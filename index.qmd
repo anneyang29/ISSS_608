@@ -1,11 +1,68 @@
 ---
-title: "isss_608"
+title: "Visual Analytics and Applications"
+
+listing: 
+
+  - id: Hands_on_Exercise
+    contents:
+      - "HE/*/*.qmd"
+    sort:
+      - "title"
+    type: grid
+    fields: [image, date, title, author]
+  - id: In_Class_Exercise
+    contents:
+      - "IE/*/*.qmd"
+    sort:
+      - "title"
+    type: grid
+    fields: [image, date, title, author]
+  
+  - id: Take_Home_Exercise
+    contents:
+      - "TE/*/*.qmd"
+    sort:
+      - "title"
+    type: grid
+    fields: [image, date, title, author]
+    
+toc: false
 ---
 
-This is a Quarto website.
+Welcome to **ISSS608 Visual Analytics and Applications** homepage. In this website, you will find my coursework. Materials here are based on [https://isss608-ay2025-26apr.netlify.app/](https://isss608-ay2025-26apr.netlify.app/lesson) by Prof Kam Tin Seong from SMU.
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
 
-```{r}
-1 + 1
-```
+Overview:
+
+::: content-container
+::: listing-block
+## Hands On Exercise
+
+</a>
+
+::: {#Hands_on_Exercise}
+:::
+:::
+:::
+
+::: content-container
+::: listing-block
+## In Class Exercise
+
+</a>
+
+::: {#In_Class_Exercise}
+:::
+:::
+:::
+
+::: content-container
+::: listing-block
+## Take Home Exercise
+
+</a>
+
+::: {#Take_Home_Exercise}
+:::
+:::
+:::

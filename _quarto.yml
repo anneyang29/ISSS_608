@@ -17,14 +17,39 @@ website:
       - href: index.qmd
         text: Home
       - about.qmd
+      
+brand:
+  color:
+    palette:
+      morandi-gray: "#b5b5b5"
+      morandi-blue: "#92a8d1"
+      morandi-dusty: "#a29bfe"
+      background-off-white: "#faf9f6" 
+      text-charcoal: "#4a4e69"      
+    
+    background: "#faf9f6"
+    foreground: "#4a4e69"
+    primary: "#8e9aaf"    
+    secondary: "#b2967d"       
+  
+  typography:
+    fonts:
+      - family: "Inter"        
+        source: google
+      - family: "Cardo" 
+        source: google
+    base: "Inter"
+    headings: "Cardo"
 
 format:
   html:
     theme:
-      - solar
+      - plain
       - brand
     css: styles.css
     toc: true
+    code-block-bg: "#f0f0ed"
+    code-block-border-left: "#8e9aaf"
 
 editor: visual
 

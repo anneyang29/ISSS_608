@@ -1,7 +1,7 @@
 ---
 title: "Hands-On Exercise 01"
 author: "Chun-Han"
-date: "January 10, 2026"
+date: "January 12, 2026"
 date-modified: "last-modified"
 execute: 
   eval: true
@@ -10,17 +10,136 @@ execute:
   freeze: true
 ---
 
-# Overview
+## Overview
 
 This is my first attempt to create the coursework website.
 
 
-## Getting Started
+## 1. Getting Started
+
+### 1.1 Installing and loading the required libraries
+
+Note: Ensure that the [pacman](https://cran.r-project.org/web/packages/pacman/) package has already been installed.
+
+The code chunk below uses `p_load()` of pacman package to check if tidyverse packages are installed in the computer. If they are, then they will be launched into R. Otherwise, tidyverse will be installed and launched into R.
 
 ```{r}
 pacman::p_load(tidyverse)
 ```
 
-# The Data
+### 1.2 The Data
 
-# First Visualization
+-   The code chunk below imports *exam_data.csv* into R environment by using [*read_csv()*](https://readr.tidyverse.org/reference/read_delim.html) function of [**readr**](https://readr.tidyverse.org/) package.
+
+-   **readr** is one of the tidyverse package.
+
+```{r}
+exam_data <- read_csv("data/Exam_data.csv")
+```
+
+**Data contains:**
+
+-   Year end examination grades of a cohort of primary 3 students from a local school.
+
+-   There are a total of seven attributes. Four of them are categorical data type and the other three are in continuous data type.
+
+    -   The categorical attributes are: ID, CLASS, GENDER and RACE.
+
+    -   The continuous attributes are: MATHS, ENGLISH and SCIENCE.
+
+## 2. Introducing ggplot
+
+### 2.1 Overview
+
+ggplot2 is a system for declaratively creating graphics, based on The Grammar of Graphics. You provide the data, tell ggplot2 how to map variables to aesthetics, what graphical primitives to use, and it takes care of the details.
+
+### 2.2 R Graphics VS ggplot
+
+::: panel-tabset
+
+#### R Graphics
+```{r}
+hist(exam_data$MATHS)
+```
+#### ggplot2
+```{r}
+ggplot(data=exam_data, aes(x = MATHS)) +
+  geom_histogram(bins=10, 
+                 boundary = 100,
+                 color="black", 
+                 fill="grey") +
+  ggtitle("Distribution of Maths scores")
+```
+:::
+
+::: callout-note
+Benefits of ggplot2 over in-built R graphics
+
+1. I believe ggplot2 shines most when dealing with complex data because of its layering logic. It works like building blocks—using the + operator to stack points, lines, and labels. This makes the code logic incredibly clear and much easier to maintain or modify.
+
+2. I also feel it saves a lot of time because it handles so much automatically. Once I map a column to an axis or a color, it takes care of the scaling and legend generation for me. It’s far more efficient than the manual setup required in Base R.
+
+3.Compared to Base R, I find it much more powerful for multi-dimensional data. With just a single line like facet_wrap, I can instantly generate sub-plots for different categories, which is the best way to visualize and compare trends across groups.
+:::
+
+## 3 Grammar of Graphics
+### 3.1 Introduction
+The "Grammar of Graphics" framework was first proposed by Leland Wilkinson in 1999. It breaks down complex visualizations into semantic components, such as Scales and Layers, essentially defining the fundamental nature of what a statistical graphic is.
+
+The core of the Grammar of Graphics lies in defining a set of rules for structuring mathematical and aesthetic elements into a meaningful graph. The theory is built upon two key principles:
+
+- Graphics = distinct layers of grammatical elements
+- Meaningful plots through aesthetic mapping
+
+A good grammar of graphics will allow us to gain insight into the composition of complicated graphics, and reveal unexpected connections between seemingly different graphics (Cox 1978). It also provides a strong foundation for understanding a diverse range of graphics. Furthermore, it may also help guide us on what a well-formed or correct graphic looks like, but there will still be many grammatically correct but nonsensical graphics.
+
+### 3.2 A Layered Grammar of Graphics
+ggplot2 is an implementation of Leland Wilkinson’s Grammar of Graphics.
+![Grammar-of-graphics](data/grammar-of-graphics.png)
+There are seven grammars of ggplot2:
+
+-   **Data**: The dataset being plotted.
+
+-   **Aesthetics** take attributes of the data and use them to influence visual characteristics, such as position, colours, size, shape, or transparency.
+
+-   **Geometrics**: The visual elements used for our data, such as point, bar or line.
+
+-   **Facets** split the data into subsets to create multiple variations of the same graph (paneling, multiple plots).
+
+-   **Statistics**, statiscal transformations that summarise data (e.g. mean, confidence intervals).
+
+-   **Coordinate systems** define the plane on which data are mapped on the graphic.
+
+-   **Themes** modify all non-data components of a plot, such as main title, sub-title, y-aixs title, or legend background.
+
+## 4 Essential Grammatical Elements in ggplot2: data
+
+Call the `ggplot()` function using the code chunk below
+```{r}
+ggplot(data=exam_data)
+```
+
+::: callout-note
+-   A blank canvas appears.
+-   `ggplot()` initializes a ggplot object.
+-   The *data* argument defines the dataset to be used for plotting.
+-   If the dataset is not already a data.frame, it will be converted to one by `fortify()`.
+:::
+
+## 5 Essential Grammatical Elements in ggplot2: [Aesthetic mappings](https://ggplot2.tidyverse.org/articles/ggplot2-specs.html)
+
+The aesthetic mappings take attributes of the data and and use them to influence visual characteristics, e.g., position, colour, size, shape, or transparency. Each visual characteristic can thus encode an aspect of the data and be used to convey information.
+
+All aesthetics of a plot are specified in the [`aes()`](https://ggplot2.tidyverse.org/reference/aes.html) function call.
+
+Code chunk below adds the aesthetic element into the plot.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS))
+```
+
+::: callout-note
+-   ggplot includes the x-axis and the axis’s label.
+:::
+
