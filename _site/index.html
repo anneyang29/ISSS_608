@@ -73,7 +73,7 @@ ul.task-list li input[type="checkbox"] {
 <script>
 
   window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-Hands_on_Exercise .list');
+    const listingTargetEl = window.document.querySelector('#listing-Hands-On Exercise .list');
     if (!listingTargetEl) {
       // No listing discovered, do not attach.
       return; 
@@ -82,67 +82,11 @@ ul.task-list li input[type="checkbox"] {
     const options = {
       valueNames: ['listing-image','listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
-      searchColumns: [],
+      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-Hands_on_Exercise'] = new List('listing-Hands_on_Exercise', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-In_Class_Exercise .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-image','listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: [],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-In_Class_Exercise'] = new List('listing-In_Class_Exercise', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-Take_Home_Exercise .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-image','listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: [],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-Take_Home_Exercise'] = new List('listing-Take_Home_Exercise', options);
+    window['quarto-listings']['listing-Hands-On Exercise'] = new List('listing-Hands-On Exercise', options);
 
     if (window['quarto-listing-loaded']) {
       window['quarto-listing-loaded']();
@@ -278,43 +222,39 @@ window.Quarto = {
 <section id="hands-on-exercise" class="level2 listing-block">
 <h2 class="anchored" data-anchor-id="hands-on-exercise">Hands On Exercise</h2>
 <p></p>
-<div id="listing-Hands_on_Exercise" class="quarto-listing quarto-listing-container-grid">
-<div class="list grid quarto-listing-cols-3">
+<div id="Hands_on_Exercise">
 
 </div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div>
-</section>
-</div>
-<div class="content-container">
-<section id="in-class-exercise" class="level2 listing-block">
-<h2 class="anchored" data-anchor-id="in-class-exercise">In Class Exercise</h2>
-<p></p>
-<div id="listing-In_Class_Exercise" class="quarto-listing quarto-listing-container-grid">
-<div class="list grid quarto-listing-cols-3">
 
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div>
-</section>
-</div>
-<div class="content-container">
-<section id="take-home-exercise" class="level2 listing-block">
-<h2 class="anchored" data-anchor-id="take-home-exercise">Take Home Exercise</h2>
-<p></p>
-<div id="listing-Take_Home_Exercise" class="quarto-listing quarto-listing-container-grid">
-<div class="list grid quarto-listing-cols-3">
 
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div>
+
 </section>
 </div>
 
-
-
-
-</main> <!-- /main -->
+<div class="quarto-listing quarto-listing-container-grid" id="listing-Hands-On Exercise">
+<div class="list grid quarto-listing-cols-3">
+<div class="g-col-1" data-index="0" data-listing-date-sort="1768147200000" data-listing-file-modified-sort="1768286170934" data-listing-date-modified-sort="1768286170000" data-listing-reading-time-sort="16" data-listing-word-count-sort="3079">
+<a href="./Hands-On_Exercise/Hands-On_Exercise01/HE01.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img src="Hands-On_Exercise\Hands-On_Exercise01\HE01_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands-On Exercise 01
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Chun-Han
+</div>
+<div class="listing-date">
+Jan 12, 2026
+</div>
+</div>
+</div>
+</div></a>
+</div>
+</div>
+<div class="listing-no-matching d-none">No matching items</div>
+</div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

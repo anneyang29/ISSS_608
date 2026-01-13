@@ -3,28 +3,14 @@ title: "Visual Analytics and Applications"
 
 listing: 
 
-  - id: Hands_on_Exercise
+  - id: Hands-On Exercise
     contents:
-      - "HE/*/*.qmd"
-    sort:
-      - "title"
-    type: grid
-    fields: [image, date, title, author]
-  - id: In_Class_Exercise
-    contents:
-      - "IE/*/*.qmd"
+      - "Hands-On_Exercise/*/*.qmd"
     sort:
       - "title"
     type: grid
     fields: [image, date, title, author]
   
-  - id: Take_Home_Exercise
-    contents:
-      - "TE/*/*.qmd"
-    sort:
-      - "title"
-    type: grid
-    fields: [image, date, title, author]
     
 toc: false
 ---
@@ -42,27 +28,5 @@ Overview:
 
 ::: {#Hands_on_Exercise}
 :::
-:::
-:::
 
-::: content-container
-::: listing-block
-## In Class Exercise
 
-</a>
-
-::: {#In_Class_Exercise}
-:::
-:::
-:::
-
-::: content-container
-::: listing-block
-## Take Home Exercise
-
-</a>
-
-::: {#Take_Home_Exercise}
-:::
-:::
-:::
