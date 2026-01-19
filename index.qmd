@@ -3,9 +3,17 @@ title: "Visual Analytics and Applications"
 
 listing: 
 
-  - id: Hands-On Exercise
+  - id: Hands-On_Exercise
     contents:
       - "Hands-On_Exercise/*/*.qmd"
+    sort:
+      - "title"
+    type: grid
+    fields: [image, date, title, author]
+  
+  - id: In-Class_Exercise
+    contents:
+      - "In-Class_Exercise/*/*.qmd"
     sort:
       - "title"
     type: grid
@@ -26,7 +34,18 @@ Overview:
 
 </a>
 
-::: {#Hands_on_Exercise}
+::: {#Hands-On_Exercise}
+:::
+:::
 :::
 
+::: content-container
+::: listing-block
+## In Class Exercise
 
+</a>
+
+::: {#In-Class_Exercise}
+:::
+:::
+:::
