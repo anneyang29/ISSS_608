@@ -1,5 +1,5 @@
 ---
-title: "Hands-On Exercise 03"
+title: "Hands-On Exercise 03-1"
 author: "Chun-Han"
 date: "January 24, 2026"
 date-modified: "last-modified"

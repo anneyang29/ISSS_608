@@ -9,3 +9,11 @@ execute:
   warning: false
   freeze: true
 ---
+
+## Overview 
+
+This session utilizes Tableau to explore the logic behind constructing fundamental visualizations. The primary focus is on temporal dimension analysis: practicing the ability to switch between different time scales (Year/Month/Day) through drill-down functions. By adjusting the granularity of time, we can more accurately identify performance variances across different periods, thereby enhancing our capacity to interpret business trends.
+
+![Dashboard](data/Dashboard 1.png)
+
+

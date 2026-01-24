@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Chun-Han">
-<meta name="dcterms.date" content="2026-01-12">
+<meta name="dcterms.date" content="2026-01-25">
 
-<title>In-Class Exercise 01 – ISSS608-Coursework</title>
+<title>In-Class Exercise 02 – ISSS608-Coursework</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -157,6 +157,12 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#monthly-sales-with-reference-lines" id="toc-monthly-sales-with-reference-lines" class="nav-link" data-scroll-target="#monthly-sales-with-reference-lines">1. Monthly Sales with Reference Lines</a></li>
+  <li><a href="#monthly-profit-bar-chart" id="toc-monthly-profit-bar-chart" class="nav-link" data-scroll-target="#monthly-profit-bar-chart">2. Monthly Profit (Bar Chart)</a></li>
+  <li><a href="#relationship-between-monthly-profit-and-sales" id="toc-relationship-between-monthly-profit-and-sales" class="nav-link" data-scroll-target="#relationship-between-monthly-profit-and-sales">3. Relationship between Monthly Profit and Sales</a></li>
+  <li><a href="#pareto-chart-sales-by-sub-category" id="toc-pareto-chart-sales-by-sub-category" class="nav-link" data-scroll-target="#pareto-chart-sales-by-sub-category">4. Pareto Chart: Sales by Sub-Category</a></li>
+  <li><a href="#pareto-analysis-of-sales-by-stateprovince" id="toc-pareto-analysis-of-sales-by-stateprovince" class="nav-link" data-scroll-target="#pareto-analysis-of-sales-by-stateprovince">5. Pareto Analysis of Sales by State/Province</a></li>
+  <li><a href="#dashboard-presentation" id="toc-dashboard-presentation" class="nav-link" data-scroll-target="#dashboard-presentation">6. Dashboard Presentation</a></li>
   </ul>
 </nav>
     </div>
@@ -165,7 +171,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">In-Class Exercise 01</h1>
+<h1 class="title">In-Class Exercise 02</h1>
 </div>
 
 
@@ -182,7 +188,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 12, 2026</p>
+      <p class="date">January 25, 2026</p>
     </div>
   </div>
   
@@ -202,10 +208,64 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>This session utilizes Tableau to explore the logic behind constructing fundamental visualizations. The primary focus is on temporal dimension analysis: practicing the ability to switch between different time scales (Year/Month/Day) through drill-down functions. By adjusting the granularity of time, we can more accurately identify performance variances across different periods, thereby enhancing our capacity to interpret business trends.</p>
+<p>This exercise focuses on the strategic selection of chart types and the enhancement of user interpretation through effective annotation. The goal is to move beyond mere data display to intentional “data storytelling.</p>
+</section>
+<section id="monthly-sales-with-reference-lines" class="level2">
+<h2 class="anchored" data-anchor-id="monthly-sales-with-reference-lines">1. Monthly Sales with Reference Lines</h2>
+<p>Adding <strong>Reference Lines</strong> (e.g., average or target) provides a benchmark for the data. This allows analysts to instantly identify months with above-average performance, adding essential “context” to a standard line chart.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="data/Dashboard 1.png" class="img-fluid figure-img"></p>
+<p><img src="data/Monthly Sales.png" class="img-fluid figure-img"></p>
+<figcaption>Monthly Sales</figcaption>
+</figure>
+</div>
+</section>
+<section id="monthly-profit-bar-chart" class="level2">
+<h2 class="anchored" data-anchor-id="monthly-profit-bar-chart">2. Monthly Profit (Bar Chart)</h2>
+<p>Switching to a bar chart for profit emphasizes divergence. By contrasting color and bar length, the intensity of profits and losses becomes much more visually impactful than a continuous line.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="data/Monthly Profit.png" class="img-fluid figure-img"></p>
+<figcaption>Monthly Profit</figcaption>
+</figure>
+</div>
+</section>
+<section id="relationship-between-monthly-profit-and-sales" class="level2">
+<h2 class="anchored" data-anchor-id="relationship-between-monthly-profit-and-sales">3. Relationship between Monthly Profit and Sales</h2>
+<p>This view explores correlation. Does high sales volume always translate to high profit? This helps identify months with “high revenue but low margin,” signaling a need for cost structure optimization.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="data/Monthly Profit by Sales.png" class="img-fluid figure-img"></p>
+<figcaption>Monthly Profit by Sales</figcaption>
+</figure>
+</div>
+</section>
+<section id="pareto-chart-sales-by-sub-category" class="level2">
+<h2 class="anchored" data-anchor-id="pareto-chart-sales-by-sub-category">4. Pareto Chart: Sales by Sub-Category</h2>
+<p>This chart identifies the primary revenue drivers among sub-categories. It helps in optimizing the product mix, ensuring high-value categories receive adequate visibility and marketing budget.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="data/Pareto.png" class="img-fluid figure-img"></p>
+<figcaption>Pareto Chart Sales by Sub-Category</figcaption>
+</figure>
+</div>
+</section>
+<section id="pareto-analysis-of-sales-by-stateprovince" class="level2">
+<h2 class="anchored" data-anchor-id="pareto-analysis-of-sales-by-stateprovince">5. Pareto Analysis of Sales by State/Province</h2>
+<p>A classic application of the 80/20 Rule. It identifies the “vital few” states (top 20% of regions) that generate 80% of total sales. This is strategically crucial for resource allocation, such as the placement of logistics hubs and regional marketing expenditures.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="data/Pareto Analysis of Sales.png" class="img-fluid figure-img"></p>
+<figcaption>Pareto Analysis of Sales by State Province</figcaption>
+</figure>
+</div>
+</section>
+<section id="dashboard-presentation" class="level2">
+<h2 class="anchored" data-anchor-id="dashboard-presentation">6. Dashboard Presentation</h2>
+<p>Finally, we integrate these multi-dimensional views into a Dashboard. This provides a holistic perspective and utilizes interactivity to allow users to instantly identify the core regions and products driving the business.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="data/Dashboard 2.png" class="img-fluid figure-img"></p>
 <figcaption>Dashboard</figcaption>
 </figure>
 </div>

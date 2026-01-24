@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Chun-Han">
-<meta name="dcterms.date" content="2026-01-12">
+<meta name="dcterms.date" content="2026-01-24">
 
-<title>In-Class Exercise 01 – ISSS608-Coursework</title>
+<title>Hands-On Exercise 03-2 – ISSS608-Coursework</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,6 +21,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -157,6 +192,13 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#basic-concepts-of-animation" id="toc-basic-concepts-of-animation" class="nav-link" data-scroll-target="#basic-concepts-of-animation">1 Basic concepts of animation</a></li>
+  <li><a href="#terminology" id="toc-terminology" class="nav-link" data-scroll-target="#terminology">2 Terminology</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">3 Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#loading-r-packages" id="toc-loading-r-packages" class="nav-link" data-scroll-target="#loading-r-packages">3.1 Loading R packages</a></li>
+  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data">3.2 Importing the data</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -165,7 +207,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">In-Class Exercise 01</h1>
+<h1 class="title">Hands-On Exercise 03-2</h1>
 </div>
 
 
@@ -182,7 +224,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 12, 2026</p>
+      <p class="date">January 24, 2026</p>
     </div>
   </div>
   
@@ -202,15 +244,97 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>This session utilizes Tableau to explore the logic behind constructing fundamental visualizations. The primary focus is on temporal dimension analysis: practicing the ability to switch between different time scales (Year/Month/Day) through drill-down functions. By adjusting the granularity of time, we can more accurately identify performance variances across different periods, thereby enhancing our capacity to interpret business trends.</p>
+<p>When telling a visually-driven data story, animated graphics tends to attract the interest of the audience and make deeper impression than static graphics. In this hands-on exercise, we will learn how to create animated data visualisation by using <strong>gganimate</strong> and <strong>plotly r</strong> packages. At the same time, you will also learn how to (i) reshape data by using <strong>tidyr</strong> package, and (ii) process, wrangle and transform data by using <strong>dplyr</strong> package.</p>
+</section>
+<section id="basic-concepts-of-animation" class="level2">
+<h2 class="anchored" data-anchor-id="basic-concepts-of-animation">1 Basic concepts of animation</h2>
+<p>When creating animations, the plot does not actually move. Instead, many individual plots are built and then stitched together as movie frames, just like an old-school flip book or cartoon. Each frame is a different plot when conveying motion, which is built using some relevant subset of the aggregate data. The subset drives the flow of the animation when stitched back together.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="data/Dashboard 1.png" class="img-fluid figure-img"></p>
-<figcaption>Dashboard</figcaption>
+<p><img src="data/image1.jpg" class="img-fluid figure-img"></p>
+<figcaption>animation</figcaption>
 </figure>
 </div>
+</section>
+<section id="terminology" class="level2">
+<h2 class="anchored" data-anchor-id="terminology">2 Terminology</h2>
+<p>Before we dive into the steps for creating an animated statistical graph, it’s important to understand some of the key concepts and terminology related to this type of visualization.</p>
+<ol type="1">
+<li><p>Frame: In an animated line graph, each frame represents a different point in time or a different category. When the frame changes, the data points on the graph are updated to reflect the new data.</p></li>
+<li><p>Animation Attributes: The animation attributes are the settings that control how the animation behaves. For example, you can specify the duration of each frame, the easing function used to transition between frames, and whether to start the animation from the current frame or from the beginning.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p>Effort vs.&nbsp;Value High effort required. Ask first: Does the extra work translate into proportional value?</p></li>
+<li><p>Key Scenarios</p></li>
+</ol>
+<ul>
+<li>EDA : <strong>Internal Efficiency.</strong> Prioritize speed and accuracy. Use static charts unless animation reveals insights that statics cannot.</li>
+</ul>
+<p>-Presentation : <strong>External Impact.</strong> Animation is for storytelling. It guides the audience and creates a stronger connection than static figures.</p>
+</div>
+</div>
+</section>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">3 Getting Started</h2>
+<section id="loading-r-packages" class="level3">
+<h3 class="anchored" data-anchor-id="loading-r-packages">3.1 Loading R packages</h3>
+<p>Note: Ensure that the <a href="https://cran.r-project.org/web/packages/gifski/index.html">gifski</a>, <a href="https://plotly.com/r/">plotly</a>, <a href="https://gganimate.com/">gganimate</a>, <a href="https://tidyverse.org/">tidyverse</a>, <a href="https://cran.r-project.org/web/packages/gapminder/index.html">gapminder</a> package has already been installed.</p>
+<p>The code chunk below uses</p>
+<ul>
+<li><p>plotly, R library for plotting interactive statistical graphs.</p></li>
+<li><p>gganimate, an ggplot extension for creating animated statistical graphs.</p></li>
+<li><p>gifski converts video frames to GIF animations using pngquant’s fancy features for efficient cross-frame palettes and temporal dithering. It produces animated GIFs that use thousands of colors per frame.</p></li>
+<li><p>gapminder: An excerpt of the data available at Gapminder.org. We just want to use its country_colors scheme.</p></li>
+<li><p>tidyverse, a family of modern R packages specially designed to support data science, analysis and communication task including creating static statistical graphs.</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(readxl, gifski, gapminder,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               plotly, gganimate, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>package 'gifski' successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+    C:\Users\88696\AppData\Local\Temp\RtmpoLxL7V\downloaded_packages</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>package 'gapminder' successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+    C:\Users\88696\AppData\Local\Temp\RtmpoLxL7V\downloaded_packages</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>package 'proxy' successfully unpacked and MD5 sums checked
+package 'e1071' successfully unpacked and MD5 sums checked
+package 'wk' successfully unpacked and MD5 sums checked
+package 'classInt' successfully unpacked and MD5 sums checked
+package 's2' successfully unpacked and MD5 sums checked
+package 'units' successfully unpacked and MD5 sums checked
+package 'sf' successfully unpacked and MD5 sums checked
+package 'lpSolve' successfully unpacked and MD5 sums checked
+package 'transformr' successfully unpacked and MD5 sums checked
+package 'tweenr' successfully unpacked and MD5 sums checked
+package 'gganimate' successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+    C:\Users\88696\AppData\Local\Temp\RtmpoLxL7V\downloaded_packages</code></pre>
+</div>
+</div>
+</section>
+<section id="importing-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="importing-the-data">3.2 Importing the data</h3>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
