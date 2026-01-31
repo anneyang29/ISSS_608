@@ -750,5 +750,5 @@ patchwork <- (p1 / p2) | p3
 patchwork & theme_economist() & 
   theme(plot.title = element_text(size = 10))
 ```
+
 :::
-::::

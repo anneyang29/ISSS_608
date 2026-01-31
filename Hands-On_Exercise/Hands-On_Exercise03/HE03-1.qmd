@@ -114,6 +114,7 @@ girafe(
 :::
 
 ### 2.3 Displaying multiple information on tooltip
+
 The content of the tooltip can be customised by including a list object as shown in the code chunk below. The first three lines of codes in the code chunk create a new field called tooltip. At the same time, it populates text in ID and CLASS fields into the newly created field. Next, this newly created field is used as tooltip field as shown in the code of line 7.
 
 ::: panel-tabset
@@ -169,6 +170,7 @@ girafe(
 :::
 
 ### 2.4 Customising Tooltip style
+
 Code chunk below uses [opts_tooltip()](https://davidgohel.github.io/ggiraph/reference/opts_tooltip.html) of **ggiraph** to customize tooltip rendering by add css declarations.
 
 ::: callout-note
@@ -232,6 +234,7 @@ girafe(
 :::
 
 ### 2.5 Displaying statistics on tooltip
+
 Code chunk below shows an advanced way to customise tooltip. In this example, a function is used to compute 90% confident interval of the mean. The derived statistics are then displayed in the tooltip.
 
 ::: panel-tabset
@@ -301,9 +304,9 @@ girafe(ggobj = gg_point,
 ::: callout-note
 In this visualization, I deliberately chose a Point Plot with Error Bars over a traditional Bar Chart. The primary reasons are:
 
-- Eliminating "Visual Gravity": Bar charts create a sense of visual weight that pulls the reader’s attention to the entire area between the zero-axis and the mean.
+-   Eliminating "Visual Gravity": Bar charts create a sense of visual weight that pulls the reader’s attention to the entire area between the zero-axis and the mean.
 
-- Preventing Distribution Illusions: The solid bars can create a false impression that the data is uniformly "filled" or "grown" from zero.
+-   Preventing Distribution Illusions: The solid bars can create a false impression that the data is uniformly "filled" or "grown" from zero.
 :::
 
 ::: panel-tabset
@@ -410,12 +413,13 @@ girafe(
 :::
 
 ### 2.6 Hover effect with *data_id* aesthetic
+
 Code chunk below shows the second interactive feature of ggiraph, namely `data_id`.
 
 ::: callout-note
-- Elements associated with a data_id (i.e CLASS) will be highlighted upon mouse over.
+-   Elements associated with a data_id (i.e CLASS) will be highlighted upon mouse over.
 
-- Note that the default value of the hover css is hover_css = “fill:orange;”.
+-   Note that the default value of the hover css is hover_css = “fill:orange;”.
 :::
 
 ::: panel-tabset
@@ -462,12 +466,12 @@ girafe(
 ```
 :::
 
-:::callout-note
+::: callout-note
 To improve the readability of the interactive distribution, I implemented a monochromatic gradient combined with interactive tooltips. By mapping the `CLASS` variable to a specific color scale and adding data labels:
 
-- Instantly distinguish between different class cohorts within a dense dataset.
+-   Instantly distinguish between different class cohorts within a dense dataset.
 
-- Access granular details (such as specific scores) via tooltips without cluttering the primary visual field.
+-   Access granular details (such as specific scores) via tooltips without cluttering the primary visual field.
 :::
 
 ::: panel-tabset
@@ -573,6 +577,7 @@ girafe(
 :::
 
 ### 2.7 Styling hover effect
+
 In the code chunk below, css codes are used to change the highlighting effect.
 
 ::: panel-tabset
@@ -628,6 +633,7 @@ girafe(
 :::
 
 ### 2.8 Combining tooltip and hover effect
+
 There are time that we want to combine tooltip and hover effect on the interactive statistical graph as shown in the code chunk below.
 
 ::: panel-tabset
@@ -685,6 +691,7 @@ girafe(
 :::
 
 ### 2.9 Click effect with onclick
+
 `onclick` argument of ggiraph provides hotlink interactivity on the web. The code chunk below shown an example of `onclick`.
 
 ::: panel-tabset
@@ -737,17 +744,18 @@ girafe(
 ```
 :::
 
-:::callout-note
+::: callout-note
 Note that click actions must be a string column in the dataset containing valid javascript instructions.
 :::
 
 ### 2.10 Coordinated Multiple Views with ggiraph
+
 Notice that when a data point of one of the dotplot is selected, the corresponding data point ID on the second data visualisation will be highlighted too.
 
 In order to build a coordinated multiple views as shown in the example above, the following programming strategy will be used:
 
-1. Appropriate interactive functions of **ggiraph** will be used to create the multiple views.
-2. patchwork function of patchwork package will be used inside girafe function to create the interactive coordinated multiple views.
+1.  Appropriate interactive functions of **ggiraph** will be used to create the multiple views.
+2.  patchwork function of patchwork package will be used inside girafe function to create the interactive coordinated multiple views.
 
 ::: panel-tabset
 ### Plot
@@ -940,14 +948,16 @@ girafe(
 ## 3 Interactive Data Visualisation - plotly methods
 
 ### 3.1 Introduction
+
 Plotly’s R graphing library create interactive web graphics from **ggplot2** graphs and/or a custom interface to the (MIT-licensed) JavaScript library [plotly.js](https://plotly.com/javascript/) inspired by the grammar of graphics. Different from other plotly platform, plot.R is free and open source.
 
 There are two ways to create interactive graph by using plotly, they are:
 
-- by using plot_ly()
-- by using ggplotly()
+-   by using plot_ly()
+-   by using ggplotly()
 
 ### 3.2 Creating an interactive scatter plot: plot_ly() method
+
 The tabset below shows an example a basic interactive plot created by using plot_ly().
 
 ::: panel-tabset
@@ -973,6 +983,7 @@ plot_ly(data = exam_data,
 :::
 
 ### 3.3 Working with visual variable: plot_ly() method
+
 In the code chunk below, color argument is mapped to a qualitative visual variable (i.e. RACE).
 
 ::: panel-tabset
@@ -1000,6 +1011,7 @@ plot_ly(data = exam_data,
 :::
 
 ### 3.4 Creating an interactive scatter plot: ggplotly() method
+
 The code chunk below plots an interactive scatter plot by using ggplotly().
 
 ::: panel-tabset
@@ -1033,11 +1045,12 @@ ggplotly(p)
 :::
 
 ### 3.5 Coordinated Multiple Views with plotly
+
 The creation of a coordinated linked plot by using plotly involves three steps:
 
-- [highlight_key()](https://www.rdocumentation.org/packages/plotly/versions/4.9.2/topics/highlight_key) of **plotly** package is used as shared data.
-- Two scatterplots will be created by using ggplot2 functions.
-- [subplot()](https://plotly.com/r/subplots/) of **plotly** package is used to place them next to each other side-by-side.
+-   [highlight_key()](https://www.rdocumentation.org/packages/plotly/versions/4.9.2/topics/highlight_key) of **plotly** package is used as shared data.
+-   Two scatterplots will be created by using ggplot2 functions.
+-   [subplot()](https://plotly.com/r/subplots/) of **plotly** package is used to place them next to each other side-by-side.
 
 ::: panel-tabset
 ### Plot
@@ -1088,13 +1101,16 @@ subplot(ggplotly(p1),
 :::
 
 ## 4 Interactive Data Visualisation - crosstalk methods
-### 4.1 Introduction 
+
+### 4.1 Introduction
+
 [Crosstalk](https://rstudio.github.io/crosstalk/index.html) is an add-on to the htmlwidgets package. It extends htmlwidgets with a set of classes, functions, and conventions for implementing cross-widget interactions (currently, linked brushing and filtering).
 
 ### 4.2 Interactive Data Table: DT package
-- A wrapper of the JavaScript Library [DataTables](https://datatables.net/)
 
-- Data objects in R can be rendered as HTML tables using the JavaScript library ‘DataTables’ (typically via R Markdown or Shiny).
+-   A wrapper of the JavaScript Library [DataTables](https://datatables.net/)
+
+-   Data objects in R can be rendered as HTML tables using the JavaScript library ‘DataTables’ (typically via R Markdown or Shiny).
 
 ```{r}
 DT::datatable(exam_data, class= "compact")
