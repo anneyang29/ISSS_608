@@ -18,6 +18,14 @@ listing:
       - "title"
     type: grid
     fields: [image, date, title, author]
+
+  - id: Take-Home_Exercise
+    contents:
+      - "Take-Home_Exercise/*/*.qmd"
+    sort:
+      - "title"
+    type: grid
+    fields: [image, date, title, author]
   
     
 toc: false
@@ -48,4 +56,12 @@ Overview:
 ::: {#In-Class_Exercise}
 :::
 :::
+:::
+::: content-container
+::: listing-block
+## Take Home Exercise
+
+</a>
+
+::: {#Take-Home_Exercise}
 :::

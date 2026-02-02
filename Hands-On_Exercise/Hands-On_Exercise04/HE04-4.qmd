@@ -14,9 +14,9 @@ execute:
 
 Funnel plot is a specially designed data visualisation for conducting unbiased comparison between outlets, stores or business entities. By the end of this hands-on exercise, you will gain hands-on experience on:
 
-- plotting funnel plots by using **funnelPlotR** package,
-- plotting static funnel plot by using ggplot2 package, and
-- plotting interactive funnel plot by using both **plotly R** and **ggplot2** packages.
+-   plotting funnel plots by using **funnelPlotR** package,
+-   plotting static funnel plot by using ggplot2 package, and
+-   plotting interactive funnel plot by using both **plotly R** and **ggplot2** packages.
 
 ## 1 Getting Started
 
@@ -24,11 +24,11 @@ Funnel plot is a specially designed data visualisation for conducting unbiased c
 
 In this exercise, four R packages will be used. They are:
 
-- **readr** for importing csv into R.
-- **FunnelPlotR** for creating funnel plot.
-- **ggplot2** for creating funnel plot manually.
-- **knitr** for building static html table.
-- **plotly** for creating interactive funnel plot.
+-   **readr** for importing csv into R.
+-   **FunnelPlotR** for creating funnel plot.
+-   **ggplot2** for creating funnel plot manually.
+-   **knitr** for building static html table.
+-   **plotly** for creating interactive funnel plot.
 
 ```{r}
 pacman::p_load(tidyverse, FunnelPlotR, plotly, knitr)
@@ -70,12 +70,12 @@ covid19 <- read_csv("data/COVID-19_DKI_Jakarta.csv") %>%
 
 [FunnelPlotR](https://nhs-r-community.github.io/FunnelPlotR/) package uses ggplot to generate funnel plots. It requires a `numerator` (events of interest), `denominator` (population to be considered) and `group`. The key arguments selected for customisation are:
 
-- `limit`: plot limits (95 or 99).
-- `label_outliers`: to label outliers (true or false).
-- `Poisson_limits`: to add Poisson limits to the plot.
-- `OD_adjust`: to add overdispersed limits to the plot.
-- `xrange` and `yrange`: to specify the range to display for axes, acts like a zoom function.
-- Other aesthetic components such as graph title, axis labels etc.
+-   `limit`: plot limits (95 or 99).
+-   `label_outliers`: to label outliers (true or false).
+-   `Poisson_limits`: to add Poisson limits to the plot.
+-   `OD_adjust`: to add overdispersed limits to the plot.
+-   `xrange` and `yrange`: to specify the range to display for axes, acts like a zoom function.
+-   Other aesthetic components such as graph title, axis labels etc.
 
 ### 2.2 FunnelPlotR methods: The basic plot
 
@@ -112,9 +112,9 @@ funnel_plot(
 :::
 
 ::: callout-note
-- `group` in this function is different from the scatterplot. Here, it defines the level of the points to be plotted i.e. Sub-district, District or City. If Cityc is chosen, there are only six data points.
-- By default, `data_type` argument is “SR”.
-- `limit`: Plot limits, accepted values are: 95 or 99, corresponding to 95% or 99.8% quantiles of the distribution.
+-   `group` in this function is different from the scatterplot. Here, it defines the level of the points to be plotted i.e. Sub-district, District or City. If Cityc is chosen, there are only six data points.
+-   By default, `data_type` argument is “SR”.
+-   `limit`: Plot limits, accepted values are: 95 or 99, corresponding to 95% or 99.8% quantiles of the distribution.
 :::
 
 ### 2.3 FunnelPlotR methods: Makeover 1
@@ -209,9 +209,9 @@ funnel_plot(
 
 Things to learn from the code chunk above.
 
-- `label = NA` argument is to removed the default label outliers feature.
-- `title` argument is used to add plot title.
-- `x_label` and `y_label` arguments are used to add/edit x-axis and y-axis titles.
+-   `label = NA` argument is to removed the default label outliers feature.
+-   `title` argument is used to add plot title.
+-   `x_label` and `y_label` arguments are used to add/edit x-axis and y-axis titles.
 
 ## 3 Funnel Plot for Fair Visual Comparison: ggplot2 methods
 
@@ -234,7 +234,7 @@ Next, the *fit.mean* is computed by using the code chunk below.
 fit.mean <- weighted.mean(df$rate, 1/df$rate.se^2)
 ```
 
-### 3.2  Calculate lower and upper limits for 95% and 99.9% CI
+### 3.2 Calculate lower and upper limits for 95% and 99.9% CI
 
 The code chunk below is used to compute the lower and upper limits for 95% confidence interval.
 
@@ -357,7 +357,7 @@ p
 ```
 :::
 
-### 3.4  Interactive Funnel Plot: plotly + ggplot2
+### 3.4 Interactive Funnel Plot: plotly + ggplot2
 
 The funnel plot created using ggplot2 functions can be made interactive with `ggplotly()` of plotly r package.
 
@@ -388,5 +388,3 @@ fp_ggplotly
 
 ```
 :::
-
-

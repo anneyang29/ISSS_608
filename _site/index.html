@@ -126,6 +126,34 @@ ul.task-list li input[type="checkbox"] {
       window['quarto-listing-loaded']();
     }
   })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-Take-Home_Exercise .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-image','listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-Take-Home_Exercise'] = new List('listing-Take-Home_Exercise', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
   </script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
@@ -229,6 +257,17 @@ window.Quarto = {
         <li>
     <a class="dropdown-item" href="./In-Class_Exercise/In-Class_Exercise02/IE02.html">
  <span class="dropdown-text">In-Class Exercise 2</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-Home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="./Take-Home_Exercise/Take-Home_Exercise01/TE01.html">
+ <span class="dropdown-text">Take-Home Exercise 1</span></a>
   </li>  
     </ul>
   </li>
@@ -417,7 +456,7 @@ Feb 1, 2026
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="7" data-listing-date-sort="1769875200000" data-listing-file-modified-sort="1769960120521" data-listing-date-modified-sort="1769960120000" data-listing-reading-time-sort="11" data-listing-word-count-sort="2107">
+<div class="g-col-1" data-index="7" data-listing-date-sort="1769875200000" data-listing-file-modified-sort="1770013747854" data-listing-date-modified-sort="1770013747000" data-listing-reading-time-sort="11" data-listing-word-count-sort="2145">
 <a href="./Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top"><img src="Hands-On_Exercise\Hands-On_Exercise04\HE04-4_files\figure-html\unnamed-chunk-4-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
@@ -490,9 +529,39 @@ Jan 25, 2026
 </div>
 </section>
 </div>
+<div class="content-container">
+<section id="take-home-exercise" class="level2 listing-block">
+<h2 class="anchored" data-anchor-id="take-home-exercise">Take Home Exercise</h2>
+<p></p>
+<div id="listing-Take-Home_Exercise" class="quarto-listing quarto-listing-container-grid">
+<div class="list grid quarto-listing-cols-3">
+<div class="g-col-1" data-index="0" data-listing-date-sort="1769961600000" data-listing-file-modified-sort="1770022541444" data-listing-date-modified-sort="1770022541000" data-listing-reading-time-sort="12" data-listing-word-count-sort="2208">
+<a href="./Take-Home_Exercise/Take-Home_Exercise01/TE01.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Take-Home Exercise 01
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Chun-Han
+</div>
+<div class="listing-date">
+Feb 2, 2026
+</div>
+</div>
+</div>
+</div></a>
+</div>
+</div>
+<div class="listing-no-matching d-none">No matching items</div>
+</div>
 
 
 
+</section>
+</div>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

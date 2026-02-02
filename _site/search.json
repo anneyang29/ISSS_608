@@ -1,38 +1,150 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Visual Analytics and Applications",
+    "objectID": "Take-Home_Exercise/Take-Home_Exercise01/TE01.html",
+    "href": "Take-Home_Exercise/Take-Home_Exercise01/TE01.html",
+    "title": "Take-Home Exercise 01",
     "section": "",
-    "text": "Welcome to ISSS608 Visual Analytics and Applications homepage. In this website, you will find my coursework. Materials here are based on https://isss608-ay2025-26apr.netlify.app/ by Prof Kam Tin Seong from SMU.\nOverview:"
+    "text": "This report analyzes income inequality among rural informal labourers in Northern Vietnam. Leveraging tidyverse for data wrangling and ggplot2 for visual analytics, we address key socio-economic questions through four progressive lenses:\n\nMacro Context: Demographics and income distribution patterns.\nStructural Gaps: The influence of ethnicity, gender, and livelihood diversity.\nMicro Influencers: Returns on education, vocational training, and credit access.\nSocial Outlook: Linking policy priorities to rural development perceptions."
   },
   {
-    "objectID": "index.html#hands-on-exercise",
-    "href": "index.html#hands-on-exercise",
-    "title": "Visual Analytics and Applications",
-    "section": "Hands On Exercise",
-    "text": "Hands On Exercise\n\n\n\n\n\n\n\n\n\nHands-On Exercise 01\n\n\n\nChun-Han\n\n\nJan 12, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 02\n\n\n\nChun-Han\n\n\nJan 19, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-1\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-2\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-1\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-2\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-3\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-4\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "index.html#in-class-exercise",
-    "href": "index.html#in-class-exercise",
-    "title": "Visual Analytics and Applications",
-    "section": "In Class Exercise",
-    "text": "In Class Exercise\n\n\n\n\n\n\n\n\n\nIn-Class Exercise 01\n\n\n\nChun-Han\n\n\nJan 25, 2026\n\n\n\n\n\n\n\n\n\n\n\nIn-Class Exercise 02\n\n\n\nChun-Han\n\n\nJan 25, 2026\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "In-Class_Exercise/In-Class_Exercise01/IE01.html",
-    "href": "In-Class_Exercise/In-Class_Exercise01/IE01.html",
-    "title": "In-Class Exercise 01",
+    "objectID": "Take-Home_Exercise/Take-Home_Exercise01/TE01.html#overview",
+    "href": "Take-Home_Exercise/Take-Home_Exercise01/TE01.html#overview",
+    "title": "Take-Home Exercise 01",
     "section": "",
-    "text": "This session utilizes Tableau to explore the logic behind constructing fundamental visualizations. The primary focus is on temporal dimension analysis: practicing the ability to switch between different time scales (Year/Month/Day) through drill-down functions. By adjusting the granularity of time, we can more accurately identify performance variances across different periods, thereby enhancing our capacity to interpret business trends.\n\n\n\nDashboard"
+    "text": "This report analyzes income inequality among rural informal labourers in Northern Vietnam. Leveraging tidyverse for data wrangling and ggplot2 for visual analytics, we address key socio-economic questions through four progressive lenses:\n\nMacro Context: Demographics and income distribution patterns.\nStructural Gaps: The influence of ethnicity, gender, and livelihood diversity.\nMicro Influencers: Returns on education, vocational training, and credit access.\nSocial Outlook: Linking policy priorities to rural development perceptions."
   },
   {
-    "objectID": "In-Class_Exercise/In-Class_Exercise01/IE01.html#overview",
-    "href": "In-Class_Exercise/In-Class_Exercise01/IE01.html#overview",
-    "title": "In-Class Exercise 01",
+    "objectID": "Take-Home_Exercise/Take-Home_Exercise01/TE01.html#getting-started",
+    "href": "Take-Home_Exercise/Take-Home_Exercise01/TE01.html#getting-started",
+    "title": "Take-Home Exercise 01",
+    "section": "1 Getting Started",
+    "text": "1 Getting Started\n\n1.1 Installing and loading the packages\n\n\n\n\n\n\n\nLibrary\nDescription\n\n\n\n\ntidyverse\nA collection of core packages designed for data science, used extensively for data preparation and wrangling.\n\n\nreadxl\nAllows R to read Excel files (.xlsx).\n\n\npatchwork\nFor arranging multiple ggplot2 figures into a composite figure.\n\n\nggthemes\nProvides extra themes, geoms, and scales for ggplot2.\n\n\nscales\nSupplies scale functions and tools for customizing axes, labels, and legends in ggplot2.\n\n\nggdist\nAn extension of ggplot2 for visualising distributions and uncertainty, useful for half-violin or raincloud plots.\n\n\nplotly\nR library for plotting interactive statistical graphs\n\n\n\n\npacman::p_load(tidyverse, readxl, patchwork, ggthemes, scales, ggdist, plotly)\n\n\n\n1.2 Data import\nThe dataset used in this study is derived from a socio-economic survey of 725 informal labourers across five provinces in the Northern Mountainous Region of Vietnam. The data consists of 725 observations and 30 variables, categorized into six key dimensions: Characteristics (C), Income Types (T), Impact Factors (F), Living Conditions (L), Policy Opinions (P), and Social Assessments (A).\n\nraw_df &lt;- read_excel(\"data/Upload for elsiver.xlsx\",\n                     sheet = 1,\n                     na = c(\"\", \"NA\"))\n\n\n\n1.3 Filtering data for selected variables\n\nselected_df &lt;- raw_df %&gt;%\n  select(\n    CPRO, CGEN, CRAC, CJOB, CQUI,        \n    TEIN, TAIN, TSII, TOIN,              \n    FEDU, FVTP, FCRA, FTAP,              \n    LWDA,                                \n    starts_with(\"PPO\"),                  \n    ARO4,                                \n    starts_with(\"LHO\")                \n  )\n\n\n\n1.4 Data Preprocessing\n\n1.4.1 Checking Duplicate Rows\nUsing the duplicated() function to see whether there are duplicate entries in the data.\n\nselected_df[duplicated(selected_df),]\n\n# A tibble: 5 × 24\n   CPRO CGEN   CRAC  CJOB  CQUI  TEIN  TAIN  TSII  TOIN  FEDU  FVTP  FCRA  FTAP\n  &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;\n1     3 1         2     1     5    24    24     0     0     0     1     1     1\n2     3 1         2     1     5    22    22     0     0     0     1     1     1\n3     3 1         2     1     5    22    22     0     0     0     1     1     1\n4     3 1         2     1     4    26    26     0     0     0     1     1     1\n5     5 1         1     1     5    18     7    11     0     0     1     1     1\n# ℹ 11 more variables: LWDA &lt;dbl&gt;, PPO1 &lt;dbl&gt;, PPO2 &lt;dbl&gt;, PPO3 &lt;dbl&gt;,\n#   PPO4 &lt;dbl&gt;, PPO5 &lt;dbl&gt;, ARO4 &lt;chr&gt;, LHO1 &lt;dbl&gt;, LHO2 &lt;dbl&gt;, LHO3 &lt;dbl&gt;,\n#   LHO4 &lt;dbl&gt;\n\n\n\n\n\n\n\n\nNote\n\n\n\nAlthough some identical rows appear after performing feature selection, we have deliberately chosen to retain all records. In a survey targeting a highly homogeneous population (such as informal labourers in the same mountainous region), it is common for different respondents to share identical socio-economic profiles across key indicators like income, gender, and career. Removing these records after reducing the feature space would lead to an artificial loss of sample density and bias the statistical representation of these specific demographic groups.\n\n\n\n\n1.4.2 Checking Missing Value\n\ncheck_na &lt;- colSums(is.na(selected_df))\ncheck_na\n\nCPRO CGEN CRAC CJOB CQUI TEIN TAIN TSII TOIN FEDU FVTP FCRA FTAP LWDA PPO1 PPO2 \n   0    0    0   49    4    1    1    6    0   23   23    2  102  160  209  230 \nPPO3 PPO4 PPO5 ARO4 LHO1 LHO2 LHO3 LHO4 \n  88   99  106  111  512  402  616  653 \n\n\nRecognizing that different variables carry distinct statistical weight, we implemented a Categorized Imputation Strategy\n\nFor Core Metrics (TEIN): We applied deletion to maintain a solid analytical baseline.\nFor Categorical Factors (CJOB, FEDU): We recoded missing entries as “Unknown” or “Not Disclosed”. This is particularly critical for the Career (CJOB) variable, as it preserves 49 observations that still hold valuable income data.\nFor Binary Indicators (LHO series): NA values were treated as a negative response (0).\nFor Subjective Opinions (PPO): Missing values were labeled as “Not Answered”.\n\n\nfinal_df &lt;- selected_df %&gt;%\n  filter(!is.na(TEIN)) %&gt;%\n  \n  mutate(across(c(CGEN, CRAC, CJOB, CQUI, FEDU, FVTP, FCRA, FTAP, ARO4), \n                ~replace_na(as.character(.), \"Unknown\"))) %&gt;%\n\n  mutate(across(starts_with(\"PPO\"), \n                ~replace_na(as.character(.), \"Not Answered\"))) %&gt;%\n  \n  mutate(across(starts_with(\"LHO\"), \n                ~replace_na(as.numeric(.), 0)))\n\n\n\n1.4.3 Renaming Columns and Transforming Feature\n\nclean_df &lt;- final_df %&gt;%\n  rename(\n    total_income         = TEIN,\n    agri_income          = TAIN,\n    service_industry_inc = TSII,\n    other_income         = TOIN,\n    working_days         = LWDA,\n    policy_training      = PPO1,\n    policy_agri_chain    = PPO2,\n    policy_healthcare    = PPO3,\n    policy_elderly_care  = PPO4,\n    policy_urban_jobs    = PPO5,\n    wellbeing_improve    = ARO4,\n    house_cottage        = LHO1,\n    house_roofed         = LHO2,\n    house_solid          = LHO3,\n    house_buildings      = LHO4\n  ) %&gt;%\n  \n  # Recoding values to labels\n  mutate(\n    province = factor(CPRO, levels = 1:5, \n                      labels = c(\"Tuyen Quang\", \"Quang Ninh\", \"Ha Giang\", \"Yen Bai\", \"Bac Giang\")),\n    gender   = factor(CGEN, levels = c(1, 2), labels = c(\"Male\", \"Female\")),\n    race     = factor(CRAC, levels = c(1, 2), labels = c(\"Kinh\", \"Minority\")),\n    \n    job_type = factor(CJOB, levels = c(1, 2, 3), \n                      labels = c(\"Agricultural\", \"Service/Industrial\", \"Other\")),\n    income_group = factor(CQUI, levels = c(5, 4, 3, 2, 1), \n                          labels = c(\"Lowest\", \"Second\", \"Middle\", \"Fourth\", \"Top\")),\n    \n    # Education and Micro-factors\n    education = factor(FEDU, levels = c(0, 1, 2, 3), \n                       labels = c(\"Primary\", \"Lower secondary\", \"Upper secondary\", \"Other\")),\n    training_status = factor(FVTP, levels = c(1, 2), labels = c(\"Short course\", \"Long course\")),\n    credit_status   = factor(FCRA, levels = c(1, 2), labels = c(\"Inaccessible\", \"Accessible\")),\n    tech_level      = factor(FTAP, levels = c(1, 2), labels = c(\"Low\", \"Adequate\")),\n    \n    # Binary\n    across(starts_with(\"house_\"), ~factor(., levels = c(0, 1), labels = c(\"No\", \"Yes\"))),\n    \n    # Recoding PPO & ARO scores\n    across(c(starts_with(\"policy_\"), wellbeing_improve), ~case_when(\n      . == \"1\" ~ \"Strongly Disagree\",\n      . == \"2\" ~ \"Disagree\",\n      . == \"3\" ~ \"Neutral\",\n      . == \"4\" ~ \"Agree\",\n      . == \"5\" ~ \"Strongly Agree\",\n      TRUE ~ \"No Opinion\"\n    ) %&gt;% factor(levels = c(\"Strongly Disagree\", \"Disagree\", \"Neutral\", \"Agree\", \"Strongly Agree\", \"No Opinion\"))),\n    \n    # Feature Engineering\n    daily_wage = if_else(!is.na(working_days) & working_days &gt; 0, total_income / working_days, NA_real_),\n    agri_inc_ratio = if_else(total_income &gt; 0, agri_income / total_income, 0)\n  ) %&gt;%\n  \n  # Remove original numerical columns\n  select(-CPRO, -CGEN, -CRAC, -CJOB, -CQUI, -FEDU, -FVTP, -FCRA, -FTAP)\n\n# Final Verification\nglimpse(clean_df)\n\nRows: 724\nColumns: 26\n$ total_income         &lt;dbl&gt; 37, 25, 33, 35, 36, 21, 35, 36, 38, 30, 58, 24, 3…\n$ agri_income          &lt;dbl&gt; 25, 22, 25, 30, 28, 17, 25, 28, 26, 22, 40, 24, 2…\n$ service_industry_inc &lt;dbl&gt; 7, 0, 0, 5, 0, 0, 0, 0, 12, 2, 0, 0, 0, 0, 0, 50,…\n$ other_income         &lt;dbl&gt; 5, 3, 8, 0, 8, 4, 10, 8, 0, 6, 18, 0, 9, 0, 2, 15…\n$ working_days         &lt;dbl&gt; 240, 350, 260, 300, 360, 360, 260, 260, 300, 300,…\n$ policy_training      &lt;fct&gt; Strongly Agree, Disagree, Strongly Agree, No Opin…\n$ policy_agri_chain    &lt;fct&gt; Disagree, Strongly Agree, Strongly Agree, No Opin…\n$ policy_healthcare    &lt;fct&gt; Neutral, Neutral, Strongly Disagree, No Opinion, …\n$ policy_elderly_care  &lt;fct&gt; Strongly Disagree, Strongly Disagree, Strongly Di…\n$ policy_urban_jobs    &lt;fct&gt; Neutral, Strongly Disagree, Strongly Disagree, No…\n$ wellbeing_improve    &lt;fct&gt; Neutral, Neutral, No Opinion, No Opinion, Disagre…\n$ house_cottage        &lt;fct&gt; No, Yes, No, Yes, No, No, No, No, No, No, No, No,…\n$ house_roofed         &lt;fct&gt; Yes, No, No, No, Yes, Yes, No, Yes, Yes, Yes, Yes…\n$ house_solid          &lt;fct&gt; No, No, No, No, No, No, Yes, No, No, No, No, No, …\n$ house_buildings      &lt;fct&gt; No, No, Yes, No, No, No, No, No, No, No, No, No, …\n$ province             &lt;fct&gt; Tuyen Quang, Tuyen Quang, Tuyen Quang, Tuyen Quan…\n$ gender               &lt;fct&gt; Male, Male, Female, Male, Female, Female, Male, M…\n$ race                 &lt;fct&gt; Minority, Minority, Minority, Minority, Minority,…\n$ job_type             &lt;fct&gt; Agricultural, Agricultural, Other, Agricultural, …\n$ income_group         &lt;fct&gt; Middle, Lowest, Middle, Middle, Middle, Second, T…\n$ education            &lt;fct&gt; Lower secondary, Primary, Lower secondary, Lower …\n$ training_status      &lt;fct&gt; Short course, Short course, Short course, Short c…\n$ credit_status        &lt;fct&gt; Inaccessible, Accessible, Inaccessible, Inaccessi…\n$ tech_level           &lt;fct&gt; Low, Low, Adequate, NA, Adequate, Adequate, Adequ…\n$ daily_wage           &lt;dbl&gt; 0.15416667, 0.07142857, 0.12692308, 0.11666667, 0…\n$ agri_inc_ratio       &lt;dbl&gt; 0.6756757, 0.8800000, 0.7575758, 0.8571429, 0.777…"
+  },
+  {
+    "objectID": "Take-Home_Exercise/Take-Home_Exercise01/TE01.html#visualization",
+    "href": "Take-Home_Exercise/Take-Home_Exercise01/TE01.html#visualization",
+    "title": "Take-Home Exercise 01",
+    "section": "2 Visualization",
+    "text": "2 Visualization\n\n2.1\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nlibrary(plotly)\nlibrary(scales)\n\nplot_data_final &lt;- clean_df %&gt;%\n  group_by(province, race, gender) %&gt;%\n  summarise(count = n(), .groups = \"drop\") %&gt;%\n  group_by(province) %&gt;%\n  mutate(\n    prov_total = sum(count),\n    percentage = count / prov_total,\n    tooltip_text = paste0(\n      \"&lt;b&gt;Province: &lt;/b&gt;\", province, \" (Total N=\", prov_total, \")&lt;br&gt;\",\n      \"&lt;b&gt;Group: &lt;/b&gt;\", race, \" - \", gender, \"&lt;br&gt;\",\n      \"&lt;b&gt;Count: &lt;/b&gt;\", count, \" persons&lt;br&gt;\",\n      \"&lt;b&gt;Share of Province: &lt;/b&gt;\", percent(percentage, accuracy = 0.1)\n    ),\n    facet_label = paste0(province, \" (N=\", prov_total, \")\")\n  )\n\np_final &lt;- ggplot(plot_data_final, \n                  aes(x = race, \n                      y = percentage, \n                      fill = gender, \n                      text = tooltip_text, \n                      group = gender)) +\n  geom_bar(stat = \"identity\", position = \"stack\", width = 0.7, alpha = 0.8) +\n  facet_wrap(~facet_label, nrow = 1) +\n  scale_y_continuous(labels = scales::percent_format()) +\n  scale_fill_manual(values = c(\"Male\" = \"#2c7fb8\", \"Female\" = \"#feb24c\")) +\n  theme_minimal(base_size = 12) +\n  labs(\n    title = \"Workforce Composition by Region\",\n    x = \"Ethnic Group\",\n    y = \"Proportional Share in Province\"\n  ) +\n  theme(legend.position = \"none\", panel.spacing = unit(1, \"lines\"))\n\nggplotly(p_final, tooltip = \"text\") %&gt;%\n  layout(\n    title = list(text = \"Ethnic Concentration in Northern Vietnam's Informal Sector&lt;br&gt;&lt;sup&gt;Spatial distribution across five provinces\"),\n    margin = list(t = 80)\n  )\n\n\n\n\nObservation :\nThe visualization reveals a balanced sampling strategy (\\(N \\approx 141\\)–\\(150\\) per region). A dominant pattern emerges regarding ethnicity: Minority groups constitute the overwhelming majority of informal labourers in Ha Giang, Tuyen Quang, and Yen Bai. In these remote provinces, ethnicity is a near-absolute predictor of informal employment.\nInterestingly, gender distribution shows no consistent geographic pattern. While males dominate the workforce (over 80% across all facets), the female participation rate fluctuates unpredictably between provinces and ethnic groups without a distinct trend. This suggests that while informal labour is heavily “gendered” toward men, female participation is likely driven by localized micro-economic conditions or household-specific needs, such as the necessity for supplemental income, rather than provincial-level geographic characteristics."
+  },
+  {
+    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html",
+    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html",
+    "title": "In-Class Exercise 02",
     "section": "",
-    "text": "This session utilizes Tableau to explore the logic behind constructing fundamental visualizations. The primary focus is on temporal dimension analysis: practicing the ability to switch between different time scales (Year/Month/Day) through drill-down functions. By adjusting the granularity of time, we can more accurately identify performance variances across different periods, thereby enhancing our capacity to interpret business trends.\n\n\n\nDashboard"
+    "text": "This exercise focuses on the strategic selection of chart types and the enhancement of user interpretation through effective annotation. The goal is to move beyond mere data display to intentional “data storytelling."
+  },
+  {
+    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#overview",
+    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#overview",
+    "title": "In-Class Exercise 02",
+    "section": "",
+    "text": "This exercise focuses on the strategic selection of chart types and the enhancement of user interpretation through effective annotation. The goal is to move beyond mere data display to intentional “data storytelling."
+  },
+  {
+    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#monthly-sales-with-reference-lines",
+    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#monthly-sales-with-reference-lines",
+    "title": "In-Class Exercise 02",
+    "section": "1. Monthly Sales with Reference Lines",
+    "text": "1. Monthly Sales with Reference Lines\nAdding Reference Lines (e.g., average or target) provides a benchmark for the data. This allows analysts to instantly identify months with above-average performance, adding essential “context” to a standard line chart.\n\n\n\nMonthly Sales"
+  },
+  {
+    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#monthly-profit-bar-chart",
+    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#monthly-profit-bar-chart",
+    "title": "In-Class Exercise 02",
+    "section": "2. Monthly Profit (Bar Chart)",
+    "text": "2. Monthly Profit (Bar Chart)\nSwitching to a bar chart for profit emphasizes divergence. By contrasting color and bar length, the intensity of profits and losses becomes much more visually impactful than a continuous line.\n\n\n\nMonthly Profit"
+  },
+  {
+    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#relationship-between-monthly-profit-and-sales",
+    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#relationship-between-monthly-profit-and-sales",
+    "title": "In-Class Exercise 02",
+    "section": "3. Relationship between Monthly Profit and Sales",
+    "text": "3. Relationship between Monthly Profit and Sales\nThis view explores correlation. Does high sales volume always translate to high profit? This helps identify months with “high revenue but low margin,” signaling a need for cost structure optimization.\n\n\n\nMonthly Profit by Sales"
+  },
+  {
+    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#pareto-chart-sales-by-sub-category",
+    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#pareto-chart-sales-by-sub-category",
+    "title": "In-Class Exercise 02",
+    "section": "4. Pareto Chart: Sales by Sub-Category",
+    "text": "4. Pareto Chart: Sales by Sub-Category\nThis chart identifies the primary revenue drivers among sub-categories. It helps in optimizing the product mix, ensuring high-value categories receive adequate visibility and marketing budget.\n\n\n\nPareto Chart Sales by Sub-Category"
+  },
+  {
+    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#pareto-analysis-of-sales-by-stateprovince",
+    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#pareto-analysis-of-sales-by-stateprovince",
+    "title": "In-Class Exercise 02",
+    "section": "5. Pareto Analysis of Sales by State/Province",
+    "text": "5. Pareto Analysis of Sales by State/Province\nA classic application of the 80/20 Rule. It identifies the “vital few” states (top 20% of regions) that generate 80% of total sales. This is strategically crucial for resource allocation, such as the placement of logistics hubs and regional marketing expenditures.\n\n\n\nPareto Analysis of Sales by State Province"
+  },
+  {
+    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#dashboard-presentation",
+    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#dashboard-presentation",
+    "title": "In-Class Exercise 02",
+    "section": "6. Dashboard Presentation",
+    "text": "6. Dashboard Presentation\nFinally, we integrate these multi-dimensional views into a Dashboard. This provides a holistic perspective and utilizes interactivity to allow users to instantly identify the core regions and products driving the business.\n\n\n\nDashboard"
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html",
+    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html",
+    "title": "Hands-On Exercise 04-4",
+    "section": "",
+    "text": "Funnel plot is a specially designed data visualisation for conducting unbiased comparison between outlets, stores or business entities. By the end of this hands-on exercise, you will gain hands-on experience on:\n\nplotting funnel plots by using funnelPlotR package,\nplotting static funnel plot by using ggplot2 package, and\nplotting interactive funnel plot by using both plotly R and ggplot2 packages."
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#overview",
+    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#overview",
+    "title": "Hands-On Exercise 04-4",
+    "section": "",
+    "text": "Funnel plot is a specially designed data visualisation for conducting unbiased comparison between outlets, stores or business entities. By the end of this hands-on exercise, you will gain hands-on experience on:\n\nplotting funnel plots by using funnelPlotR package,\nplotting static funnel plot by using ggplot2 package, and\nplotting interactive funnel plot by using both plotly R and ggplot2 packages."
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#getting-started",
+    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#getting-started",
+    "title": "Hands-On Exercise 04-4",
+    "section": "1 Getting Started",
+    "text": "1 Getting Started\n\n1.1 Installing and loading the packages\nIn this exercise, four R packages will be used. They are:\n\nreadr for importing csv into R.\nFunnelPlotR for creating funnel plot.\nggplot2 for creating funnel plot manually.\nknitr for building static html table.\nplotly for creating interactive funnel plot.\n\n\npacman::p_load(tidyverse, FunnelPlotR, plotly, knitr)\n\n\n\n1.2 Importing Data\nIn this section, COVID-19_DKI_Jakarta will be used. The data was downloaded from Open Data Covid-19 Provinsi DKI Jakarta portal. For this hands-on exercise, we are going to compare the cumulative COVID-19 cases and death by sub-district (i.e. kelurahan) as at 31st July 2021, DKI Jakarta.\nThe code chunk below imports the data into R and save it into a tibble data frame object called covid19.\n\nTableCode\n\n\n\n\n\n\n\nSub-district ID\nCity\nDistrict\nSub-district\nPositive\nRecovered\nDeath\n\n\n\n\n3172051003\nJAKARTA UTARA\nPADEMANGAN\nANCOL\n1776\n1691\n26\n\n\n3173041007\nJAKARTA BARAT\nTAMBORA\nANGKE\n1783\n1720\n29\n\n\n3175041005\nJAKARTA TIMUR\nKRAMAT JATI\nBALE KAMBANG\n2049\n1964\n31\n\n\n3175031003\nJAKARTA TIMUR\nJATINEGARA\nBALI MESTER\n827\n797\n13\n\n\n3175101006\nJAKARTA TIMUR\nCIPAYUNG\nBAMBU APUS\n2866\n2792\n27\n\n\n3174031002\nJAKARTA SELATAN\nMAMPANG PRAPATAN\nBANGKA\n1828\n1757\n26\n\n\n\n\n\n\n\n\ncovid19 &lt;- read_csv(\"data/COVID-19_DKI_Jakarta.csv\") %&gt;%\n  mutate_if(is.character, as.factor)"
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#funnelplotr-methods",
+    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#funnelplotr-methods",
+    "title": "Hands-On Exercise 04-4",
+    "section": "2 FunnelPlotR methods",
+    "text": "2 FunnelPlotR methods\n\n2.1 Introduction\nFunnelPlotR package uses ggplot to generate funnel plots. It requires a numerator (events of interest), denominator (population to be considered) and group. The key arguments selected for customisation are:\n\nlimit: plot limits (95 or 99).\nlabel_outliers: to label outliers (true or false).\nPoisson_limits: to add Poisson limits to the plot.\nOD_adjust: to add overdispersed limits to the plot.\nxrange and yrange: to specify the range to display for axes, acts like a zoom function.\nOther aesthetic components such as graph title, axis labels etc.\n\n\n\n2.2 FunnelPlotR methods: The basic plot\nThe code chunk below plots a funnel plot.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nA funnel plot object with 267 points of which 0 are outliers. \nPlot is adjusted for overdispersion. \n\n\n\n\n\nfunnel_plot(\n  .data = covid19,\n  numerator = Positive,\n  denominator = Death,\n  group = `Sub-district`\n)\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\n\ngroup in this function is different from the scatterplot. Here, it defines the level of the points to be plotted i.e. Sub-district, District or City. If Cityc is chosen, there are only six data points.\nBy default, data_type argument is “SR”.\nlimit: Plot limits, accepted values are: 95 or 99, corresponding to 95% or 99.8% quantiles of the distribution.\n\n\n\n\n\n2.3 FunnelPlotR methods: Makeover 1\nThe code chunk below plots a funnel plot.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nA funnel plot object with 267 points of which 7 are outliers. \nPlot is adjusted for overdispersion. \n\n\n\n\n\nfunnel_plot(\n  .data = covid19,\n  numerator = Death,\n  denominator = Positive,\n  group = `Sub-district`,\n  data_type = \"PR\",     #&lt;&lt;\n  xrange = c(0, 6500),  #&lt;&lt;\n  yrange = c(0, 0.05)   #&lt;&lt;\n)\n\n\n\n\nThings to learn from the code chunk above. + data_type argument is used to change from default “SR” to “PR” (i.e. proportions). + xrange and yrange are used to set the range of x-axis and y-axis\n\n\n2.4 FunnelPlotR methods: Makeover 2\nThe code chunk below plots a funnel plot.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nA funnel plot object with 267 points of which 7 are outliers. \nPlot is adjusted for overdispersion. \n\n\n\n\n\nfunnel_plot(\n  .data = covid19,\n  numerator = Death,\n  denominator = Positive,\n  group = `Sub-district`,\n  data_type = \"PR\",   \n  xrange = c(0, 6500),  \n  yrange = c(0, 0.05),\n  label = NA,\n  title = \"Cumulative COVID-19 Fatality Rate by Cumulative Total Number of COVID-19 Positive Cases\", #&lt;&lt;           \n  x_label = \"Cumulative COVID-19 Positive Cases\", #&lt;&lt;\n  y_label = \"Cumulative Fatality Rate\"  #&lt;&lt;\n)\n\n\n\n\nThings to learn from the code chunk above.\n\nlabel = NA argument is to removed the default label outliers feature.\ntitle argument is used to add plot title.\nx_label and y_label arguments are used to add/edit x-axis and y-axis titles."
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#funnel-plot-for-fair-visual-comparison-ggplot2-methods",
+    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#funnel-plot-for-fair-visual-comparison-ggplot2-methods",
+    "title": "Hands-On Exercise 04-4",
+    "section": "3 Funnel Plot for Fair Visual Comparison: ggplot2 methods",
+    "text": "3 Funnel Plot for Fair Visual Comparison: ggplot2 methods\nIn this section, you will gain hands-on experience on building funnel plots step-by-step by using ggplot2. It aims to enhance you working experience of ggplot2 to customise speciallised data visualisation like funnel plot.\n\n3.1 Computing the basic derived fields\nTo plot the funnel plot from scratch, we need to derive cumulative death rate and standard error of cumulative death rate.\n\ndf &lt;- covid19 %&gt;%\n  mutate(rate = Death / Positive) %&gt;%\n  mutate(rate.se = sqrt((rate*(1-rate)) / (Positive))) %&gt;%\n  filter(rate &gt; 0)\n\nNext, the fit.mean is computed by using the code chunk below.\n\nfit.mean &lt;- weighted.mean(df$rate, 1/df$rate.se^2)\n\n\n\n3.2 Calculate lower and upper limits for 95% and 99.9% CI\nThe code chunk below is used to compute the lower and upper limits for 95% confidence interval.\n\nnumber.seq &lt;- seq(1, max(df$Positive), 1)\nnumber.ll95 &lt;- fit.mean - 1.96 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) \nnumber.ul95 &lt;- fit.mean + 1.96 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) \nnumber.ll999 &lt;- fit.mean - 3.29 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) \nnumber.ul999 &lt;- fit.mean + 3.29 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) \ndfCI &lt;- data.frame(number.ll95, number.ul95, number.ll999, \n                   number.ul999, number.seq, fit.mean)\n\n\n\n3.3 Plotting a static funnel plot\nIn the code chunk below, ggplot2 functions are used to plot a static funnel plot.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\np &lt;- ggplot(df, aes(x = Positive, y = rate)) +\n  geom_point(aes(label=`Sub-district`), \n             alpha=0.4) +\n  geom_line(data = dfCI, \n            aes(x = number.seq, \n                y = number.ll95), \n            size = 0.4, \n            colour = \"grey40\", \n            linetype = \"dashed\") +\n  geom_line(data = dfCI, \n            aes(x = number.seq, \n                y = number.ul95), \n            size = 0.4, \n            colour = \"grey40\", \n            linetype = \"dashed\") +\n  geom_line(data = dfCI, \n            aes(x = number.seq, \n                y = number.ll999), \n            size = 0.4, \n            colour = \"grey40\") +\n  geom_line(data = dfCI, \n            aes(x = number.seq, \n                y = number.ul999), \n            size = 0.4, \n            colour = \"grey40\") +\n  geom_hline(data = dfCI, \n             aes(yintercept = fit.mean), \n             size = 0.4, \n             colour = \"grey40\") +\n  coord_cartesian(ylim=c(0,0.05)) +\n  annotate(\"text\", x = 1, y = -0.13, label = \"95%\", size = 3, colour = \"grey40\") + \n  annotate(\"text\", x = 4.5, y = -0.18, label = \"99%\", size = 3, colour = \"grey40\") + \n  ggtitle(\"Cumulative Fatality Rate by Cumulative Number of COVID-19 Cases\") +\n  xlab(\"Cumulative Number of COVID-19 Cases\") + \n  ylab(\"Cumulative Fatality Rate\") +\n  theme_light() +\n  theme(plot.title = element_text(size=12),\n        legend.position = c(0.91,0.85), \n        legend.title = element_text(size=7),\n        legend.text = element_text(size=7),\n        legend.background = element_rect(colour = \"grey60\", linetype = \"dotted\"),\n        legend.key.height = unit(0.3, \"cm\"))\np\n\n\n\n\n\n\n3.4 Interactive Funnel Plot: plotly + ggplot2\nThe funnel plot created using ggplot2 functions can be made interactive with ggplotly() of plotly r package.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nfp_ggplotly &lt;- ggplotly(p,\n  tooltip = c(\"label\", \n              \"x\", \n              \"y\"))\nfp_ggplotly"
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html",
+    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html",
+    "title": "Hands-On Exercise 04-2",
+    "section": "",
+    "text": "In this hands-on exercise, you will gain hands-on experience on using:\n\nggstatsplot package to create visual graphics with rich statistical information,\nperformance package to visualise model diagnostics, and\nparameters package to visualise model parameters"
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#overview",
+    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#overview",
+    "title": "Hands-On Exercise 04-2",
+    "section": "",
+    "text": "In this hands-on exercise, you will gain hands-on experience on using:\n\nggstatsplot package to create visual graphics with rich statistical information,\nperformance package to visualise model diagnostics, and\nparameters package to visualise model parameters"
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#introduction",
+    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#introduction",
+    "title": "Hands-On Exercise 04-2",
+    "section": "1 Introduction",
+    "text": "1 Introduction\n\n1.1 Visual Statistical Analysis with ggstatsplot\nggstatsplot is an extension of ggplot2 package for creating graphics with details from statistical tests included in the information-rich plots themselves.\n\nTo provide alternative statistical inference methods by default.\nTo follow best practices for statistical reporting. For all statistical tests reported in the plots, the default template abides by the APA gold standard for statistical reporting. For example, here are results from a robust t-test:\n\n\n\n\nggstatsplot\n\n\n\n\n1.2 Installing and launching R packages\nIn this exercise, ggstatsplot and tidyverse will be used.\n\npacman::p_load(ggstatsplot, tidyverse)\n\n\n\n1.3 Data import\nFor the purpose of this exercise, Exam_data.csv will be used.\nIn the code chunk below, read_csv() of readr package is used to import Exam_data.csv into R and saved it into a tibble data.frame.\n\nexam &lt;- read_csv(\"data/Exam_data.csv\")"
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#visual-statistical-analysis-with-ggstatsplot-1",
+    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#visual-statistical-analysis-with-ggstatsplot-1",
+    "title": "Hands-On Exercise 04-2",
+    "section": "2 Visual Statistical Analysis with ggstatsplot",
+    "text": "2 Visual Statistical Analysis with ggstatsplot\n\n2.1 One-sample test: gghistostats() method\nIn the code chunk below, gghistostats() is used to to build an visual of one-sample test on English scores.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nset.seed(1234)\n\ngghistostats(\n  data = exam,\n  x = ENGLISH,\n  type = \"bayes\",\n  test.value = 60,\n  xlab = \"English scores\"\n)\n\n\n\n\nDefault information: - statistical details - Bayes Factor - sample sizes - distribution summary\n\n\n2.2 Unpacking the Bayes Factor\n\nA Bayes factor is the ratio of the likelihood of one particular hypothesis to the likelihood of another. It can be interpreted as a measure of the strength of evidence in favor of one theory among two competing theories.\nThat’s because the Bayes factor gives us a way to evaluate the data in favor of a null hypothesis, and to use external information to do so. It tells us what the weight of the evidence is in favor of a given hypothesis.\nWhen we are comparing two hypotheses, H1 (the alternate hypothesis) and H0 (the null hypothesis), the Bayes Factor is often written as B10. It can be defined mathematically as\n\n The Schwarz criterion is one of the easiest ways to calculate rough approximation of the Bayes Factor.\n\n\n2.3 How to interpret Bayes Factor\nA Bayes Factor can be any positive number. One of the most common interpretations is this one—first proposed by Harold Jeffereys (1961) and slightly modified by Lee and Wagenmakers in 2013:\n ### 2.4 Two-sample mean test: ggbetweenstats()\nIn the code chunk below, ggbetweenstats() is used to build a visual for two-sample mean test of Maths scores by gender.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggbetweenstats(\n  data = exam,\n  x = GENDER, \n  y = MATHS,\n  type = \"np\",\n  messages = FALSE\n)\n\n\n\n\nDefault information: - statistical details - Bayes Factor - sample sizes - distribution summary\n\n\n2.5 Oneway ANOVA Test: ggbetweenstats() method\nIn the code chunk below, ggbetweenstats() is used to build a visual for One-way ANOVA test on English score by race.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggbetweenstats(\n  data = exam,\n  x = RACE, \n  y = ENGLISH,\n  type = \"p\",\n  mean.ci = TRUE, \n  pairwise.comparisons = TRUE, \n  pairwise.display = \"s\",\n  p.adjust.method = \"fdr\",\n  messages = FALSE\n)\n\n\n\n\n\n“ns” → only non-significant\n“s” → only significant\n“all” → everything\n\n\n\n2.6 ggbetweenstats - Summary of tests\n  \n\n\n2.7 Significant Test of Correlation: ggscatterstats()\nIn the code chunk below, ggscatterstats() is used to build a visual for Significant Test of Correlation between Maths scores and English scores.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggscatterstats(\n  data = exam,\n  x = MATHS,\n  y = ENGLISH,\n  marginal = FALSE,\n  )\n\n\n\n\n\n\n2.8 Significant Test of Association (Depedence) : ggbarstats() methods\nIn the code chunk below, the Maths scores is binned into a 4-class variable by using cut().\n\nexam1 &lt;- exam %&gt;% \n  mutate(MATHS_bins = \n           cut(MATHS, \n               breaks = c(0,60,75,85,100))\n)\n\nIn this code chunk below ggbarstats() is used to build a visual for Significant Test of Association\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggbarstats(exam1, \n           x = MATHS_bins, \n           y = GENDER)"
   },
   {
     "objectID": "Hands-On_Exercise/Hands-On_Exercise03/HE03-2.html",
@@ -294,90 +406,6 @@
     "text": "3 Visualising Distribution with Raincloud Plot\n\n3.1 Introduction\nRaincloud Plot is a data visualisation techniques that produces a half-density to a distribution plot. It gets the name because the density plot is in the shape of a “raincloud”. The raincloud (half-density) plot enhances the traditional box-plot by highlighting multiple modalities (an indicator that groups may exist). The boxplot does not show where densities are clustered, but the raincloud plot does!\nIn this section, you will learn how to create a raincloud plot to visualise the distribution of English score by race. It will be created by using functions provided by ggdist and ggplot2 packages.\n\n\n3.2 Plotting a Half Eye graph\nFirst, we will plot a Half-Eye graph by using stat_halfeye() of ggdist package.\nThis produces a Half Eye visualization, which is contains a half-density and a slab-interval.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggplot(exam, \n       aes(x = RACE, \n           y = ENGLISH)) +\n  stat_halfeye(adjust = 0.5,\n               justification = -0.2,\n               .width = 0,\n               point_colour = NA)\n\n\n\n\n\n\n\nNote\n\n\n\nWe remove the slab interval by setting .width = 0 and point_colour = NA.\n\n\n\n\n\n\n\n3.3 Adding the boxplot with geom_boxplot()\nNext, we will add the second geometry layer using geom_boxplot() of ggplot2. This produces a narrow boxplot. We reduce the width and adjust the opacity.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggplot(exam, \n       aes(x = RACE, \n           y = ENGLISH)) +\n  stat_halfeye(adjust = 0.5,\n               justification = -0.2,\n               .width = 0,\n               point_colour = NA) +\n  geom_boxplot(width = .20,\n               outlier.shape = NA)\n\n\n\n\n\n\n3.4 Adding the Dot Plots with stat_dots()\nNext, we will add the third geometry layer using stat_dots() of ggdist package. This produces a half-dotplot, which is similar to a histogram that indicates the number of samples (number of dots) in each bin. We select side = “left” to indicate we want it on the left-hand side.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggplot(exam, \n       aes(x = RACE, \n           y = ENGLISH)) +\n  stat_halfeye(adjust = 0.5,\n               justification = -0.2,\n               .width = 0,\n               point_colour = NA) +\n  geom_boxplot(width = .20,\n               outlier.shape = NA) +\n  stat_dots(side = \"left\", \n            justification = 1.2, \n            binwidth = .5,\n            dotsize = 2)\n\n\n\n\n\n\n3.5 Finishing touch\nLastly, coord_flip() of ggplot2 package will be used to flip the raincloud chart horizontally to give it the raincloud appearance. At the same time, theme_economist() of ggthemes package is used to give the raincloud chart a professional publishing standard look.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggplot(exam, \n       aes(x = RACE, \n           y = ENGLISH)) +\n  stat_halfeye(adjust = 0.5,\n               justification = -0.2,\n               .width = 0,\n               point_colour = NA) +\n  geom_boxplot(width = .20,\n               outlier.shape = NA) +\n  stat_dots(side = \"left\", \n            justification = 1.2, \n            binwidth = .5,\n            dotsize = 1.5) +\n  coord_flip() +\n  theme_economist()"
   },
   {
-    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html",
-    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html",
-    "title": "In-Class Exercise 02",
-    "section": "",
-    "text": "This exercise focuses on the strategic selection of chart types and the enhancement of user interpretation through effective annotation. The goal is to move beyond mere data display to intentional “data storytelling."
-  },
-  {
-    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#overview",
-    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#overview",
-    "title": "In-Class Exercise 02",
-    "section": "",
-    "text": "This exercise focuses on the strategic selection of chart types and the enhancement of user interpretation through effective annotation. The goal is to move beyond mere data display to intentional “data storytelling."
-  },
-  {
-    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#monthly-sales-with-reference-lines",
-    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#monthly-sales-with-reference-lines",
-    "title": "In-Class Exercise 02",
-    "section": "1. Monthly Sales with Reference Lines",
-    "text": "1. Monthly Sales with Reference Lines\nAdding Reference Lines (e.g., average or target) provides a benchmark for the data. This allows analysts to instantly identify months with above-average performance, adding essential “context” to a standard line chart.\n\n\n\nMonthly Sales"
-  },
-  {
-    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#monthly-profit-bar-chart",
-    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#monthly-profit-bar-chart",
-    "title": "In-Class Exercise 02",
-    "section": "2. Monthly Profit (Bar Chart)",
-    "text": "2. Monthly Profit (Bar Chart)\nSwitching to a bar chart for profit emphasizes divergence. By contrasting color and bar length, the intensity of profits and losses becomes much more visually impactful than a continuous line.\n\n\n\nMonthly Profit"
-  },
-  {
-    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#relationship-between-monthly-profit-and-sales",
-    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#relationship-between-monthly-profit-and-sales",
-    "title": "In-Class Exercise 02",
-    "section": "3. Relationship between Monthly Profit and Sales",
-    "text": "3. Relationship between Monthly Profit and Sales\nThis view explores correlation. Does high sales volume always translate to high profit? This helps identify months with “high revenue but low margin,” signaling a need for cost structure optimization.\n\n\n\nMonthly Profit by Sales"
-  },
-  {
-    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#pareto-chart-sales-by-sub-category",
-    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#pareto-chart-sales-by-sub-category",
-    "title": "In-Class Exercise 02",
-    "section": "4. Pareto Chart: Sales by Sub-Category",
-    "text": "4. Pareto Chart: Sales by Sub-Category\nThis chart identifies the primary revenue drivers among sub-categories. It helps in optimizing the product mix, ensuring high-value categories receive adequate visibility and marketing budget.\n\n\n\nPareto Chart Sales by Sub-Category"
-  },
-  {
-    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#pareto-analysis-of-sales-by-stateprovince",
-    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#pareto-analysis-of-sales-by-stateprovince",
-    "title": "In-Class Exercise 02",
-    "section": "5. Pareto Analysis of Sales by State/Province",
-    "text": "5. Pareto Analysis of Sales by State/Province\nA classic application of the 80/20 Rule. It identifies the “vital few” states (top 20% of regions) that generate 80% of total sales. This is strategically crucial for resource allocation, such as the placement of logistics hubs and regional marketing expenditures.\n\n\n\nPareto Analysis of Sales by State Province"
-  },
-  {
-    "objectID": "In-Class_Exercise/In-Class_Exercise02/IE02.html#dashboard-presentation",
-    "href": "In-Class_Exercise/In-Class_Exercise02/IE02.html#dashboard-presentation",
-    "title": "In-Class Exercise 02",
-    "section": "6. Dashboard Presentation",
-    "text": "6. Dashboard Presentation\nFinally, we integrate these multi-dimensional views into a Dashboard. This provides a holistic perspective and utilizes interactivity to allow users to instantly identify the core regions and products driving the business.\n\n\n\nDashboard"
-  },
-  {
-    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html",
-    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html",
-    "title": "Hands-On Exercise 04-2",
-    "section": "",
-    "text": "In this hands-on exercise, you will gain hands-on experience on using:\n\nggstatsplot package to create visual graphics with rich statistical information,\nperformance package to visualise model diagnostics, and\nparameters package to visualise model parameters"
-  },
-  {
-    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#overview",
-    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#overview",
-    "title": "Hands-On Exercise 04-2",
-    "section": "",
-    "text": "In this hands-on exercise, you will gain hands-on experience on using:\n\nggstatsplot package to create visual graphics with rich statistical information,\nperformance package to visualise model diagnostics, and\nparameters package to visualise model parameters"
-  },
-  {
-    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#introduction",
-    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#introduction",
-    "title": "Hands-On Exercise 04-2",
-    "section": "1 Introduction",
-    "text": "1 Introduction\n\n1.1 Visual Statistical Analysis with ggstatsplot\nggstatsplot is an extension of ggplot2 package for creating graphics with details from statistical tests included in the information-rich plots themselves.\n\nTo provide alternative statistical inference methods by default.\nTo follow best practices for statistical reporting. For all statistical tests reported in the plots, the default template abides by the APA gold standard for statistical reporting. For example, here are results from a robust t-test:\n\n\n\n\nggstatsplot\n\n\n\n\n1.2 Installing and launching R packages\nIn this exercise, ggstatsplot and tidyverse will be used.\n\npacman::p_load(ggstatsplot, tidyverse)\n\n\n\n1.3 Data import\nFor the purpose of this exercise, Exam_data.csv will be used.\nIn the code chunk below, read_csv() of readr package is used to import Exam_data.csv into R and saved it into a tibble data.frame.\n\nexam &lt;- read_csv(\"data/Exam_data.csv\")"
-  },
-  {
-    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#visual-statistical-analysis-with-ggstatsplot-1",
-    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html#visual-statistical-analysis-with-ggstatsplot-1",
-    "title": "Hands-On Exercise 04-2",
-    "section": "2 Visual Statistical Analysis with ggstatsplot",
-    "text": "2 Visual Statistical Analysis with ggstatsplot\n\n2.1 One-sample test: gghistostats() method\nIn the code chunk below, gghistostats() is used to to build an visual of one-sample test on English scores.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nset.seed(1234)\n\ngghistostats(\n  data = exam,\n  x = ENGLISH,\n  type = \"bayes\",\n  test.value = 60,\n  xlab = \"English scores\"\n)\n\n\n\n\nDefault information: - statistical details - Bayes Factor - sample sizes - distribution summary\n\n\n2.2 Unpacking the Bayes Factor\n\nA Bayes factor is the ratio of the likelihood of one particular hypothesis to the likelihood of another. It can be interpreted as a measure of the strength of evidence in favor of one theory among two competing theories.\nThat’s because the Bayes factor gives us a way to evaluate the data in favor of a null hypothesis, and to use external information to do so. It tells us what the weight of the evidence is in favor of a given hypothesis.\nWhen we are comparing two hypotheses, H1 (the alternate hypothesis) and H0 (the null hypothesis), the Bayes Factor is often written as B10. It can be defined mathematically as\n\n The Schwarz criterion is one of the easiest ways to calculate rough approximation of the Bayes Factor.\n\n\n2.3 How to interpret Bayes Factor\nA Bayes Factor can be any positive number. One of the most common interpretations is this one—first proposed by Harold Jeffereys (1961) and slightly modified by Lee and Wagenmakers in 2013:\n ### 2.4 Two-sample mean test: ggbetweenstats()\nIn the code chunk below, ggbetweenstats() is used to build a visual for two-sample mean test of Maths scores by gender.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggbetweenstats(\n  data = exam,\n  x = GENDER, \n  y = MATHS,\n  type = \"np\",\n  messages = FALSE\n)\n\n\n\n\nDefault information: - statistical details - Bayes Factor - sample sizes - distribution summary\n\n\n2.5 Oneway ANOVA Test: ggbetweenstats() method\nIn the code chunk below, ggbetweenstats() is used to build a visual for One-way ANOVA test on English score by race.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggbetweenstats(\n  data = exam,\n  x = RACE, \n  y = ENGLISH,\n  type = \"p\",\n  mean.ci = TRUE, \n  pairwise.comparisons = TRUE, \n  pairwise.display = \"s\",\n  p.adjust.method = \"fdr\",\n  messages = FALSE\n)\n\n\n\n\n\n“ns” → only non-significant\n“s” → only significant\n“all” → everything\n\n\n\n2.6 ggbetweenstats - Summary of tests\n  \n\n\n2.7 Significant Test of Correlation: ggscatterstats()\nIn the code chunk below, ggscatterstats() is used to build a visual for Significant Test of Correlation between Maths scores and English scores.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggscatterstats(\n  data = exam,\n  x = MATHS,\n  y = ENGLISH,\n  marginal = FALSE,\n  )\n\n\n\n\n\n\n2.8 Significant Test of Association (Depedence) : ggbarstats() methods\nIn the code chunk below, the Maths scores is binned into a 4-class variable by using cut().\n\nexam1 &lt;- exam %&gt;% \n  mutate(MATHS_bins = \n           cut(MATHS, \n               breaks = c(0,60,75,85,100))\n)\n\nIn this code chunk below ggbarstats() is used to build a visual for Significant Test of Association\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggbarstats(exam1, \n           x = MATHS_bins, \n           y = GENDER)"
-  },
-  {
     "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-3.html",
     "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-3.html",
     "title": "Hands-On Exercise 04-3",
@@ -420,38 +448,45 @@
     "text": "4 Visualising Uncertainty with Hypothetical Outcome Plots (HOPs)\n\n4.1 Installing ungeviz package\n\ndevtools::install_github(\"wilkelab/ungeviz\")\n\n\n\n4.2 Launch the application in R\n\nlibrary(ungeviz)\n\n\n\n4.3 Visualising Uncertainty with Hypothetical Outcome Plots (HOPs)\nNext, the code chunk below will be used to build the HOPs.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nggplot(data = exam, \n       (aes(x = factor(RACE), \n            y = MATHS))) +\n  geom_point(position = position_jitter(\n    height = 0.3, \n    width = 0.05), \n    size = 0.4, \n    color = \"#0072B2\", \n    alpha = 1/2) +\n  geom_hpline(data = sampler(25, \n                             group = RACE), \n              height = 0.6, \n              color = \"#D55E00\") +\n  theme_bw() + \n  transition_states(.draw, 1, 3)"
   },
   {
-    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html",
-    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html",
-    "title": "Hands-On Exercise 04-4",
+    "objectID": "In-Class_Exercise/In-Class_Exercise01/IE01.html",
+    "href": "In-Class_Exercise/In-Class_Exercise01/IE01.html",
+    "title": "In-Class Exercise 01",
     "section": "",
-    "text": "Funnel plot is a specially designed data visualisation for conducting unbiased comparison between outlets, stores or business entities. By the end of this hands-on exercise, you will gain hands-on experience on:\n\nplotting funnel plots by using funnelPlotR package,\nplotting static funnel plot by using ggplot2 package, and\nplotting interactive funnel plot by using both plotly R and ggplot2 packages."
+    "text": "This session utilizes Tableau to explore the logic behind constructing fundamental visualizations. The primary focus is on temporal dimension analysis: practicing the ability to switch between different time scales (Year/Month/Day) through drill-down functions. By adjusting the granularity of time, we can more accurately identify performance variances across different periods, thereby enhancing our capacity to interpret business trends.\n\n\n\nDashboard"
   },
   {
-    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#overview",
-    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#overview",
-    "title": "Hands-On Exercise 04-4",
+    "objectID": "In-Class_Exercise/In-Class_Exercise01/IE01.html#overview",
+    "href": "In-Class_Exercise/In-Class_Exercise01/IE01.html#overview",
+    "title": "In-Class Exercise 01",
     "section": "",
-    "text": "Funnel plot is a specially designed data visualisation for conducting unbiased comparison between outlets, stores or business entities. By the end of this hands-on exercise, you will gain hands-on experience on:\n\nplotting funnel plots by using funnelPlotR package,\nplotting static funnel plot by using ggplot2 package, and\nplotting interactive funnel plot by using both plotly R and ggplot2 packages."
+    "text": "This session utilizes Tableau to explore the logic behind constructing fundamental visualizations. The primary focus is on temporal dimension analysis: practicing the ability to switch between different time scales (Year/Month/Day) through drill-down functions. By adjusting the granularity of time, we can more accurately identify performance variances across different periods, thereby enhancing our capacity to interpret business trends.\n\n\n\nDashboard"
   },
   {
-    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#getting-started",
-    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#getting-started",
-    "title": "Hands-On Exercise 04-4",
-    "section": "1 Getting Started",
-    "text": "1 Getting Started\n\n1.1 Installing and loading the packages\nIn this exercise, four R packages will be used. They are:\n\nreadr for importing csv into R.\nFunnelPlotR for creating funnel plot.\nggplot2 for creating funnel plot manually.\nknitr for building static html table.\nplotly for creating interactive funnel plot.\n\n\npacman::p_load(tidyverse, FunnelPlotR, plotly, knitr)\n\n\n\n1.2 Importing Data\nIn this section, COVID-19_DKI_Jakarta will be used. The data was downloaded from Open Data Covid-19 Provinsi DKI Jakarta portal. For this hands-on exercise, we are going to compare the cumulative COVID-19 cases and death by sub-district (i.e. kelurahan) as at 31st July 2021, DKI Jakarta.\nThe code chunk below imports the data into R and save it into a tibble data frame object called covid19.\n\nTableCode\n\n\n\n\n\n\n\nSub-district ID\nCity\nDistrict\nSub-district\nPositive\nRecovered\nDeath\n\n\n\n\n3172051003\nJAKARTA UTARA\nPADEMANGAN\nANCOL\n1776\n1691\n26\n\n\n3173041007\nJAKARTA BARAT\nTAMBORA\nANGKE\n1783\n1720\n29\n\n\n3175041005\nJAKARTA TIMUR\nKRAMAT JATI\nBALE KAMBANG\n2049\n1964\n31\n\n\n3175031003\nJAKARTA TIMUR\nJATINEGARA\nBALI MESTER\n827\n797\n13\n\n\n3175101006\nJAKARTA TIMUR\nCIPAYUNG\nBAMBU APUS\n2866\n2792\n27\n\n\n3174031002\nJAKARTA SELATAN\nMAMPANG PRAPATAN\nBANGKA\n1828\n1757\n26\n\n\n\n\n\n\n\n\ncovid19 &lt;- read_csv(\"data/COVID-19_DKI_Jakarta.csv\") %&gt;%\n  mutate_if(is.character, as.factor)"
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Visual Analytics and Applications",
+    "section": "",
+    "text": "Welcome to ISSS608 Visual Analytics and Applications homepage. In this website, you will find my coursework. Materials here are based on https://isss608-ay2025-26apr.netlify.app/ by Prof Kam Tin Seong from SMU.\nOverview:"
   },
   {
-    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#funnelplotr-methods",
-    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#funnelplotr-methods",
-    "title": "Hands-On Exercise 04-4",
-    "section": "2 FunnelPlotR methods",
-    "text": "2 FunnelPlotR methods\n\n2.1 Introduction\nFunnelPlotR package uses ggplot to generate funnel plots. It requires a numerator (events of interest), denominator (population to be considered) and group. The key arguments selected for customisation are:\n\nlimit: plot limits (95 or 99).\nlabel_outliers: to label outliers (true or false).\nPoisson_limits: to add Poisson limits to the plot.\nOD_adjust: to add overdispersed limits to the plot.\nxrange and yrange: to specify the range to display for axes, acts like a zoom function.\nOther aesthetic components such as graph title, axis labels etc.\n\n\n\n2.2 FunnelPlotR methods: The basic plot\nThe code chunk below plots a funnel plot.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nA funnel plot object with 267 points of which 0 are outliers. \nPlot is adjusted for overdispersion. \n\n\n\n\n\nfunnel_plot(\n  .data = covid19,\n  numerator = Positive,\n  denominator = Death,\n  group = `Sub-district`\n)\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\n\ngroup in this function is different from the scatterplot. Here, it defines the level of the points to be plotted i.e. Sub-district, District or City. If Cityc is chosen, there are only six data points.\nBy default, data_type argument is “SR”.\nlimit: Plot limits, accepted values are: 95 or 99, corresponding to 95% or 99.8% quantiles of the distribution.\n\n\n\n\n\n2.3 FunnelPlotR methods: Makeover 1\nThe code chunk below plots a funnel plot.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nA funnel plot object with 267 points of which 7 are outliers. \nPlot is adjusted for overdispersion. \n\n\n\n\n\nfunnel_plot(\n  .data = covid19,\n  numerator = Death,\n  denominator = Positive,\n  group = `Sub-district`,\n  data_type = \"PR\",     #&lt;&lt;\n  xrange = c(0, 6500),  #&lt;&lt;\n  yrange = c(0, 0.05)   #&lt;&lt;\n)\n\n\n\n\nThings to learn from the code chunk above. + data_type argument is used to change from default “SR” to “PR” (i.e. proportions). + xrange and yrange are used to set the range of x-axis and y-axis\n\n\n2.4 FunnelPlotR methods: Makeover 2\nThe code chunk below plots a funnel plot.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nA funnel plot object with 267 points of which 7 are outliers. \nPlot is adjusted for overdispersion. \n\n\n\n\n\nfunnel_plot(\n  .data = covid19,\n  numerator = Death,\n  denominator = Positive,\n  group = `Sub-district`,\n  data_type = \"PR\",   \n  xrange = c(0, 6500),  \n  yrange = c(0, 0.05),\n  label = NA,\n  title = \"Cumulative COVID-19 Fatality Rate by Cumulative Total Number of COVID-19 Positive Cases\", #&lt;&lt;           \n  x_label = \"Cumulative COVID-19 Positive Cases\", #&lt;&lt;\n  y_label = \"Cumulative Fatality Rate\"  #&lt;&lt;\n)\n\n\n\n\nThings to learn from the code chunk above.\n\nlabel = NA argument is to removed the default label outliers feature.\ntitle argument is used to add plot title.\nx_label and y_label arguments are used to add/edit x-axis and y-axis titles."
+    "objectID": "index.html#hands-on-exercise",
+    "href": "index.html#hands-on-exercise",
+    "title": "Visual Analytics and Applications",
+    "section": "Hands On Exercise",
+    "text": "Hands On Exercise\n\n\n\n\n\n\n\n\n\nHands-On Exercise 01\n\n\n\nChun-Han\n\n\nJan 12, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 02\n\n\n\nChun-Han\n\n\nJan 19, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-1\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-2\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-1\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-2\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-3\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-4\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#funnel-plot-for-fair-visual-comparison-ggplot2-methods",
-    "href": "Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html#funnel-plot-for-fair-visual-comparison-ggplot2-methods",
-    "title": "Hands-On Exercise 04-4",
-    "section": "3 Funnel Plot for Fair Visual Comparison: ggplot2 methods",
-    "text": "3 Funnel Plot for Fair Visual Comparison: ggplot2 methods\nIn this section, you will gain hands-on experience on building funnel plots step-by-step by using ggplot2. It aims to enhance you working experience of ggplot2 to customise speciallised data visualisation like funnel plot.\n\n3.1 Computing the basic derived fields\nTo plot the funnel plot from scratch, we need to derive cumulative death rate and standard error of cumulative death rate.\n\ndf &lt;- covid19 %&gt;%\n  mutate(rate = Death / Positive) %&gt;%\n  mutate(rate.se = sqrt((rate*(1-rate)) / (Positive))) %&gt;%\n  filter(rate &gt; 0)\n\nNext, the fit.mean is computed by using the code chunk below.\n\nfit.mean &lt;- weighted.mean(df$rate, 1/df$rate.se^2)\n\n\n\n3.2 Calculate lower and upper limits for 95% and 99.9% CI\nThe code chunk below is used to compute the lower and upper limits for 95% confidence interval.\n\nnumber.seq &lt;- seq(1, max(df$Positive), 1)\nnumber.ll95 &lt;- fit.mean - 1.96 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) \nnumber.ul95 &lt;- fit.mean + 1.96 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) \nnumber.ll999 &lt;- fit.mean - 3.29 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) \nnumber.ul999 &lt;- fit.mean + 3.29 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) \ndfCI &lt;- data.frame(number.ll95, number.ul95, number.ll999, \n                   number.ul999, number.seq, fit.mean)\n\n\n\n3.3 Plotting a static funnel plot\nIn the code chunk below, ggplot2 functions are used to plot a static funnel plot.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\np &lt;- ggplot(df, aes(x = Positive, y = rate)) +\n  geom_point(aes(label=`Sub-district`), \n             alpha=0.4) +\n  geom_line(data = dfCI, \n            aes(x = number.seq, \n                y = number.ll95), \n            size = 0.4, \n            colour = \"grey40\", \n            linetype = \"dashed\") +\n  geom_line(data = dfCI, \n            aes(x = number.seq, \n                y = number.ul95), \n            size = 0.4, \n            colour = \"grey40\", \n            linetype = \"dashed\") +\n  geom_line(data = dfCI, \n            aes(x = number.seq, \n                y = number.ll999), \n            size = 0.4, \n            colour = \"grey40\") +\n  geom_line(data = dfCI, \n            aes(x = number.seq, \n                y = number.ul999), \n            size = 0.4, \n            colour = \"grey40\") +\n  geom_hline(data = dfCI, \n             aes(yintercept = fit.mean), \n             size = 0.4, \n             colour = \"grey40\") +\n  coord_cartesian(ylim=c(0,0.05)) +\n  annotate(\"text\", x = 1, y = -0.13, label = \"95%\", size = 3, colour = \"grey40\") + \n  annotate(\"text\", x = 4.5, y = -0.18, label = \"99%\", size = 3, colour = \"grey40\") + \n  ggtitle(\"Cumulative Fatality Rate by Cumulative Number of COVID-19 Cases\") +\n  xlab(\"Cumulative Number of COVID-19 Cases\") + \n  ylab(\"Cumulative Fatality Rate\") +\n  theme_light() +\n  theme(plot.title = element_text(size=12),\n        legend.position = c(0.91,0.85), \n        legend.title = element_text(size=7),\n        legend.text = element_text(size=7),\n        legend.background = element_rect(colour = \"grey60\", linetype = \"dotted\"),\n        legend.key.height = unit(0.3, \"cm\"))\np\n\n\n\n\n\n\n3.4 Interactive Funnel Plot: plotly + ggplot2\nThe funnel plot created using ggplot2 functions can be made interactive with ggplotly() of plotly r package.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\nfp_ggplotly &lt;- ggplotly(p,\n  tooltip = c(\"label\", \n              \"x\", \n              \"y\"))\nfp_ggplotly"
+    "objectID": "index.html#in-class-exercise",
+    "href": "index.html#in-class-exercise",
+    "title": "Visual Analytics and Applications",
+    "section": "In Class Exercise",
+    "text": "In Class Exercise\n\n\n\n\n\n\n\n\n\nIn-Class Exercise 01\n\n\n\nChun-Han\n\n\nJan 25, 2026\n\n\n\n\n\n\n\n\n\n\n\nIn-Class Exercise 02\n\n\n\nChun-Han\n\n\nJan 25, 2026\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html#take-home-exercise",
+    "href": "index.html#take-home-exercise",
+    "title": "Visual Analytics and Applications",
+    "section": "Take Home Exercise",
+    "text": "Take Home Exercise\n\n\n\n\n\n\n\n\n\nTake-Home Exercise 01\n\n\n\nChun-Han\n\n\nFeb 2, 2026\n\n\n\n\n\n\nNo matching items"
   }
 ]

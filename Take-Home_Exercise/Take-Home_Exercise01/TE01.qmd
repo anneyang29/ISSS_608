@@ -1,0 +1,293 @@
+---
+title: "Take-Home Exercise 01"
+author: "Chun-Han"
+date: "February 2, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+---
+
+## Overview
+
+This report analyzes income inequality among rural informal labourers in Northern Vietnam. Leveraging tidyverse for data wrangling and ggplot2 for visual analytics, we address key socio-economic questions through four progressive lenses:
+
+1.  **Macro Context**: Demographics and income distribution patterns.
+
+2.  **Structural Gaps**: The influence of ethnicity, gender, and livelihood diversity.
+
+3.  **Micro Influencers**: Returns on education, vocational training, and credit access.
+
+4.  **Social Outlook**: Linking policy priorities to rural development perceptions.
+
+## 1 Getting Started
+
+### 1.1 Installing and loading the packages
+
+| Library | Description |
+|-------------|-----------------------------------------------------------|
+| tidyverse | A collection of core packages designed for data science, used extensively for data preparation and wrangling. |
+| readxl | Allows R to read Excel files (.xlsx). |
+| patchwork | For arranging multiple ggplot2 figures into a composite figure. |
+| ggthemes | Provides extra themes, geoms, and scales for ggplot2. |
+| scales | Supplies scale functions and tools for customizing axes, labels, and legends in ggplot2. |
+| ggdist | An extension of ggplot2 for visualising distributions and uncertainty, useful for half-violin or raincloud plots. |
+| plotly | R library for plotting interactive statistical graphs |
+
+```{r}
+pacman::p_load(tidyverse, readxl, patchwork, ggthemes, scales, ggdist, plotly)
+```
+
+### 1.2 Data import
+
+[The dataset](https://www.sciencedirect.com/science/article/pii/S235234092100576X) used in this study is derived from a socio-economic survey of 725 informal labourers across five provinces in the Northern Mountainous Region of Vietnam. 
+The data consists of 725 observations and 30 variables, categorized into six key dimensions: Characteristics (C), Income Types (T), Impact Factors (F), Living Conditions (L), Policy Opinions (P), and Social Assessments (A).
+
+```{r}
+raw_df <- read_excel("data/Upload for elsiver.xlsx",
+                     sheet = 1,
+                     na = c("", "NA"))
+```
+
+### 1.3 Filtering data for selected variables
+
+```{r}
+selected_df <- raw_df %>%
+  select(
+    CPRO, CGEN, CRAC, CJOB, CQUI,        
+    TEIN, TAIN, TSII, TOIN,              
+    FEDU, FVTP, FCRA, FTAP,              
+    LWDA,                                
+    starts_with("PPO"),                  
+    ARO4,                                
+    starts_with("LHO")                
+  )
+
+```
+
+### 1.4 Data Preprocessing
+
+#### 1.4.1 Checking Duplicate Rows 
+
+Using the `duplicated()` function to see whether there are duplicate entries in the data.
+
+```{r}
+selected_df[duplicated(selected_df),]
+```
+
+:::callout-note
+
+Although some identical rows appear after performing feature selection, we have deliberately chosen to retain all records. In a survey targeting a highly homogeneous population (such as informal labourers in the same mountainous region), it is common for different respondents to share identical socio-economic profiles across key indicators like income, gender, and career. Removing these records after reducing the feature space would lead to an artificial loss of sample density and bias the statistical representation of these specific demographic groups.
+:::
+
+#### 1.4.2 Checking Missing Value
+
+```{r}
+check_na <- colSums(is.na(selected_df))
+check_na
+```
+
+Recognizing that different variables carry distinct statistical weight, we implemented a Categorized Imputation Strategy
+
+- For Core Metrics (TEIN): We applied deletion to maintain a solid analytical baseline. 
+
+- For Categorical Factors (CJOB, FEDU): We recoded missing entries as "Unknown" or "Not Disclosed". This is particularly critical for the Career (CJOB) variable, as it preserves 49 observations that still hold valuable income data.
+
+- For Binary Indicators (LHO series): NA values were treated as a negative response (0).
+
+- For Subjective Opinions (PPO): Missing values were labeled as "Not Answered".
+
+```{r}
+
+final_df <- selected_df %>%
+  filter(!is.na(TEIN)) %>%
+  
+  mutate(across(c(CGEN, CRAC, CJOB, CQUI, FEDU, FVTP, FCRA, FTAP, ARO4), 
+                ~replace_na(as.character(.), "Unknown"))) %>%
+
+  mutate(across(starts_with("PPO"), 
+                ~replace_na(as.character(.), "Not Answered"))) %>%
+  
+  mutate(across(starts_with("LHO"), 
+                ~replace_na(as.numeric(.), 0)))
+```
+
+#### 1.4.3 Renaming Columns and Transforming Feature 
+
+```{r}
+clean_df <- final_df %>%
+  rename(
+    total_income         = TEIN,
+    agri_income          = TAIN,
+    service_industry_inc = TSII,
+    other_income         = TOIN,
+    working_days         = LWDA,
+    policy_training      = PPO1,
+    policy_agri_chain    = PPO2,
+    policy_healthcare    = PPO3,
+    policy_elderly_care  = PPO4,
+    policy_urban_jobs    = PPO5,
+    wellbeing_improve    = ARO4,
+    house_cottage        = LHO1,
+    house_roofed         = LHO2,
+    house_solid          = LHO3,
+    house_buildings      = LHO4
+  ) %>%
+  
+  # Recoding values to labels
+  mutate(
+    province = factor(CPRO, levels = 1:5, 
+                      labels = c("Tuyen Quang", "Quang Ninh", "Ha Giang", "Yen Bai", "Bac Giang")),
+    gender   = factor(CGEN, levels = c(1, 2), labels = c("Male", "Female")),
+    race     = factor(CRAC, levels = c(1, 2), labels = c("Kinh", "Minority")),
+    
+    job_type = factor(CJOB, levels = c(1, 2, 3), 
+                      labels = c("Agricultural", "Service/Industrial", "Other")),
+    income_group = factor(CQUI, levels = c(5, 4, 3, 2, 1), 
+                          labels = c("Lowest", "Second", "Middle", "Fourth", "Top")),
+    
+    # Education and Micro-factors
+    education = factor(FEDU, levels = c(0, 1, 2, 3), 
+                       labels = c("Primary", "Lower secondary", "Upper secondary", "Other")),
+    training_status = factor(FVTP, levels = c(1, 2), labels = c("Short course", "Long course")),
+    credit_status   = factor(FCRA, levels = c(1, 2), labels = c("Inaccessible", "Accessible")),
+    tech_level      = factor(FTAP, levels = c(1, 2), labels = c("Low", "Adequate")),
+    
+    # Binary
+    across(starts_with("house_"), ~factor(., levels = c(0, 1), labels = c("No", "Yes"))),
+    
+    # Recoding PPO & ARO scores
+    across(c(starts_with("policy_"), wellbeing_improve), ~case_when(
+      . == "1" ~ "Strongly Disagree",
+      . == "2" ~ "Disagree",
+      . == "3" ~ "Neutral",
+      . == "4" ~ "Agree",
+      . == "5" ~ "Strongly Agree",
+      TRUE ~ "No Opinion"
+    ) %>% factor(levels = c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree", "No Opinion"))),
+    
+    # Feature Engineering
+    daily_wage = if_else(!is.na(working_days) & working_days > 0, total_income / working_days, NA_real_),
+    agri_inc_ratio = if_else(total_income > 0, agri_income / total_income, 0)
+  ) %>%
+  
+  # Remove original numerical columns
+  select(-CPRO, -CGEN, -CRAC, -CJOB, -CQUI, -FEDU, -FVTP, -FCRA, -FTAP)
+
+# Final Verification
+glimpse(clean_df)
+```
+
+
+## 2 Visualization
+
+### 2.1 
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+
+library(plotly)
+library(scales)
+
+plot_data_final <- clean_df %>%
+  group_by(province, race, gender) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  group_by(province) %>%
+  mutate(
+    prov_total = sum(count),
+    percentage = count / prov_total,
+    tooltip_text = paste0(
+      "<b>Province: </b>", province, " (Total N=", prov_total, ")<br>",
+      "<b>Group: </b>", race, " - ", gender, "<br>",
+      "<b>Count: </b>", count, " persons<br>",
+      "<b>Share of Province: </b>", percent(percentage, accuracy = 0.1)
+    ),
+    facet_label = paste0(province, " (N=", prov_total, ")")
+  )
+
+p_final <- ggplot(plot_data_final, 
+                  aes(x = race, 
+                      y = percentage, 
+                      fill = gender, 
+                      text = tooltip_text, 
+                      group = gender)) +
+  geom_bar(stat = "identity", position = "stack", width = 0.7, alpha = 0.8) +
+  facet_wrap(~facet_label, nrow = 1) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = c("Male" = "#2c7fb8", "Female" = "#feb24c")) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "Workforce Composition by Region",
+    x = "Ethnic Group",
+    y = "Proportional Share in Province"
+  ) +
+  theme(legend.position = "none", panel.spacing = unit(1, "lines"))
+
+ggplotly(p_final, tooltip = "text") %>%
+  layout(
+    title = list(text = "Ethnic Concentration in Northern Vietnam's Informal Sector<br><sup>Spatial distribution across five provinces"),
+    margin = list(t = 80)
+  )
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+library(plotly)
+library(scales)
+
+plot_data_final <- clean_df %>%
+  group_by(province, race, gender) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  group_by(province) %>%
+  mutate(
+    prov_total = sum(count),
+    percentage = count / prov_total,
+    tooltip_text = paste0(
+      "<b>Province: </b>", province, " (Total N=", prov_total, ")<br>",
+      "<b>Group: </b>", race, " - ", gender, "<br>",
+      "<b>Count: </b>", count, " persons<br>",
+      "<b>Share of Province: </b>", percent(percentage, accuracy = 0.1)
+    ),
+    facet_label = paste0(province, " (N=", prov_total, ")")
+  )
+
+p_final <- ggplot(plot_data_final, 
+                  aes(x = race, 
+                      y = percentage, 
+                      fill = gender, 
+                      text = tooltip_text, 
+                      group = gender)) +
+  geom_bar(stat = "identity", position = "stack", width = 0.7, alpha = 0.8) +
+  facet_wrap(~facet_label, nrow = 1) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = c("Male" = "#2c7fb8", "Female" = "#feb24c")) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "Workforce Composition by Region",
+    x = "Ethnic Group",
+    y = "Proportional Share in Province"
+  ) +
+  theme(legend.position = "none", panel.spacing = unit(1, "lines"))
+
+ggplotly(p_final, tooltip = "text") %>%
+  layout(
+    title = list(text = "Ethnic Concentration in Northern Vietnam's Informal Sector<br><sup>Spatial distribution across five provinces"),
+    margin = list(t = 80)
+  )
+```
+:::
+
+**Observation** : 
+
+The visualization reveals a balanced sampling strategy ($N \approx 141$–$150$ per region). A dominant pattern emerges regarding ethnicity: Minority groups constitute the overwhelming majority of informal labourers in Ha Giang, Tuyen Quang, and Yen Bai. In these remote provinces, ethnicity is a near-absolute predictor of informal employment. 
+
+Interestingly, gender distribution shows no consistent geographic pattern. While males dominate the workforce (over 80% across all facets), the female participation rate fluctuates unpredictably between provinces and ethnic groups without a distinct trend. This suggests that while informal labour is heavily "gendered" toward men, female participation is likely driven by localized micro-economic conditions or household-specific needs, such as the necessity for supplemental income, rather than provincial-level geographic characteristics.
