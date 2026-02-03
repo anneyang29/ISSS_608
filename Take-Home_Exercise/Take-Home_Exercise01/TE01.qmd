@@ -406,7 +406,7 @@ p_lorenz <- ggplot(lorenz_df, aes(x = cum_pop, y = cum_income)) +
 
 ```
 
-**Observation**:
+**Observation**
 
 Income among rural informal labourers is concentrated in the lower-to-middle strata, yet the Lorenz curve shows that income accumulation remains uneven. Most respondents fall within the bottom and middle income quintiles, indicating that low-to-mid income conditions are widespread rather than limited to a small disadvantaged subgroup. However, the Lorenz curve deviates from the line of equality, implying that a relatively smaller share of higher earners holds a disproportionate share of total income. Together, these patterns suggest persistent inequality within an overall low-income population, reflecting structural constraints alongside unequal income capture at the upper tail.
 
@@ -609,7 +609,7 @@ p_density_23 <- ggplot(df_income, aes(x = total_income, fill = gender)) +
 p_rain_split / (p_box_23 | p_density_23)
 ```
 
-**Observation**:
+**Observation**
 
 Most respondents’ total income is concentrated below 100, with distributions tightly clustered in the 20–60 range, indicating generally low income levels across the sample. Clear ethnic disparities emerge: ethnic minority workers exhibit lower median incomes and a left-shifted distribution compared with Kinh workers, suggesting structurally constrained earning capacity rather than isolated poverty. Gender differences are not uniform across groups. Among Kinh workers, male and female income distributions largely overlap, whereas among ethnic minorities, male incomes are more compressed at the lower end, with weaker upper-tail dispersion. Together, these patterns indicate that income inequality is shaped by ethnicity and that gender-based income advantages are conditional on ethnic context, pointing to intersecting structural constraints rather than single-factor effects.
 
@@ -683,6 +683,12 @@ p_rain_split
 ```
 :::
 
+::: callout-note
+- To improve readability, the x-axis is trimmed to the 95th percentile using `coord_cartesian()`.
+
+- This keeps the main distribution visible while preventing a small number of extreme incomes from stretching the scale.
+:::
+
 #### 2.3.2 Income Distribution (Boxplot)
 
 ::: panel-tabset
@@ -719,6 +725,13 @@ p_box_23 <- ggplot(df_income, aes(x = race, y = total_income, fill = gender)) +
 p_box_23
 ```
 :::
+
+::: callout-note
+- The y-axis is zoomed to 0–150 via `coord_cartesian()` to highlight differences in the median and IQR.
+
+- Outliers are still present in the dataset; they are only de-emphasized visually to avoid compressing the box region.
+:::
+
 
 #### 2.3.3 Within-Group Income Distribution (Density)
 
@@ -757,3 +770,328 @@ p_density_23 <- ggplot(df_income, aes(x = total_income, fill = gender)) +
 p_density_23
 ```
 :::
+
+::: callout-note
+- Density plots are faceted by ethnicity with `scales = "free_y"` so each group’s distribution shape is readable.
+
+- The x-axis is trimmed to the 95th percentile, focusing attention on the dominant income range.
+:::
+
+
+### 2.4 Income Composition
+
+```{r}
+#| echo: false
+
+quintile_order <- c("Unknown", "Lowest", "Second", "Middle", "Fourth", "Top")
+
+pal_src <- c(
+  "Agriculture" = "#6b8ba4",
+  "Service"     = "#d8a437",
+  "Other"       = "#f1e3c4"
+)
+
+df_24 <- clean_df %>%
+  filter(!is.na(income_group), !is.na(total_income), total_income > 0) %>%
+  mutate(income_group = forcats::fct_relevel(income_group, quintile_order))
+
+comp_df <- df_24 %>%
+  transmute(
+    income_group,
+    Agriculture = agri_inc_ratio,
+    Service     = service_inc_ratio,
+    Other       = other_inc_ratio
+  ) %>%
+  pivot_longer(
+    cols = c(Agriculture, Service, Other),
+    names_to = "income_source",
+    values_to = "share"
+  ) %>%
+  group_by(income_group, income_source) %>%
+  summarise(share = mean(share, na.rm = TRUE), .groups = "drop") %>%
+  group_by(income_group) %>%
+  mutate(share = share / sum(share, na.rm = TRUE)) %>%   # ensure =100%
+  ungroup()
+
+p_comp <- ggplot(comp_df, aes(x = income_group, y = share, fill = income_source)) +
+  geom_col(width = 0.7, alpha = 0.95) +
+  geom_text(
+    aes(label = ifelse(share >= 0.10, scales::percent(share, accuracy = 1), "")),
+    position = position_stack(vjust = 0.5),
+    color = "white",
+    size = 3
+  ) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_fill_manual(values = pal_src) +
+  labs(
+    title = "Income Source Composition by Quintile",
+    subtitle = "Higher quintiles rely more on service and other non-agricultural income",
+    x = "Income Quintile",
+    y = "Share of Total Income",
+    fill = "Income Source"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "top"
+  )
+
+mean_df <- df_24 %>%
+  group_by(income_group) %>%
+  summarise(
+    mean_income = mean(total_income, na.rm = TRUE),
+    se = sd(total_income, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    ci_low  = mean_income - 1.96 * se,
+    ci_high = mean_income + 1.96 * se
+  )
+
+p_mean <- ggplot(mean_df, aes(x = income_group, y = mean_income)) +
+  geom_col(fill = "#547d9d", width = 0.6, alpha = 0.9) +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high), width = 0.2) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Average Total Income by Quintile",
+    subtitle = "Mean income with 95% confidence intervals",
+    x = "Income Quintile",
+    y = "Mean Total Income"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+
+p_comp / p_mean
+```
+
+**Observation**
+
+While higher income quintiles mechanically exhibit higher average income, the key distinction lies in income composition. Lower quintiles depend predominantly on agricultural income, with limited diversification across income sources. As income levels rise, the share of service and other non-agricultural income increases substantially, alongside a marked rise in average total income. This pattern suggests that upward income mobility is associated with structural shifts in livelihood strategies, rather than proportional increases within the same income source.
+
+#### 2.4.1 Income Source Composition by Quintile
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_comp
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+pal_src <- c(
+  "Agriculture" = "#547d9d",
+  "Service"     = "#d8a437",
+  "Other"       = "#f3e4c7"
+)
+
+quintile_order <- c("Unknown", "Lowest", "Second", "Middle", "Fourth", "Top")
+
+comp_df <- clean_df %>%
+  filter(!is.na(total_income), total_income > 0) %>%
+  mutate(income_group = forcats::fct_relevel(income_group, quintile_order)) %>%
+  transmute(
+    income_group,
+    Agriculture = agri_inc_ratio,
+    Service     = service_inc_ratio,
+    Other       = other_inc_ratio
+  ) %>%
+  pivot_longer(
+    cols = c("Agriculture","Service","Other"),
+    names_to = "source",
+    values_to = "share"
+  ) %>%
+  group_by(income_group, source) %>%
+  summarise(share = mean(share, na.rm = TRUE), .groups = "drop") %>%
+  group_by(income_group) %>%
+  mutate(share = share / sum(share, na.rm = TRUE)) %>%
+  ungroup()
+
+p_comp <- ggplot(comp_df, aes(x = income_group, y = share, fill = source)) +
+  geom_col(width = 0.75, alpha = 0.95) +
+  geom_text(
+    aes(label = scales::percent(share, accuracy = 1)),
+    position = position_stack(vjust = 0.5),
+    color = "white",
+    size = 3.4
+  ) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_fill_manual(values = pal_src) +
+  labs(
+    title = "Income Source Composition by Income Quintile",
+    subtitle = "Higher quintiles show increasing reliance on non-agricultural income",
+    x = "Income Quintile",
+    y = "Share of Total Income",
+    fill = "Income Source"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "top"
+  )
+
+p_comp
+```
+:::
+
+::: callout-note
+This figure uses a 100% stacked bar (each bar sums to 100%) to compare income structure across quintiles. Values are based on average income shares (ratios) rather than raw income levels, so the focus is on composition, not magnitude.
+:::
+
+#### 2.4.2 Average Total Income by Quintile
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_mean
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+quintile_order <- c("Unknown", "Lowest", "Second", "Middle", "Fourth", "Top")
+
+mean_df <- df_24 %>%
+  group_by(income_group) %>%
+  summarise(
+    mean_income = mean(total_income, na.rm = TRUE),
+    se = sd(total_income, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    ci_low  = mean_income - 1.96 * se,
+    ci_high = mean_income + 1.96 * se
+  )
+
+p_mean <- ggplot(mean_df, aes(x = income_group, y = mean_income)) +
+  geom_col(fill = "#547d9d", width = 0.6, alpha = 0.9) +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high), width = 0.2) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Average Total Income by Quintile",
+    subtitle = "Mean income with 95% confidence intervals",
+    x = "Income Quintile",
+    y = "Mean Total Income"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+
+p_mean
+```
+:::
+
+::: callout-note
+Error bars show 95% confidence intervals of the mean, computed as *mean ± 1.96 × SE*. This chart complements the composition plot by showing income magnitude, addressing the limitation that “high share” does not necessarily imply “high income”.
+:::
+
+### 2.5 
+
+```{r}
+#| echo: false
+
+
+# ---- Palette for TRAINING (not gender) ----
+pal_train <- c(
+  "Short course" = "#547d9d",
+  "Long course"  = "#d8a437"
+)
+
+# ---- Data: drop Unknown because it's not interpretable ----
+df_et <- clean_df %>%
+  filter(
+    !is.na(total_income), total_income >= 0,
+    education != "Unknown",
+    training_status != "Unknown"
+  ) %>%
+  mutate(
+    education = forcats::fct_relevel(
+      education,
+      c("Primary","Lower secondary","Upper secondary","Other")
+    ),
+    training_status = forcats::fct_relevel(
+      training_status,
+      c("Short course","Long course")
+    )
+  )
+
+# ---- 99% zoom limit (keep data, only zoom display) ----
+x_p99 <- as.numeric(quantile(df_et$total_income, 0.99, na.rm = TRUE))
+
+# ---- Mean + 95% CI (within education, by training) ----
+mean_df <- df_et %>%
+  group_by(education, training_status) %>%
+  summarise(
+    n = n(),
+    mean_income = mean(total_income, na.rm = TRUE),
+    sd_income   = sd(total_income, na.rm = TRUE),
+    se = sd_income / sqrt(n),
+    ci_low  = mean_income - 1.96 * se,
+    ci_high = mean_income + 1.96 * se,
+    .groups = "drop"
+  )
+
+p_mean_et <- ggplot(mean_df, aes(x = mean_income, y = education, color = training_status)) +
+  geom_errorbarh(aes(xmin = ci_low, xmax = ci_high), height = 0.15, linewidth = 0.8) +
+  geom_point(size = 3.2) +
+  scale_color_manual(values = pal_train) +
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    title = "Mean Income by Education and Training",
+    subtitle = "Long-course training is associated with higher mean income",
+    x = "Mean Total Income (95% CI)",
+    y = "Education Level",
+    color = "Training"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "top"
+  )
+
+# ---- Distribution (boxplot) + 99% zoom ----
+p_box_et <- ggplot(
+  df_et,
+  aes(x = total_income, y = education, fill = training_status)
+) +
+  geom_boxplot(
+    width = 0.55,
+    outlier.alpha = 0.35
+  ) +
+  coord_cartesian(xlim = c(0, x_p99)) +
+  scale_fill_manual(values = pal_train) +
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    title = "Income Distribution by Education and Training",
+    subtitle = "Median and upper-tail differences explain variation beyond the mean",
+    x = "Total Income",
+    y = "Education Level",
+    fill = "Training"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "top"
+  )
+(p_mean_et / p_box_et) +
+  plot_layout(heights = c(1.2, 1))
+```

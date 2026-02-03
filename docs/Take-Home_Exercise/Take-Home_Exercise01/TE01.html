@@ -231,6 +231,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#macro-context" id="toc-macro-context" class="nav-link" data-scroll-target="#macro-context">2.1 Macro Context</a></li>
   <li><a href="#income-distribution-inequality" id="toc-income-distribution-inequality" class="nav-link" data-scroll-target="#income-distribution-inequality">2.2 Income Distribution &amp; Inequality</a></li>
   <li><a href="#structural-disparities" id="toc-structural-disparities" class="nav-link" data-scroll-target="#structural-disparities">2.3 Structural Disparities</a></li>
+  <li><a href="#income-composition" id="toc-income-composition" class="nav-link" data-scroll-target="#income-composition">2.4 Income Composition</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">2.5</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -678,7 +680,7 @@ $ other_inc_ratio      &lt;dbl&gt; 0.13513514, 0.12000000, 0.24242424, 0.0000000
 </div>
 </div>
 </div>
-<p><strong>Observation</strong>:</p>
+<p><strong>Observation</strong></p>
 <p>Income among rural informal labourers is concentrated in the lower-to-middle strata, yet the Lorenz curve shows that income accumulation remains uneven. Most respondents fall within the bottom and middle income quintiles, indicating that low-to-mid income conditions are widespread rather than limited to a small disadvantaged subgroup. However, the Lorenz curve deviates from the line of equality, implying that a relatively smaller share of higher earners holds a disproportionate share of total income. Together, these patterns suggest persistent inequality within an overall low-income population, reflecting structural constraints alongside unequal income capture at the upper tail.</p>
 <section id="income-quintile-distribution" class="level4">
 <h4 class="anchored" data-anchor-id="income-quintile-distribution">2.2.1 Income Quintile Distribution</h4>
@@ -802,7 +804,7 @@ $ other_inc_ratio      &lt;dbl&gt; 0.13513514, 0.12000000, 0.24242424, 0.0000000
 </div>
 </div>
 </div>
-<p><strong>Observation</strong>:</p>
+<p><strong>Observation</strong></p>
 <p>Most respondents’ total income is concentrated below 100, with distributions tightly clustered in the 20–60 range, indicating generally low income levels across the sample. Clear ethnic disparities emerge: ethnic minority workers exhibit lower median incomes and a left-shifted distribution compared with Kinh workers, suggesting structurally constrained earning capacity rather than isolated poverty. Gender differences are not uniform across groups. Among Kinh workers, male and female income distributions largely overlap, whereas among ethnic minorities, male incomes are more compressed at the lower end, with weaker upper-tail dispersion. Together, these patterns indicate that income inequality is shaped by ethnicity and that gender-based income advantages are conditional on ethnic context, pointing to intersecting structural constraints rather than single-factor effects.</p>
 <section id="income-spread-raincloud" class="level4">
 <h4 class="anchored" data-anchor-id="income-spread-raincloud">2.3.1 Income Spread (Raincloud)</h4>
@@ -877,6 +879,22 @@ $ other_inc_ratio      &lt;dbl&gt; 0.13513514, 0.12000000, 0.24242424, 0.0000000
 </div>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>To improve readability, the x-axis is trimmed to the 95th percentile using <code>coord_cartesian()</code>.</p></li>
+<li><p>This keeps the main distribution visible while preventing a small number of extreme incomes from stretching the scale.</p></li>
+</ul>
+</div>
+</div>
 </section>
 <section id="income-distribution-boxplot" class="level4">
 <h4 class="anchored" data-anchor-id="income-distribution-boxplot">2.3.2 Income Distribution (Boxplot)</h4>
@@ -916,6 +934,22 @@ $ other_inc_ratio      &lt;dbl&gt; 0.13513514, 0.12000000, 0.24242424, 0.0000000
 <span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>p_box_23</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>The y-axis is zoomed to 0–150 via <code>coord_cartesian()</code> to highlight differences in the median and IQR.</p></li>
+<li><p>Outliers are still present in the dataset; they are only de-emphasized visually to avoid compressing the box region.</p></li>
+</ul>
 </div>
 </div>
 </section>
@@ -960,9 +994,207 @@ $ other_inc_ratio      &lt;dbl&gt; 0.13513514, 0.12000000, 0.24242424, 0.0000000
 </div>
 </div>
 </div>
-
-
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>Density plots are faceted by ethnicity with <code>scales = "free_y"</code> so each group’s distribution shape is readable.</p></li>
+<li><p>The x-axis is trimmed to the 95th percentile, focusing attention on the dominant income range.</p></li>
+</ul>
+</div>
+</div>
 </section>
+</section>
+<section id="income-composition" class="level3">
+<h3 class="anchored" data-anchor-id="income-composition">2.4 Income Composition</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TE01_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Observation</strong></p>
+<p>While higher income quintiles mechanically exhibit higher average income, the key distinction lies in income composition. Lower quintiles depend predominantly on agricultural income, with limited diversification across income sources. As income levels rise, the share of service and other non-agricultural income increases substantially, alongside a marked rise in average total income. This pattern suggests that upward income mobility is associated with structural shifts in livelihood strategies, rather than proportional increases within the same income source.</p>
+<section id="income-source-composition-by-quintile" class="level4">
+<h4 class="anchored" data-anchor-id="income-source-composition-by-quintile">2.4.1 Income Source Composition by Quintile</h4>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true" href="">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false" href="">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TE01_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>pal_src <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Agriculture"</span> <span class="ot">=</span> <span class="st">"#547d9d"</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Service"</span>     <span class="ot">=</span> <span class="st">"#d8a437"</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Other"</span>       <span class="ot">=</span> <span class="st">"#f3e4c7"</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>quintile_order <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Unknown"</span>, <span class="st">"Lowest"</span>, <span class="st">"Second"</span>, <span class="st">"Middle"</span>, <span class="st">"Fourth"</span>, <span class="st">"Top"</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>comp_df <span class="ot">&lt;-</span> clean_df <span class="sc">%&gt;%</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(total_income), total_income <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">income_group =</span> forcats<span class="sc">::</span><span class="fu">fct_relevel</span>(income_group, quintile_order)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    income_group,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">Agriculture =</span> agri_inc_ratio,</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Service     =</span> service_inc_ratio,</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">Other       =</span> other_inc_ratio</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"Agriculture"</span>,<span class="st">"Service"</span>,<span class="st">"Other"</span>),</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"source"</span>,</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"share"</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(income_group, source) <span class="sc">%&gt;%</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">share =</span> <span class="fu">mean</span>(share, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(income_group) <span class="sc">%&gt;%</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">share =</span> share <span class="sc">/</span> <span class="fu">sum</span>(share, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>p_comp <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(comp_df, <span class="fu">aes</span>(<span class="at">x =</span> income_group, <span class="at">y =</span> share, <span class="at">fill =</span> source)) <span class="sc">+</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.75</span>, <span class="at">alpha =</span> <span class="fl">0.95</span>) <span class="sc">+</span></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">label =</span> scales<span class="sc">::</span><span class="fu">percent</span>(share, <span class="at">accuracy =</span> <span class="dv">1</span>)),</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"white"</span>,</span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">3.4</span></span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">accuracy =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> pal_src) <span class="sc">+</span></span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Income Source Composition by Income Quintile"</span>,</span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Higher quintiles show increasing reliance on non-agricultural income"</span>,</span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Income Quintile"</span>,</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Share of Total Income"</span>,</span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Income Source"</span></span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"top"</span></span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a>p_comp</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This figure uses a 100% stacked bar (each bar sums to 100%) to compare income structure across quintiles. Values are based on average income shares (ratios) rather than raw income levels, so the focus is on composition, not magnitude.</p>
+</div>
+</div>
+</section>
+<section id="average-total-income-by-quintile" class="level4">
+<h4 class="anchored" data-anchor-id="average-total-income-by-quintile">2.4.2 Average Total Income by Quintile</h4>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true" href="">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false" href="">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TE01_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>quintile_order <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Unknown"</span>, <span class="st">"Lowest"</span>, <span class="st">"Second"</span>, <span class="st">"Middle"</span>, <span class="st">"Fourth"</span>, <span class="st">"Top"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>mean_df <span class="ot">&lt;-</span> df_24 <span class="sc">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(income_group) <span class="sc">%&gt;%</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_income =</span> <span class="fu">mean</span>(total_income, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">se =</span> <span class="fu">sd</span>(total_income, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">n</span>()),</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">ci_low  =</span> mean_income <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se,</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">ci_high =</span> mean_income <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>p_mean <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mean_df, <span class="fu">aes</span>(<span class="at">x =</span> income_group, <span class="at">y =</span> mean_income)) <span class="sc">+</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"#547d9d"</span>, <span class="at">width =</span> <span class="fl">0.6</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> ci_low, <span class="at">ymax =</span> ci_high), <span class="at">width =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma) <span class="sc">+</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Average Total Income by Quintile"</span>,</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Mean income with 95% confidence intervals"</span>,</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Income Quintile"</span>,</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Mean Total Income"</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">11</span>) <span class="sc">+</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>p_mean</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Error bars show 95% confidence intervals of the mean, computed as <em>mean ± 1.96 × SE</em>. This chart complements the composition plot by showing income magnitude, addressing the limitation that “high share” does not necessarily imply “high income”.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="section" class="level3">
+<h3 class="anchored" data-anchor-id="section">2.5</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TE01_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
 </section>
 </section>
 
