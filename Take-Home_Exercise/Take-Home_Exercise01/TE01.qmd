@@ -27,7 +27,7 @@ This report analyzes income inequality among rural informal labourers in Norther
 ### 1.1 Installing and loading the packages
 
 | Library | Description |
-|-------------|-----------------------------------------------------------|
+|----------------|--------------------------------------------------------|
 | tidyverse | A collection of core packages designed for data science, used extensively for data preparation and wrangling. |
 | readxl | Allows R to read Excel files (.xlsx). |
 | patchwork | For arranging multiple ggplot2 figures into a composite figure. |
@@ -35,15 +35,13 @@ This report analyzes income inequality among rural informal labourers in Norther
 | scales | Supplies scale functions and tools for customizing axes, labels, and legends in ggplot2. |
 | ggdist | An extension of ggplot2 for visualising distributions and uncertainty, useful for half-violin or raincloud plots. |
 
-
 ```{r}
 pacman::p_load(tidyverse, readxl, patchwork, ggthemes, scales, ggdist)
 ```
 
 ### 1.2 Data import
 
-[The dataset](https://www.sciencedirect.com/science/article/pii/S235234092100576X) used in this study is derived from a socio-economic survey of 725 informal labourers across five provinces in the Northern Mountainous Region of Vietnam. 
-The data consists of 725 observations and 30 variables, categorized into six key dimensions: Characteristics (C), Income Types (T), Impact Factors (F), Living Conditions (L), Policy Opinions (P), and Social Assessments (A).
+[The dataset](https://www.sciencedirect.com/science/article/pii/S235234092100576X) used in this study is derived from a socio-economic survey of 725 informal labourers across five provinces in the Northern Mountainous Region of Vietnam. The data consists of 725 observations and 30 variables, categorized into six key dimensions: Characteristics (C), Income Types (T), Impact Factors (F), Living Conditions (L), Policy Opinions (P), and Social Assessments (A).
 
 ```{r}
 raw_df <- read_excel("data/Upload for elsiver.xlsx",
@@ -69,7 +67,7 @@ selected_df <- raw_df %>%
 
 ### 1.4 Data Preprocessing
 
-#### 1.4.1 Checking Duplicate Rows 
+#### 1.4.1 Checking Duplicate Rows
 
 Using the `duplicated()` function to see whether there are duplicate entries in the data.
 
@@ -83,13 +81,13 @@ sel_dup <- selected_df[duplicated(selected_df), ]
 sel_dup
 ```
 
-:::callout-note
+::: callout-note
 **Interpretation of duplicates**
 
 We checked duplicates at two levels:
 
-- `raw_df`: duplicates here indicate **exactly repeated records across all variables** (data-entry duplication).
-- `selected_df`: duplicates here may arise because, after selecting a subset of variables, **multiple respondents can share identical profiles** on the selected features (projection duplicates).
+-   `raw_df`: duplicates here indicate **exactly repeated records across all variables** (data-entry duplication).
+-   `selected_df`: duplicates here may arise because, after selecting a subset of variables, **multiple respondents can share identical profiles** on the selected features (projection duplicates).
 
 Since this is a survey dataset **without respondent IDs**, and projection duplicates can legitimately reflect homogeneous socio-economic profiles in the target population, **we retain all records** to avoid artificially altering the sample distribution.
 :::
@@ -107,7 +105,7 @@ na_summary <- selected_df %>%
 na_summary
 ```
 
-#### 1.4.3 Renaming Columns and Transforming Feature 
+#### 1.4.3 Renaming Columns and Transforming Feature
 
 For categorical grouping variables, missing values are retained as an explicit category ("Unknown") to preserve the full income distribution and avoid unnecessary sample loss.
 
@@ -225,13 +223,15 @@ clean_df <- selected_df %>%
 glimpse(clean_df)
 ```
 
-- For Likert-scale items (PPO and ARO4), missing responses are treated as non-substantive answers.  
+-   For Likert-scale items (PPO and ARO4), missing responses are treated as non-substantive answers.
 
-- We label PPO missing values as **"Not Answered"** to distinguish non-response from agreement levels, and recode ARO4 into ordered agreement categories while keeping missing/invalid entries as **"Unknown"**.
+-   We label PPO missing values as **"Not Answered"** to distinguish non-response from agreement levels, and recode ARO4 into ordered agreement categories while keeping missing/invalid entries as **"Unknown"**.
 
 ## 2 Visualization
 
-### 2.1 Regional Workforce Composition by Ethnicity and Gender
+### 2.1 Macro Context
+
+#### 2.1.1 Regional Workforce Composition by Ethnicity and Gender
 
 ::: panel-tabset
 ### Plot
@@ -335,6 +335,425 @@ This visualization confirms a balanced sampling design across the five provinces
 
 In contrast, gender composition exhibits a consistent structural imbalance rather than a geographic pattern. Male workers account for the majority of informal labourers across all provinces and ethnic groups, with only modest variation in female participation. These differences occur within an overall male-dominated workforce and do not show systematic spatial variation. This suggests that gender disparities in informal labour participation reflect broader labour market or household-level constraints, while regional variation is more strongly driven by ethnicity and location.
 
-### 2.2 Income Distribution and Inequality Across Quintiles
+### 2.2 Income Distribution & Inequality
+
+```{r}
+#| echo: false
+
+plot_data_22 <- clean_df %>%
+  count(income_group) %>%
+  mutate(percentage = n / sum(n))
+
+p_quintile <- ggplot(plot_data_22, aes(x = income_group, y = percentage)) +
+  geom_col(fill = "#547d9d", alpha = 0.9) +
+  geom_text(
+    aes(label = scales::percent(percentage, accuracy = 1)),
+    vjust = -0.3,
+    size = 3.5
+  ) +
+  scale_y_continuous(
+    labels = scales::percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0.08))
+  ) +
+  labs(
+    title = "Income Quintile Distribution",
+    subtitle = "Share of respondents by income group",
+    x = "Income Quintile",
+    y = "Share of Respondents"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+
+lorenz_df <- clean_df %>%
+  filter(!is.na(total_income), total_income >= 0) %>%
+  arrange(total_income) %>%
+  mutate(
+    cum_pop = row_number() / n(),
+    cum_income = cumsum(total_income) / sum(total_income)
+  )
+
+lorenz_50 <- lorenz_df %>%
+  filter(cum_pop >= 0.5) %>%
+  slice(1)
+
+p_lorenz <- ggplot(lorenz_df, aes(x = cum_pop, y = cum_income)) +
+  geom_line(color = "#547d9d", linewidth = 1.1) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "grey60") +
+  geom_point(
+    data = lorenz_50,
+    aes(x = cum_pop, y = cum_income),
+    color = "#d8a437",
+    size = 2.8
+  ) +
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, 1)) +
+  labs(
+    title = "Lorenz Curve of Income Distribution",
+    subtitle = paste0("Bottom 50% hold ~", scales::percent(lorenz_50$cum_income, accuracy = 1), " of total income"),
+    x = "Cumulative Share of Population",
+    y = "Cumulative Share of Income"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+
+(p_quintile | p_lorenz)
+
+```
+
+**Observation**:
+
+Income among rural informal labourers is concentrated in the lower-to-middle strata, yet the Lorenz curve shows that income accumulation remains uneven. Most respondents fall within the bottom and middle income quintiles, indicating that low-to-mid income conditions are widespread rather than limited to a small disadvantaged subgroup. However, the Lorenz curve deviates from the line of equality, implying that a relatively smaller share of higher earners holds a disproportionate share of total income. Together, these patterns suggest persistent inequality within an overall low-income population, reflecting structural constraints alongside unequal income capture at the upper tail.
+
+#### 2.2.1 Income Quintile Distribution
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_quintile
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+plot_data_22 <- clean_df %>%
+  count(income_group) %>%
+  mutate(percentage = n / sum(n))
+
+p_quintile <- ggplot(plot_data_22, aes(x = income_group, y = percentage)) +
+  geom_col(fill = "#547d9d", alpha = 0.9) +
+  geom_text(
+    aes(label = scales::percent(percentage, accuracy = 1)),
+    vjust = -0.3,
+    size = 3.5
+  ) +
+  scale_y_continuous(
+    labels = scales::percent_format(accuracy = 1),
+    expand = expansion(mult = c(0, 0.08))
+  ) +
+  labs(
+    title = "Income Quintile Distribution",
+    subtitle = "Share of respondents by income group",
+    x = "Income Quintile",
+    y = "Share of Respondents"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+
+p_quintile
+```
+:::
+
+#### 2.2.2 Lorenz Curve of Income Distribution
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_lorenz
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+lorenz_df <- clean_df %>%
+  filter(!is.na(total_income), total_income >= 0) %>%
+  arrange(total_income) %>%
+  mutate(
+    cum_pop = row_number() / n(),
+    cum_income = cumsum(total_income) / sum(total_income)
+  )
+
+lorenz_50 <- lorenz_df %>%
+  filter(cum_pop >= 0.5) %>%
+  slice(1)
+
+p_lorenz <- ggplot(lorenz_df, aes(x = cum_pop, y = cum_income)) +
+  geom_line(color = "#547d9d", linewidth = 1.1) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "grey60") +
+  geom_point(
+    data = lorenz_50,
+    aes(x = cum_pop, y = cum_income),
+    color = "#d8a437",
+    size = 2.8
+  ) +
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, 1)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, 1)) +
+  labs(
+    title = "Lorenz Curve of Income Distribution",
+    subtitle = paste0("Bottom 50% hold ~", scales::percent(lorenz_50$cum_income, accuracy = 1), " of total income"),
+    x = "Cumulative Share of Population",
+    y = "Cumulative Share of Income"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+
+p_lorenz
+```
+:::
+
+### 2.3 Structural Disparities
+
+```{r}
+#| echo: false
 
 
+pal <- c("Male" = "#547d9d", "Female" = "#d8a437")
+
+df_income <- clean_df %>% 
+  filter(!is.na(total_income), total_income >= 0) %>%
+  mutate(
+    race   = droplevels(race),
+    gender = droplevels(gender)
+  )
+
+x_max <- as.numeric(quantile(df_income$total_income, 0.95, na.rm = TRUE))
+
+p_rain_split <- ggplot(df_income, aes(x = total_income, y = race, fill = gender)) +
+  ggdist::stat_halfeye(
+    adjust = 0.65,
+    width  = 0.55,
+    .width = 0,
+    alpha  = 0.55,
+    point_colour = NA,
+    justification = 0.85,
+    position = position_dodge(width = 0.75)
+  ) +
+  geom_point(
+    aes(color = gender),
+    position = position_jitterdodge(
+      jitter.height = 0.18,
+      dodge.width   = 0.75,
+      seed          = 2022
+    ),
+    alpha = 0.22,
+    size  = 0.75
+  ) +
+  scale_fill_manual(values = pal) +
+  scale_color_manual(values = pal) +
+  scale_x_continuous(
+    labels = scales::comma,
+    breaks = scales::breaks_pretty(n = 6)
+  ) +
+  coord_cartesian(xlim = c(0, x_max)) +
+  labs(
+    title = "Income Spread by Ethnicity and Gender",
+    subtitle = "Distributions and individual observations",
+    x = "Total Income",
+    y = "Ethnic Group",
+    fill = "Gender"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "top"
+  ) +
+  guides(color = "none")
+
+p_box_23 <- ggplot(df_income, aes(x = race, y = total_income, fill = gender)) +
+  geom_boxplot(width = 0.6, outlier.alpha = 0.25) +
+  coord_cartesian(ylim = c(0, 150)) +
+  scale_fill_manual(values = pal) +
+  labs(
+    title = "Income Distribution (Boxplot)",
+    subtitle = "Median and IQR by ethnicity and gender",
+    x = "Ethnic Group",
+    y = "Total Income"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "top"
+  )
+
+p_density_23 <- ggplot(df_income, aes(x = total_income, fill = gender)) +
+  geom_density(alpha = 0.55) +
+  facet_wrap(~ race, scales = "free_y") +
+  coord_cartesian(xlim = c(0, x_max)) +
+  scale_fill_manual(values = pal) +
+  labs(
+    title = "Within-Group Income Distribution",
+    subtitle = "Gender density within each ethnicity",
+    x = "Total Income",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "top"
+  )
+
+p_rain_split / (p_box_23 | p_density_23)
+```
+
+**Observation**:
+
+Most respondents’ total income is concentrated below 100, with distributions tightly clustered in the 20–60 range, indicating generally low income levels across the sample. Clear ethnic disparities emerge: ethnic minority workers exhibit lower median incomes and a left-shifted distribution compared with Kinh workers, suggesting structurally constrained earning capacity rather than isolated poverty. Gender differences are not uniform across groups. Among Kinh workers, male and female income distributions largely overlap, whereas among ethnic minorities, male incomes are more compressed at the lower end, with weaker upper-tail dispersion. Together, these patterns indicate that income inequality is shaped by ethnicity and that gender-based income advantages are conditional on ethnic context, pointing to intersecting structural constraints rather than single-factor effects.
+
+#### 2.3.1 Income Spread (Raincloud)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_rain_split
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+pal <- c("Male" = "#547d9d", "Female" = "#d8a437")
+
+df_income <- clean_df %>% 
+  filter(!is.na(total_income), total_income >= 0) %>%
+  mutate(
+    race   = droplevels(race),
+    gender = droplevels(gender)
+  )
+
+x_max <- as.numeric(quantile(df_income$total_income, 0.95, na.rm = TRUE))
+
+p_rain_split <- ggplot(df_income, aes(x = total_income, y = race, fill = gender)) +
+  ggdist::stat_halfeye(
+    adjust = 0.65,
+    width  = 0.55,
+    .width = 0,
+    alpha  = 0.55,
+    point_colour = NA,
+    justification = 0.85,
+    position = position_dodge(width = 0.75)
+  ) +
+  geom_point(
+    aes(color = gender),
+    position = position_jitterdodge(
+      jitter.height = 0.18,
+      dodge.width   = 0.75,
+      seed          = 2022
+    ),
+    alpha = 0.22,
+    size  = 0.75
+  ) +
+  coord_cartesian(xlim = c(0, x_max)) +
+  scale_fill_manual(values = pal) +
+  scale_color_manual(values = pal) +
+  scale_x_continuous(labels = scales::comma) +
+  labs(
+    title = "Income Spread by Ethnicity and Gender",
+    subtitle = "Distribution shape + individual observations (trimmed to 95th percentile)",
+    x = "Total Income",
+    y = "Ethnic Group",
+    fill = "Gender"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "top"
+  ) +
+  guides(color = "none")
+
+p_rain_split
+```
+:::
+
+#### 2.3.2 Income Distribution (Boxplot)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_box_23
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+p_box_23 <- ggplot(df_income, aes(x = race, y = total_income, fill = gender)) +
+  geom_boxplot(width = 0.6, outlier.alpha = 0.25) +
+  coord_cartesian(ylim = c(0, 150)) +
+  scale_fill_manual(values = pal) +
+  labs(
+    title = "Income Distribution (Boxplot)",
+    subtitle = "Median and IQR highlighted (zoomed to 0–150)",
+    x = "Ethnic Group",
+    y = "Total Income"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "top"
+  )
+
+p_box_23
+```
+:::
+
+#### 2.3.3 Within-Group Income Distribution (Density)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_density_23
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+p_density_23 <- ggplot(df_income, aes(x = total_income, fill = gender)) +
+  geom_density(alpha = 0.55) +
+  facet_wrap(~ race, scales = "free_y") +
+  coord_cartesian(xlim = c(0, x_max)) +
+  scale_fill_manual(values = pal) +
+  labs(
+    title = "Within-Group Income Distribution",
+    subtitle = "Gender density within each ethnic group (trimmed to 95th percentile)",
+    x = "Total Income",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "top"
+  )
+
+p_density_23
+```
+:::
