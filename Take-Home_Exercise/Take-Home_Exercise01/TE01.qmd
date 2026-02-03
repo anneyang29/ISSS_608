@@ -1002,96 +1002,277 @@ p_mean
 Error bars show 95% confidence intervals of the mean, computed as *mean ± 1.96 × SE*. This chart complements the composition plot by showing income magnitude, addressing the limitation that “high share” does not necessarily imply “high income”.
 :::
 
-### 2.5 
+### 2.5 Micro-Level Drivers of Income and Productivity
 
 ```{r}
 #| echo: false
 
+df_25 <- clean_df %>%
+  filter(
+    !is.na(total_income),
+    education != "Unknown",
+    training_status != "Unknown",
+    !is.na(daily_wage),
+    daily_wage > 0,
+    working_days > 0,
+    tech_level != "Unknown",
+    job_type != "Unknown"
+  )
 
-# ---- Palette for TRAINING (not gender) ----
+y99_wage <- as.numeric(quantile(df_25$daily_wage, 0.99, na.rm = TRUE))
+x99_days <- as.numeric(quantile(df_25$working_days, 0.99, na.rm = TRUE))
+
+
+theme_25 <- theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(face = "bold", size = 11),
+    plot.subtitle = element_text(size = 9),
+    axis.title.x = element_text(size = 9, margin = margin(t = 10)),
+    axis.title.y = element_text(size = 9, margin = margin(r = 10)),
+    axis.text = element_text(size = 8),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  )
+
 pal_train <- c(
   "Short course" = "#547d9d",
   "Long course"  = "#d8a437"
 )
 
-# ---- Data: drop Unknown because it's not interpretable ----
-df_et <- clean_df %>%
-  filter(
-    !is.na(total_income), total_income >= 0,
-    education != "Unknown",
-    training_status != "Unknown"
-  ) %>%
-  mutate(
-    education = forcats::fct_relevel(
-      education,
-      c("Primary","Lower secondary","Upper secondary","Other")
-    ),
-    training_status = forcats::fct_relevel(
-      training_status,
-      c("Short course","Long course")
-    )
+pal_tech <- c(
+  "Low"      = "#547d9d",
+  "Adequate" = "#d8a437"
+)
+
+pal_job <- c(
+  "Agricultural"      = "#547d9d",
+  "Service/Industrial"= "#d8a437",
+  "Other"             = "#d9c2d3"
+)
+
+y99_wage <- as.numeric(quantile(df_25$daily_wage, 0.99, na.rm = TRUE))
+x99_days <- as.numeric(quantile(df_25$working_days, 0.99, na.rm = TRUE))
+
+# 3. 設定緊湊主題 (theme)
+theme_25_compact <- theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(face = "bold", size = 12, margin = margin(b = 5)),
+    plot.subtitle = element_text(size = 9, margin = margin(b = 10)),
+    axis.title.x = element_text(size = 9, margin = margin(t = 5)),
+    axis.title.y = element_text(size = 9, margin = margin(r = 5)),
+    axis.text = element_text(size = 8),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(5, 5, 5, 5) 
   )
 
-# ---- 99% zoom limit (keep data, only zoom display) ----
-x_p99 <- as.numeric(quantile(df_et$total_income, 0.99, na.rm = TRUE))
+p_edu_train <- ggplot(df_25, aes(x = education, y = total_income, fill = training_status)) +
+  geom_boxplot(width = 0.65, outlier.alpha = 0.3) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) + 
+  scale_y_continuous(labels = scales::comma) + 
+  scale_fill_manual(values = pal_train) +
+  labs(title = "Income by Education & Training", x = "Education", y = "Income", fill = "Training") +
+  theme_25_compact
 
-# ---- Mean + 95% CI (within education, by training) ----
-mean_df <- df_et %>%
-  group_by(education, training_status) %>%
+edu_mean <- df_25 %>%
+  group_by(education) %>%
   summarise(
     n = n(),
     mean_income = mean(total_income, na.rm = TRUE),
-    sd_income   = sd(total_income, na.rm = TRUE),
-    se = sd_income / sqrt(n),
-    ci_low  = mean_income - 1.96 * se,
-    ci_high = mean_income + 1.96 * se,
+    se = sd(total_income, na.rm = TRUE) / sqrt(n),
     .groups = "drop"
+  ) %>%
+  mutate(
+    ci_low  = mean_income - 1.96 * se,
+    ci_high = mean_income + 1.96 * se
   )
 
-p_mean_et <- ggplot(mean_df, aes(x = mean_income, y = education, color = training_status)) +
-  geom_errorbarh(aes(xmin = ci_low, xmax = ci_high), height = 0.15, linewidth = 0.8) +
-  geom_point(size = 3.2) +
-  scale_color_manual(values = pal_train) +
-  scale_x_continuous(labels = scales::comma) +
-  labs(
-    title = "Mean Income by Education and Training",
-    subtitle = "Long-course training is associated with higher mean income",
-    x = "Mean Total Income (95% CI)",
-    y = "Education Level",
-    color = "Training"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank(),
-    legend.position = "top"
-  )
+p_edu_ci <- ggplot(edu_mean, aes(x = education, y = mean_income)) +
+  geom_col(fill = "#547d9d", alpha = 0.9, width = 0.6) +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high), width = 0.15) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) + 
+  scale_y_continuous(labels = scales::comma) +
+  labs(title = "Average Income by Education", x = "Education", y = "Mean Income") +
+  theme_25_compact
 
-# ---- Distribution (boxplot) + 99% zoom ----
-p_box_et <- ggplot(
-  df_et,
-  aes(x = total_income, y = education, fill = training_status)
-) +
-  geom_boxplot(
-    width = 0.55,
-    outlier.alpha = 0.35
-  ) +
-  coord_cartesian(xlim = c(0, x_p99)) +
+
+p_job <- ggplot(df_25, aes(x = working_days, y = daily_wage, color = job_type)) +
+  geom_point(alpha = 0.3, size = 1) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 0.8) +
+  coord_cartesian(xlim = c(0, x99_days), ylim = c(0, y99_wage)) +
+  scale_color_manual(values = pal_job) +
+  labs(title = "Wage vs Days (Job Type)", x = "Days", y = "Daily Wage", color = "Job") +
+  theme_25_compact
+
+p_tech <- ggplot(df_25, aes(x = working_days, y = daily_wage, color = tech_level)) +
+  geom_point(alpha = 0.3, size = 1) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 0.8) +
+  coord_cartesian(xlim = c(0, x99_days), ylim = c(0, y99_wage)) +
+  scale_color_manual(values = pal_tech) +
+  labs(title = "Wage vs Days (Tech)", x = "Days", y = "Daily Wage", color = "Tech") +
+  theme_25_compact
+
+(p_edu_train | p_edu_ci) / (p_job | p_tech) + 
+  plot_layout(guides = "collect") & 
+  theme(legend.position = "bottom")
+```
+
+**Observation**
+
+Income dispersion increases with education level and training intensity. Higher education groups, especially those with long-course training, display not only higher mean income but also wider income distributions driven by an expanded upper tail. Training therefore raises income in a heterogeneous manner rather than uniformly benefiting all workers.
+
+The daily wage analysis clarifies the mechanism behind this pattern. Daily wages decline as working days increase, suggesting diminishing returns to labor intensity in informal work. However, service and industrial jobs consistently offer higher daily wages than agricultural work, and adequate technology access further lifts productivity per day. These results indicate that higher income is achieved not by working more days, but by accessing higher-productivity jobs and technologies.
+
+#### 2.5.1 Income by Education & Training (Boxplot)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_edu_train
+
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+p_edu_train <- ggplot(df_25, aes(x = education, y = total_income, fill = training_status)) +
+  geom_boxplot(width = 0.65, outlier.alpha = 0.18) +
+  coord_cartesian(ylim = c(0, y99_inc), clip = "off") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
   scale_fill_manual(values = pal_train) +
-  scale_x_continuous(labels = scales::comma) +
   labs(
-    title = "Income Distribution by Education and Training",
-    subtitle = "Median and upper-tail differences explain variation beyond the mean",
-    x = "Total Income",
-    y = "Education Level",
+    title = "Income by Education & Training",
+    subtitle = "Wider spread at higher levels",
+    x = "Education",
+    y = "Total Income",
     fill = "Training"
   ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank(),
-    legend.position = "top"
-  )
-(p_mean_et / p_box_et) +
-  plot_layout(heights = c(1.2, 1))
+  theme_25
+
+p_edu_train
 ```
+:::
+
+#### 2.5.2 Average Income by Education (Mean + 95% CI)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_edu_ci
+
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+edu_mean <- df_25 %>%
+  group_by(education) %>%
+  summarise(
+    mean_income = mean(total_income, na.rm = TRUE),
+    se = sd(total_income, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    ci_low  = mean_income - 1.96 * se,
+    ci_high = mean_income + 1.96 * se
+  )
+
+p_edu_ci <- ggplot(edu_mean, aes(x = education, y = mean_income)) +
+  geom_col(fill = "#547d9d", alpha = 0.9, width = 0.65) +
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high), width = 0.2) +
+  coord_cartesian(clip = "off") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Average Income by Education",
+    subtitle = "Mean (95% CI)",
+    x = "Education",
+    y = "Mean Income"
+  ) +
+  theme_25
+
+p_edu_ci
+```
+:::
+
+#### 2.5.3 Daily Wage vs Working Days (Job Type)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_job
+
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+p_job <- ggplot(df_25, aes(x = working_days, y = daily_wage, color = job_type)) +
+  geom_point(alpha = 0.8, size = 1.4) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 0.85) +
+  coord_cartesian(xlim = c(0, x99_days), ylim = c(0, y99_wage), clip = "off") +
+  scale_x_continuous(breaks = scales::breaks_pretty(n = 5)) +
+  scale_color_manual(values = pal_job) +
+  labs(
+    title = "Daily Wage vs Working Days",
+    subtitle = "Higher wage in non-farm jobs",
+    x = "Working Days",
+    y = "Daily Wage",
+    color = "Job"
+  ) +
+  theme_25
+
+p_job
+```
+:::
+
+#### 2.5.4 Daily Wage vs Working Days (Technology)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_tech
+
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+p_tech <- ggplot(df_25, aes(x = working_days, y = daily_wage, color = tech_level)) +
+  geom_point(alpha = 0.8, size = 1.4) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 0.85) +
+  coord_cartesian(xlim = c(0, x99_days), ylim = c(0, y99_wage), clip = "off") +
+  scale_x_continuous(breaks = scales::breaks_pretty(n = 5)) +
+  scale_color_manual(values = pal_tech) +
+  labs(
+    title = "Daily Wage vs Working Days",
+    subtitle = "Tech lifts wage per day",
+    x = "Working Days",
+    y = "Daily Wage",
+    color = "Tech"
+  ) +
+  theme_25
+
+p_tech
+```
+:::
