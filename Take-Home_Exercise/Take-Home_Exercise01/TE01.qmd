@@ -1047,7 +1047,7 @@ pal_tech <- c(
 pal_job <- c(
   "Agricultural"      = "#547d9d",
   "Service/Industrial"= "#d8a437",
-  "Other"             = "#d9c2d3"
+  "Other"             = "#cedbd3"
 )
 
 y99_wage <- as.numeric(quantile(df_25$daily_wage, 0.99, na.rm = TRUE))
@@ -1276,3 +1276,71 @@ p_tech <- ggplot(df_25, aes(x = working_days, y = daily_wage, color = tech_level
 p_tech
 ```
 :::
+
+
+### 2.6
+
+```{r}
+#| echo: false
+
+
+df_26 <- clean_df %>%
+  filter(income_group != "Unknown") %>%
+  filter(across(starts_with("policy_"), ~ .x != "Not Answered")) %>%
+  mutate(across(starts_with("policy_"), ~ case_when(
+    .x == "Strongly Disagree" ~ 1,
+    .x == "Disagree"          ~ 2,
+    .x == "Neutral"           ~ 3,
+    .x == "Agree"             ~ 4,
+    .x == "Strongly Agree"    ~ 5,
+    TRUE ~ NA_real_
+  )))
+
+pol_sum <- df_26 %>%
+  select(income_group, starts_with("policy_")) %>%
+  pivot_longer(
+    cols = starts_with("policy_"),
+    names_to = "policy",
+    values_to = "score"
+  ) %>%
+  mutate(
+    policy = recode(
+      policy,
+      policy_training      = "Vocational training",
+      policy_agri_chain    = "Agricultural value chain",
+      policy_healthcare    = "Healthcare access",
+      policy_elderly_care  = "Elderly care",
+      policy_urban_jobs    = "Urban job opportunities"
+    ),
+    policy_wrapped = stringr::str_wrap(policy, width = 15)
+  ) %>%
+  group_by(income_group, policy_wrapped) %>%
+  summarise(mean_score = mean(score, na.rm = TRUE), .groups = "drop")
+
+p_policy_quintile <- ggplot(
+    pol_sum, 
+    aes(x = income_group, y = mean_score, group = policy_wrapped, color = policy_wrapped)
+  ) +
+  geom_line(linewidth = 1.2, alpha = 0.8, position = position_dodge(width = 0.3)) +
+  geom_point(size = 3.5, position = position_dodge(width = 0.3)) +
+  scale_color_manual(values = c("#547d9d", "#d8a437", "#a8c0d0", "#e8c477", "#cedbd3")) +
+  scale_y_continuous(labels = scales::number_format(accuracy = 0.1)) +
+  labs(
+    title = "Policy Priorities by Income Quintile",
+    subtitle = "Agreement scores (1-5). Long labels are wrapped for readability.",
+    x = "Income Quintile",
+    y = "Mean Support Score",
+    color = "Policy Intervention"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom",
+    legend.key.height = unit(1.2, "cm"),
+    plot.margin = margin(10, 20, 10, 20) 
+  )
+
+p_policy_quintile
+```
+
