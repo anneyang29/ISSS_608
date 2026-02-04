@@ -1447,6 +1447,12 @@ p_right <- ggplot(df_26_final, aes(x = house_rank, y = transition_aspiration)) +
 The aspiration score is constructed using only two policy items—urban job opportunities and vocational training—which directly reflect forward-looking economic transition and mobility. Other policy items (e.g. healthcare, elderly care) relate primarily to social protection rather than aspirational change, and are therefore excluded to maintain conceptual clarity.
 :::
 
+**Observation**
+
+This section reveals a clear divergence between material deprivation and policy aspiration. Ethnic minorities are disproportionately concentrated in lower-quality housing, indicating weaker material living conditions. However, support for transition-oriented policies increases with housing quality, rather than deprivation severity. Importantly, the aspiration index focuses exclusively on urban job opportunities and vocational training, capturing forward-looking economic mobility rather than general welfare demand. Individuals with more secure housing conditions appear better positioned—financially and psychologically—to perceive these policies as viable pathways for further advancement. In contrast, those in precarious housing face binding constraints that limit optimism toward long-term transition policies, despite greater material need.
+
+Together, these patterns suggest that policy aspiration reflects perceived capacity to benefit, not merely exposure to hardship. Structural inequality thus operates not only through unequal living conditions, but also through unequal access to hope and future-oriented expectations—linking material reality to aspirational asymmetry.
+
 #### 2.6.1 Housing Modernization by Ethnic Group
 
 ::: panel-tabset
@@ -1513,12 +1519,6 @@ ggplot(house_df, aes(x = race, y = percentage, fill = house_type)) +
   theme_minimal(base_size = 10)
 ```
 :::
-
-**Observation**
-
-This section reveals a clear divergence between material deprivation and policy aspiration. Ethnic minorities are disproportionately concentrated in lower-quality housing, indicating weaker material living conditions. However, support for transition-oriented policies increases with housing quality, rather than deprivation severity. Importantly, the aspiration index focuses exclusively on urban job opportunities and vocational training, capturing forward-looking economic mobility rather than general welfare demand. Individuals with more secure housing conditions appear better positioned—financially and psychologically—to perceive these policies as viable pathways for further advancement. In contrast, those in precarious housing face binding constraints that limit optimism toward long-term transition policies, despite greater material need.
-
-Together, these patterns suggest that policy aspiration reflects perceived capacity to benefit, not merely exposure to hardship. Structural inequality thus operates not only through unequal living conditions, but also through unequal access to hope and future-oriented expectations—linking material reality to aspirational asymmetry.
 
 #### 2.6.2 Policy Aspiration by Housing Level
 
