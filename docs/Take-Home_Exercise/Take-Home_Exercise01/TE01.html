@@ -111,6 +111,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -225,9 +226,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">1 Getting Started</a>
   <ul class="collapse">
   <li><a href="#installing-and-loading-the-packages" id="toc-installing-and-loading-the-packages" class="nav-link" data-scroll-target="#installing-and-loading-the-packages">1.1 Installing and loading the packages</a></li>
-  <li><a href="#data-import-and-workflow" id="toc-data-import-and-workflow" class="nav-link" data-scroll-target="#data-import-and-workflow">1.2 Data import and Workflow</a></li>
-  <li><a href="#filtering-data-for-selected-variables" id="toc-filtering-data-for-selected-variables" class="nav-link" data-scroll-target="#filtering-data-for-selected-variables">1.3 Filtering data for selected variables</a></li>
-  <li><a href="#data-preprocessing" id="toc-data-preprocessing" class="nav-link" data-scroll-target="#data-preprocessing">1.4 Data Preprocessing</a></li>
+  <li><a href="#analytical-framework" id="toc-analytical-framework" class="nav-link" data-scroll-target="#analytical-framework">1.2 Analytical Framework</a></li>
+  <li><a href="#data-import" id="toc-data-import" class="nav-link" data-scroll-target="#data-import">1.3 Data Import</a></li>
+  <li><a href="#filtering-data-for-selected-variables" id="toc-filtering-data-for-selected-variables" class="nav-link" data-scroll-target="#filtering-data-for-selected-variables">1.4 Filtering data for selected variables</a></li>
+  <li><a href="#data-preprocessing" id="toc-data-preprocessing" class="nav-link" data-scroll-target="#data-preprocessing">1.5 Data Preprocessing</a></li>
   </ul></li>
   <li><a href="#visualization" id="toc-visualization" class="nav-link" data-scroll-target="#visualization">2 Visualization</a>
   <ul class="collapse">
@@ -346,16 +348,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, readxl, patchwork, ggthemes, scales, ggdist)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="data-import-and-workflow" class="level3">
-<h3 class="anchored" data-anchor-id="data-import-and-workflow">1.2 Data import and Workflow</h3>
-<p>This section summarizes how the raw survey dataset is transformed into an analytics-ready table (<code>clean_df</code>) through filtering, missing-value handling, factor recoding, and feature engineering.</p>
+<section id="analytical-framework" class="level3">
+<h3 class="anchored" data-anchor-id="analytical-framework">1.2 Analytical Framework</h3>
+<p>This section outlines the end-to-end research pipeline developed for this study. The workflow integrates systematic data wrangling, advanced feature engineering—such as the derivation of the Daily Wage and Aspiration Index—and multidimensional visual analytics.</p>
 <div class="cell" data-layout-align="default">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>flowchart TB</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>%% ==========================================</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>%% 1. Professional Minimalist Style Definitions</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>%% 1. Professional Style Definitions</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>%% ==========================================</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>classDef data fill:none,stroke:#8e9aaf,stroke-width:1.5px,color:#333333;</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>classDef proc fill:none,stroke:#8e9aaf,stroke-width:1.5px,color:#333333;</span>
@@ -365,54 +367,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>%% ==========================================</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>%% 2. Data Pipeline Logic</span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>%% ==========================================</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>A["Raw survey dataset&lt;br/&gt;725 respondents × 30 variables"]:::data</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  --&gt; B["Import Excel&lt;br/&gt;read_excel(..., na=c('', 'NA'))"]:::data</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>A["Raw survey dataset&lt;br/&gt;725 obs × 30 vars"]:::data</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  --&gt; B["Import Excel&lt;br/&gt;read_excel()"]:::data</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>%% --- Subgraph 1: Scope (Invisible Frame) ---</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>%% --- Subgraph 1: Processing (Invisible) ---</span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>subgraph S1 [" "]</span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  direction LR</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  B --&gt; C["Select relevant fields&lt;br/&gt;C*, T*, F*, LHO*, PPO*, ARO4"]:::proc</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  C --&gt; D["Duplicate audit&lt;br/&gt;duplicated()"]:::proc</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  C --&gt; E["Missingness scan&lt;br/&gt;is.na()"]:::proc</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>end</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>%% --- Subgraph 2: Cleaning (Invisible Frame) ---</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>subgraph S2 [" "]</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  direction LR</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  C --&gt; F["Filter core outcome&lt;br/&gt;Keep TEIN non-missing"]:::proc</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  F --&gt; G["Rename variables&lt;br/&gt;total_income = TEIN"]:::proc</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  G --&gt; H["Handle non-response&lt;br/&gt;Housing &amp; Policy NAs"]:::proc</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  H --&gt; I["Recode to factors&lt;br/&gt;+ explicit 'Unknown'"]:::proc</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>end</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>%% --- Subgraph 3: Features (Invisible Frame) ---</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>subgraph S3 [" "]</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  direction LR</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  I --&gt; J["Daily wage&lt;br/&gt;income / days"]:::feat</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  I --&gt; K["Income composition&lt;br/&gt;agri / service / other"]:::feat</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  I --&gt; L["Aspiration index&lt;br/&gt;(urban + training)/2"]:::feat</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>end</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>%% --- Subgraph 4: Analytics (Invisible Frame) ---</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>subgraph S4 [" "]</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  direction TB</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  J --&gt; M["2.1 Macro context"]:::out</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  K --&gt; N["2.2 Inequality"]:::out</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  J --&gt; O["2.3 Structural gaps"]:::out</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  K --&gt; P["2.4 Composition"]:::out</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  J --&gt; Q["2.5 Micro drivers"]:::out</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  L --&gt; R["2.6 Social outlook"]:::out</span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>end</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>R --&gt; Z["Synthesis &amp; Conclusion&lt;br/&gt;Integrated narrative"]:::out</span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>%% ==========================================</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>%% 3. Hide Subgraph Borders &amp; Backgrounds</span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>%% ==========================================</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>style S1 fill:none,stroke:none</span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>style S2 fill:none,stroke:none</span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>style S3 fill:none,stroke:none</span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>style S4 fill:none,stroke:none</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  B --&gt; C["Data Selection&lt;br/&gt;&amp; Audit"]:::proc</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  C --&gt; D["Data Wrangling&lt;br/&gt;&amp; Recoding"]:::proc</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>end</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>%% --- Subgraph 2: Features (Invisible) ---</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>subgraph S2 [" "]</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  direction LR</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  D --&gt; J["Daily Wage&lt;br/&gt;(Productivity)"]:::feat</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  D --&gt; K["Income Shares&lt;br/&gt;(Composition)"]:::feat</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  D --&gt; L["Aspiration Index&lt;br/&gt;(Social Outlook)"]:::feat</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>end</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>%% --- Subgraph 3: Analysis (Invisible) ---</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>subgraph S3 [" "]</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  direction TB</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  J --&gt; M["2.1 Macro context"]:::out</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  K --&gt; N["2.2 Inequality"]:::out</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  J --&gt; O["2.3 Structural gaps"]:::out</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  K --&gt; P["2.4 Composition"]:::out</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  J --&gt; Q["2.5 Micro drivers"]:::out</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  L --&gt; R["2.6 Social outlook"]:::out</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>end</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>%% --- 匯聚點修正：所有分析指標同時指向總結 ---</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>M &amp; N &amp; O &amp; P &amp; Q &amp; R --&gt; Z["Synthesis &amp; Conclusion&lt;br/&gt;(Strategic Recommendations)"]:::out</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>%% ==========================================</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>%% 3. Hide Subgraph Borders &amp; Backgrounds</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>%% ==========================================</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>style S1 fill:none,stroke:none</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>style S2 fill:none,stroke:none</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>style S3 fill:none,stroke:none</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -421,7 +413,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre class="mermaid mermaid-js">flowchart TB
 
 %% ==========================================
-%% 1. Professional Minimalist Style Definitions
+%% 1. Professional Style Definitions
 %% ==========================================
 classDef data fill:none,stroke:#8e9aaf,stroke-width:1.5px,color:#333333;
 classDef proc fill:none,stroke:#8e9aaf,stroke-width:1.5px,color:#333333;
@@ -431,36 +423,26 @@ classDef out  fill:none,stroke:#547d9d,stroke-width:2.5px,color:#547d9d;
 %% ==========================================
 %% 2. Data Pipeline Logic
 %% ==========================================
-A["Raw survey dataset&lt;br/&gt;725 respondents × 30 variables"]:::data
-  --&gt; B["Import Excel&lt;br/&gt;read_excel(..., na=c('', 'NA'))"]:::data
+A["Raw survey dataset&lt;br/&gt;725 obs × 30 vars"]:::data
+  --&gt; B["Import Excel&lt;br/&gt;read_excel()"]:::data
 
-%% --- Subgraph 1: Scope (Invisible Frame) ---
+%% --- Subgraph 1: Processing (Invisible) ---
 subgraph S1 [" "]
   direction LR
-  B --&gt; C["Select relevant fields&lt;br/&gt;C*, T*, F*, LHO*, PPO*, ARO4"]:::proc
-  C --&gt; D["Duplicate audit&lt;br/&gt;duplicated()"]:::proc
-  C --&gt; E["Missingness scan&lt;br/&gt;is.na()"]:::proc
+  B --&gt; C["Data Selection&lt;br/&gt;&amp; Audit"]:::proc
+  C --&gt; D["Data Wrangling&lt;br/&gt;&amp; Recoding"]:::proc
 end
 
-%% --- Subgraph 2: Cleaning (Invisible Frame) ---
+%% --- Subgraph 2: Features (Invisible) ---
 subgraph S2 [" "]
   direction LR
-  C --&gt; F["Filter core outcome&lt;br/&gt;Keep TEIN non-missing"]:::proc
-  F --&gt; G["Rename variables&lt;br/&gt;total_income = TEIN"]:::proc
-  G --&gt; H["Handle non-response&lt;br/&gt;Housing &amp; Policy NAs"]:::proc
-  H --&gt; I["Recode to factors&lt;br/&gt;+ explicit 'Unknown'"]:::proc
+  D --&gt; J["Daily Wage&lt;br/&gt;(Productivity)"]:::feat
+  D --&gt; K["Income Shares&lt;br/&gt;(Composition)"]:::feat
+  D --&gt; L["Aspiration Index&lt;br/&gt;(Social Outlook)"]:::feat
 end
 
-%% --- Subgraph 3: Features (Invisible Frame) ---
+%% --- Subgraph 3: Analysis (Invisible) ---
 subgraph S3 [" "]
-  direction LR
-  I --&gt; J["Daily wage&lt;br/&gt;income / days"]:::feat
-  I --&gt; K["Income composition&lt;br/&gt;agri / service / other"]:::feat
-  I --&gt; L["Aspiration index&lt;br/&gt;(urban + training)/2"]:::feat
-end
-
-%% --- Subgraph 4: Analytics (Invisible Frame) ---
-subgraph S4 [" "]
   direction TB
   J --&gt; M["2.1 Macro context"]:::out
   K --&gt; N["2.2 Inequality"]:::out
@@ -470,7 +452,8 @@ subgraph S4 [" "]
   L --&gt; R["2.6 Social outlook"]:::out
 end
 
-R --&gt; Z["Synthesis &amp; Conclusion&lt;br/&gt;Integrated narrative"]:::out
+%% --- 匯聚點修正：所有分析指標同時指向總結 ---
+M &amp; N &amp; O &amp; P &amp; Q &amp; R --&gt; Z["Synthesis &amp; Conclusion&lt;br/&gt;(Strategic Recommendations)"]:::out
 
 %% ==========================================
 %% 3. Hide Subgraph Borders &amp; Backgrounds
@@ -478,13 +461,15 @@ R --&gt; Z["Synthesis &amp; Conclusion&lt;br/&gt;Integrated narrative"]:::out
 style S1 fill:none,stroke:none
 style S2 fill:none,stroke:none
 style S3 fill:none,stroke:none
-style S4 fill:none,stroke:none
 </pre>
 </div>
 <p></p></figure><p></p>
 </div>
 </div>
 </div>
+</section>
+<section id="data-import" class="level3">
+<h3 class="anchored" data-anchor-id="data-import">1.3 Data Import</h3>
 <p><a href="https://www.sciencedirect.com/science/article/pii/S235234092100576X">The dataset</a> used in this study is derived from a socio-economic survey of 725 informal labourers across five provinces in the Northern Mountainous Region of Vietnam. The data consists of 725 observations and 30 variables, categorized into six key dimensions: Characteristics (C), Income Types (T), Impact Factors (F), Living Conditions (L), Policy Opinions (P), and Social Assessments (A).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>raw_df <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"data/Upload for elsiver.xlsx"</span>,</span>
@@ -493,7 +478,16 @@ style S4 fill:none,stroke:none
 </div>
 </section>
 <section id="filtering-data-for-selected-variables" class="level3">
-<h3 class="anchored" data-anchor-id="filtering-data-for-selected-variables">1.3 Filtering data for selected variables</h3>
+<h3 class="anchored" data-anchor-id="filtering-data-for-selected-variables">1.4 Filtering data for selected variables</h3>
+<p>To ensure a focused analysis, a subset of variables was extracted from the raw dataset, covering six critical socio-economic dimensions:</p>
+<ul>
+<li><p>Demographics (CPRO, CGEN, CRAC): Capturing province, gender, and ethnicity to identify structural grouping.</p></li>
+<li><p>Income Profiles (TEIN, TAIN, TSII, TOIN): Identifying total income and its breakdown across agriculture, service, and other sectors.</p></li>
+<li><p>Human Capital &amp; Credit (FEDU, FVTP, FCRA, FTAP): Measuring education, vocational training, credit access, and technology adoption.</p></li>
+<li><p>Labor Supply (LWDA): Recording working days to calculate daily wage efficiency.</p></li>
+<li><p>Policy &amp; Wellbeing (PPO, ARO4): Assessing respondent perceptions of rural development policies and self-reported wellbeing improvements.</p></li>
+<li><p>Living Conditions (LHO): Using housing characteristics as a proxy for material asset stability.</p></li>
+</ul>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>selected_df <span class="ot">&lt;-</span> raw_df <span class="sc">%&gt;%</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
@@ -508,9 +502,9 @@ style S4 fill:none,stroke:none
 </div>
 </section>
 <section id="data-preprocessing" class="level3">
-<h3 class="anchored" data-anchor-id="data-preprocessing">1.4 Data Preprocessing</h3>
+<h3 class="anchored" data-anchor-id="data-preprocessing">1.5 Data Preprocessing</h3>
 <section id="checking-duplicate-rows" class="level4">
-<h4 class="anchored" data-anchor-id="checking-duplicate-rows">1.4.1 Checking Duplicate Rows</h4>
+<h4 class="anchored" data-anchor-id="checking-duplicate-rows">1.5.1 Checking Duplicate Rows</h4>
 <p>Using the <code>duplicated()</code> function to see whether there are duplicate entries in the data.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>raw_dup <span class="ot">&lt;-</span> raw_df[<span class="fu">duplicated</span>(raw_df), ]</span>
@@ -565,7 +559,7 @@ Note
 </div>
 </section>
 <section id="checking-missing-value" class="level4">
-<h4 class="anchored" data-anchor-id="checking-missing-value">1.4.2 Checking Missing Value</h4>
+<h4 class="anchored" data-anchor-id="checking-missing-value">1.5.2 Checking Missing Value</h4>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>na_summary <span class="ot">&lt;-</span> selected_df <span class="sc">%&gt;%</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span><span class="fu">sum</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span></span>
@@ -594,7 +588,7 @@ Note
 </div>
 </section>
 <section id="renaming-columns-and-transforming-feature" class="level4">
-<h4 class="anchored" data-anchor-id="renaming-columns-and-transforming-feature">1.4.3 Renaming Columns and Transforming Feature</h4>
+<h4 class="anchored" data-anchor-id="renaming-columns-and-transforming-feature">1.5.3 Renaming Columns and Transforming Feature</h4>
 <p>For categorical grouping variables, missing values are retained as an explicit category (“Unknown”) to preserve the full income distribution and avoid unnecessary sample loss.</p>
 <div class="cell">
 <details class="code-fold">
