@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Chun-Han">
+<meta name="dcterms.date" content="2026-02-07">
 
-<title>Visual Analytics and Applications – ISSS608-Coursework</title>
+<title>Hands-On Exercise 05-1 – ISSS608-Coursework</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,29 +22,62 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-4c97959f51cbeabf347fefa2a080b205.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4c97959f51cbeabf347fefa2a080b205.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -70,133 +105,19 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-Hands-On_Exercise .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-image','listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-Hands-On_Exercise'] = new List('listing-Hands-On_Exercise', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-In-Class_Exercise .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-image','listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-In-Class_Exercise'] = new List('listing-In-Class_Exercise', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-Take-Home_Exercise .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-image','listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-Take-Home_Exercise'] = new List('listing-Take-Home_Exercise', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">ISSS608-Coursework</span>
     </a>
   </div>
@@ -212,39 +133,39 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">    
         <li>
-    <a class="dropdown-item" href="./Hands-On_Exercise/Hands-On_Exercise01/HE01.html">
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise01/HE01.html">
  <span class="dropdown-text">Hands-On Exercise 1</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-On_Exercise/Hands-On_Exercise02/HE02.html">
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise02/HE02.html">
  <span class="dropdown-text">Hands-On Exercise 2</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-On_Exercise/Hands-On_Exercise03/HE03-1.html">
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise03/HE03-1.html">
  <span class="dropdown-text">Hands-On Exercise 3-1</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-On_Exercise/Hands-On_Exercise03/HE03-2.html">
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise03/HE03-2.html">
  <span class="dropdown-text">Hands-On Exercise 3-2</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-On_Exercise/Hands-On_Exercise04/HE04-1.html">
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise04/HE04-1.html">
  <span class="dropdown-text">Hands-On Exercise 4-1</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html">
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html">
  <span class="dropdown-text">Hands-On Exercise 4-2</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-On_Exercise/Hands-On_Exercise04/HE04-3.html">
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise04/HE04-3.html">
  <span class="dropdown-text">Hands-On Exercise 4-3</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html">
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html">
  <span class="dropdown-text">Hands-On Exercise 4-4</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-On_Exercise/Hands-On_Exercise05/HE05-1.html">
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise05/HE05-1.html">
  <span class="dropdown-text">Hands-On Exercise 5-1</span></a>
   </li>  
     </ul>
@@ -255,11 +176,11 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
         <li>
-    <a class="dropdown-item" href="./In-Class_Exercise/In-Class_Exercise01/IE01.html">
+    <a class="dropdown-item" href="../../In-Class_Exercise/In-Class_Exercise01/IE01.html">
  <span class="dropdown-text">In-Class Exercise 1</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./In-Class_Exercise/In-Class_Exercise02/IE02.html">
+    <a class="dropdown-item" href="../../In-Class_Exercise/In-Class_Exercise02/IE02.html">
  <span class="dropdown-text">In-Class Exercise 2</span></a>
   </li>  
     </ul>
@@ -270,7 +191,7 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">    
         <li>
-    <a class="dropdown-item" href="./Take-Home_Exercise/Take-Home_Exercise01/TE01.html">
+    <a class="dropdown-item" href="../../Take-Home_Exercise/Take-Home_Exercise01/TE01.html">
  <span class="dropdown-text">Take-Home Exercise 1</span></a>
   </li>  
     </ul>
@@ -278,11 +199,11 @@ window.Quarto = {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -296,21 +217,51 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">1 Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#installing-and-launching-r-packages" id="toc-installing-and-launching-r-packages" class="nav-link" data-scroll-target="#installing-and-launching-r-packages">1.1 Installing and launching R packages</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Visual Analytics and Applications</h1>
+<h1 class="title">Hands-On Exercise 05-1</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Chun-Han </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 7, 2026</p>
+    </div>
+  </div>
   
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">February 7, 2026</p>
+    </div>
+  </div>
     
   </div>
   
@@ -319,272 +270,49 @@ window.Quarto = {
 </header>
 
 
-<p>Welcome to <strong>ISSS608 Visual Analytics and Applications</strong> homepage. In this website, you will find my coursework. Materials here are based on <a href="https://isss608-ay2025-26apr.netlify.app/lesson">https://isss608-ay2025-26apr.netlify.app/</a> by Prof Kam Tin Seong from SMU.</p>
-<p>Overview:</p>
-<div class="content-container">
-<section id="hands-on-exercise" class="level2 listing-block">
-<h2 class="anchored" data-anchor-id="hands-on-exercise">Hands On Exercise</h2>
-<p></p>
-<div id="listing-Hands-On_Exercise" class="quarto-listing quarto-listing-container-grid">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-listing-date-sort="1768147200000" data-listing-file-modified-sort="1769274869882" data-listing-date-modified-sort="1769274869000" data-listing-reading-time-sort="16" data-listing-word-count-sort="3079">
-<a href="./Hands-On_Exercise/Hands-On_Exercise01/HE01.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="Hands-On_Exercise\Hands-On_Exercise01\HE01_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-On Exercise 01
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Jan 12, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-listing-date-sort="1768752000000" data-listing-file-modified-sort="1769853596390" data-listing-date-modified-sort="1769853596000" data-listing-reading-time-sort="19" data-listing-word-count-sort="3690">
-<a href="./Hands-On_Exercise/Hands-On_Exercise02/HE02.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="Hands-On_Exercise\Hands-On_Exercise02\HE02_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-On Exercise 02
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Jan 19, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="2" data-listing-date-sort="1769184000000" data-listing-file-modified-sort="1769854212271" data-listing-date-modified-sort="1769854212000" data-listing-reading-time-sort="43" data-listing-word-count-sort="8434">
-<a href="./Hands-On_Exercise/Hands-On_Exercise03/HE03-1.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-On Exercise 03-1
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Jan 24, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="3" data-listing-date-sort="1769184000000" data-listing-file-modified-sort="1769327846212" data-listing-date-modified-sort="1769327846000" data-listing-reading-time-sort="12" data-listing-word-count-sort="2375">
-<a href="./Hands-On_Exercise/Hands-On_Exercise03/HE03-2.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="Hands-On_Exercise\Hands-On_Exercise03\data\image1.jpg" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-On Exercise 03-2
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Jan 24, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="4" data-listing-date-sort="1769788800000" data-listing-file-modified-sort="1770122190262" data-listing-date-modified-sort="1770122190000" data-listing-reading-time-sort="18" data-listing-word-count-sort="3401">
-<a href="./Hands-On_Exercise/Hands-On_Exercise04/HE04-1.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="Hands-On_Exercise\Hands-On_Exercise04\HE04-1_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-On Exercise 04-1
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Jan 31, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="5" data-listing-date-sort="1769788800000" data-listing-file-modified-sort="1769951559103" data-listing-date-modified-sort="1769951559000" data-listing-reading-time-sort="5" data-listing-word-count-sort="861">
-<a href="./Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="Hands-On_Exercise\Hands-On_Exercise04\data\image2.jpg" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-On Exercise 04-2
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Jan 31, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="6" data-listing-date-sort="1769875200000" data-listing-file-modified-sort="1769957603136" data-listing-date-modified-sort="1769957603000" data-listing-reading-time-sort="29" data-listing-word-count-sort="5601">
-<a href="./Hands-On_Exercise/Hands-On_Exercise04/HE04-3.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="Hands-On_Exercise\Hands-On_Exercise04\HE04-3_files\figure-html\unnamed-chunk-6-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-On Exercise 04-3
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Feb 1, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="7" data-listing-date-sort="1769875200000" data-listing-file-modified-sort="1770144411939" data-listing-date-modified-sort="1770144411000" data-listing-reading-time-sort="11" data-listing-word-count-sort="2145">
-<a href="./Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="Hands-On_Exercise\Hands-On_Exercise04\HE04-4_files\figure-html\unnamed-chunk-4-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-On Exercise 04-4
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Feb 1, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="8" data-listing-date-sort="1770393600000" data-listing-file-modified-sort="1770456645089" data-listing-date-modified-sort="1770456645000" data-listing-reading-time-sort="2" data-listing-word-count-sort="254">
-<a href="./Hands-On_Exercise/Hands-On_Exercise05/HE05-1.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-On Exercise 05-1
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Feb 7, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>Ternary plots are a way of displaying the distribution and variability of three-part compositional data. (For example, the proportion of aged, economy active and young population or sand, silt, and clay in soil.) It’s display is a triangle with sides scaled from 0 to 1. Each side represents one of the three components. A point is plotted so that a line drawn perpendicular from the point to each leg of the triangle intersect at the component values of the point.</p>
+<p>In this hands-on, you will learn how to build ternary plot programmatically using R for visualising and analysing population structure of Singapore.</p>
+<p>The hands-on exercise consists of four steps:</p>
+<ul>
+<li><p>Install and launch tidyverse and ggtern packages.</p></li>
+<li><p>Derive three new measures using mutate() function of dplyr package.</p></li>
+<li><p>Build a static ternary plot using ggtern() function of ggtern package.</p></li>
+<li><p>Build an interactive ternary plot using plot-ly() function of Plotly R package.</p></li>
+</ul>
 </section>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">1 Getting Started</h2>
+<section id="installing-and-launching-r-packages" class="level3">
+<h3 class="anchored" data-anchor-id="installing-and-launching-r-packages">1.1 Installing and launching R packages</h3>
+<p>For this exercise, two main R packages will be used in this hands-on exercise, they are:</p>
+<ul>
+<li><p><strong>ggtern</strong>, a ggplot extension specially designed to plot ternary diagrams. The package will be used to plot static ternary plots.</p></li>
+<li><p><strong>Plotly R</strong>, an R package for creating interactive web-based graphs via plotly’s JavaScript graphing library, plotly.js . The <strong>plotly R</strong> libary contains the ggplotly function, which will convert <strong>ggplot2</strong> figures into a Plotly object. We will also need to ensure that selected <strong>tidyverse</strong> family packages namely: <strong>readr</strong>, <strong>dplyr</strong> and <strong>tidyr</strong> are also installed and loaded.</p></li>
+</ul>
+<p>The code chunks below will accomplish the task.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(plotly, ggtern, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>package 'DEoptimR' successfully unpacked and MD5 sums checked
+package 'tensorA' successfully unpacked and MD5 sums checked
+package 'robustbase' successfully unpacked and MD5 sums checked
+package 'bayesm' successfully unpacked and MD5 sums checked
+package 'compositions' successfully unpacked and MD5 sums checked
+package 'latex2exp' successfully unpacked and MD5 sums checked
+package 'proto' successfully unpacked and MD5 sums checked
+package 'hexbin' successfully unpacked and MD5 sums checked
+package 'ggtern' successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+    C:\Users\88696\AppData\Local\Temp\RtmpOEQ7Vp\downloaded_packages</code></pre>
 </div>
-<div class="content-container">
-<section id="in-class-exercise" class="level2 listing-block">
-<h2 class="anchored" data-anchor-id="in-class-exercise">In Class Exercise</h2>
-<p></p>
-<div id="listing-In-Class_Exercise" class="quarto-listing quarto-listing-container-grid">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-listing-date-sort="1769270400000" data-listing-file-modified-sort="1769278043585" data-listing-date-modified-sort="1769278043000" data-listing-reading-time-sort="1" data-listing-word-count-sort="58">
-<a href="./In-Class_Exercise/In-Class_Exercise01/IE01.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="In-Class_Exercise\In-Class_Exercise01\data\Dashboard 1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-In-Class Exercise 01
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Jan 25, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-listing-date-sort="1769270400000" data-listing-file-modified-sort="1769276879145" data-listing-date-modified-sort="1769276879000" data-listing-reading-time-sort="2" data-listing-word-count-sort="272">
-<a href="./In-Class_Exercise/In-Class_Exercise02/IE02.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="In-Class_Exercise\In-Class_Exercise02\data\Monthly Sales.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-In-Class Exercise 02
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Jan 25, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div>
-</section>
-</div>
-<div class="content-container">
-<section id="take-home-exercise" class="level2 listing-block">
-<h2 class="anchored" data-anchor-id="take-home-exercise">Take Home Exercise</h2>
-<p></p>
-<div id="listing-Take-Home_Exercise" class="quarto-listing quarto-listing-container-grid">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-listing-date-sort="1769961600000" data-listing-file-modified-sort="1770454965251" data-listing-date-modified-sort="1770454965000" data-listing-reading-time-sort="63" data-listing-word-count-sort="12445">
-<a href="./Take-Home_Exercise/Take-Home_Exercise01/TE01.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="Take-Home_Exercise\Take-Home_Exercise01\TE01_files\figure-html\unnamed-chunk-9-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Take-Home Exercise 01
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Chun-Han
-</div>
-<div class="listing-date">
-Feb 2, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
 </div>
 
 
-
 </section>
-</div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

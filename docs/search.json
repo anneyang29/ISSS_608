@@ -480,7 +480,7 @@
     "href": "index.html#hands-on-exercise",
     "title": "Visual Analytics and Applications",
     "section": "Hands On Exercise",
-    "text": "Hands On Exercise\n\n\n\n\n\n\n\n\n\nHands-On Exercise 01\n\n\n\nChun-Han\n\n\nJan 12, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 02\n\n\n\nChun-Han\n\n\nJan 19, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-1\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-2\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-1\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-2\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-3\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-4\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "Hands On Exercise\n\n\n\n\n\n\n\n\n\nHands-On Exercise 01\n\n\n\nChun-Han\n\n\nJan 12, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 02\n\n\n\nChun-Han\n\n\nJan 19, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-1\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-2\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-1\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-2\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-3\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-4\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 05-1\n\n\n\nChun-Han\n\n\nFeb 7, 2026\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html#in-class-exercise",
@@ -495,5 +495,26 @@
     "title": "Visual Analytics and Applications",
     "section": "Take Home Exercise",
     "text": "Take Home Exercise\n\n\n\n\n\n\n\n\n\nTake-Home Exercise 01\n\n\n\nChun-Han\n\n\nFeb 2, 2026\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-1.html",
+    "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-1.html",
+    "title": "Hands-On Exercise 05-1",
+    "section": "",
+    "text": "Ternary plots are a way of displaying the distribution and variability of three-part compositional data. (For example, the proportion of aged, economy active and young population or sand, silt, and clay in soil.) It’s display is a triangle with sides scaled from 0 to 1. Each side represents one of the three components. A point is plotted so that a line drawn perpendicular from the point to each leg of the triangle intersect at the component values of the point.\nIn this hands-on, you will learn how to build ternary plot programmatically using R for visualising and analysing population structure of Singapore.\nThe hands-on exercise consists of four steps:\n\nInstall and launch tidyverse and ggtern packages.\nDerive three new measures using mutate() function of dplyr package.\nBuild a static ternary plot using ggtern() function of ggtern package.\nBuild an interactive ternary plot using plot-ly() function of Plotly R package."
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-1.html#overview",
+    "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-1.html#overview",
+    "title": "Hands-On Exercise 05-1",
+    "section": "",
+    "text": "Ternary plots are a way of displaying the distribution and variability of three-part compositional data. (For example, the proportion of aged, economy active and young population or sand, silt, and clay in soil.) It’s display is a triangle with sides scaled from 0 to 1. Each side represents one of the three components. A point is plotted so that a line drawn perpendicular from the point to each leg of the triangle intersect at the component values of the point.\nIn this hands-on, you will learn how to build ternary plot programmatically using R for visualising and analysing population structure of Singapore.\nThe hands-on exercise consists of four steps:\n\nInstall and launch tidyverse and ggtern packages.\nDerive three new measures using mutate() function of dplyr package.\nBuild a static ternary plot using ggtern() function of ggtern package.\nBuild an interactive ternary plot using plot-ly() function of Plotly R package."
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-1.html#getting-started",
+    "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-1.html#getting-started",
+    "title": "Hands-On Exercise 05-1",
+    "section": "1 Getting Started",
+    "text": "1 Getting Started\n\n1.1 Installing and launching R packages\nFor this exercise, two main R packages will be used in this hands-on exercise, they are:\n\nggtern, a ggplot extension specially designed to plot ternary diagrams. The package will be used to plot static ternary plots.\nPlotly R, an R package for creating interactive web-based graphs via plotly’s JavaScript graphing library, plotly.js . The plotly R libary contains the ggplotly function, which will convert ggplot2 figures into a Plotly object. We will also need to ensure that selected tidyverse family packages namely: readr, dplyr and tidyr are also installed and loaded.\n\nThe code chunks below will accomplish the task.\n\npacman::p_load(plotly, ggtern, tidyverse)\n\npackage 'DEoptimR' successfully unpacked and MD5 sums checked\npackage 'tensorA' successfully unpacked and MD5 sums checked\npackage 'robustbase' successfully unpacked and MD5 sums checked\npackage 'bayesm' successfully unpacked and MD5 sums checked\npackage 'compositions' successfully unpacked and MD5 sums checked\npackage 'latex2exp' successfully unpacked and MD5 sums checked\npackage 'proto' successfully unpacked and MD5 sums checked\npackage 'hexbin' successfully unpacked and MD5 sums checked\npackage 'ggtern' successfully unpacked and MD5 sums checked\n\nThe downloaded binary packages are in\n    C:\\Users\\88696\\AppData\\Local\\Temp\\RtmpOEQ7Vp\\downloaded_packages"
   }
 ]

@@ -1,0 +1,15 @@
+{
+  "hash": "32edced994e9455193ecc0abc52bd85d",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Hands-On Exercise 05-1\"\nauthor: \"Chun-Han\"\ndate: \"February 7, 2026\"\ndate-modified: \"last-modified\"\nexecute: \n  eval: true\n  echo: true\n  warning: false\n  freeze: true\n---\n\n## Overview\n\nTernary plots are a way of displaying the distribution and variability of three-part compositional data. (For example, the proportion of aged, economy active and young population or sand, silt, and clay in soil.) It’s display is a triangle with sides scaled from 0 to 1. Each side represents one of the three components. A point is plotted so that a line drawn perpendicular from the point to each leg of the triangle intersect at the component values of the point.\n\nIn this hands-on, you will learn how to build ternary plot programmatically using R for visualising and analysing population structure of Singapore.\n\nThe hands-on exercise consists of four steps:\n\n- Install and launch tidyverse and ggtern packages.\n\n- Derive three new measures using mutate() function of dplyr package.\n\n- Build a static ternary plot using ggtern() function of ggtern package.\n\n- Build an interactive ternary plot using plot-ly() function of Plotly R package.\n\n## 1 Getting Started\n\n### 1.1 Installing and launching R packages\n\nFor this exercise, two main R packages will be used in this hands-on exercise, they are:\n\n- **ggtern**, a ggplot extension specially designed to plot ternary diagrams. The package will be used to plot static ternary plots.\n\n- **Plotly R**, an R package for creating interactive web-based graphs via plotly’s JavaScript graphing library, plotly.js . The **plotly R** libary contains the ggplotly function, which will convert **ggplot2** figures into a Plotly object.\nWe will also need to ensure that selected **tidyverse** family packages namely: **readr**, **dplyr** and **tidyr** are also installed and loaded.\n\nThe code chunks below will accomplish the task.\n\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load(plotly, ggtern, tidyverse)\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\npackage 'DEoptimR' successfully unpacked and MD5 sums checked\npackage 'tensorA' successfully unpacked and MD5 sums checked\npackage 'robustbase' successfully unpacked and MD5 sums checked\npackage 'bayesm' successfully unpacked and MD5 sums checked\npackage 'compositions' successfully unpacked and MD5 sums checked\npackage 'latex2exp' successfully unpacked and MD5 sums checked\npackage 'proto' successfully unpacked and MD5 sums checked\npackage 'hexbin' successfully unpacked and MD5 sums checked\npackage 'ggtern' successfully unpacked and MD5 sums checked\n\nThe downloaded binary packages are in\n\tC:\\Users\\88696\\AppData\\Local\\Temp\\RtmpOEQ7Vp\\downloaded_packages\n```\n\n\n:::\n:::\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
