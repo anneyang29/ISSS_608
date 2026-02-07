@@ -47,7 +47,7 @@ This report investigates the drivers of income inequality and socio-economic mob
 | ggdist | An extension of ggplot2 for visualising distributions and uncertainty, useful for half-violin or raincloud plots. |
 
 ```{r}
-pacman::p_load(tidyverse, readxl, patchwork, ggthemes, scales, ggdist)
+pacman::p_load(tidyverse, readxl, patchwork, ggthemes, scales, ggdist,DescTools, ggpubr)
 ```
 
 ### 1.2 Analytical Framework
@@ -100,7 +100,7 @@ subgraph S3 [" "]
   L --> R["2.6 Social outlook"]:::out
 end
 
-%% --- 匯聚點修正：所有分析指標同時指向總結 ---
+%%
 M & N & O & P & Q & R --> Z["Synthesis & Conclusion<br/>(Strategic Recommendations)"]:::out
 
 %% ==========================================
@@ -470,6 +470,8 @@ lorenz_50 <- lorenz_df %>%
   filter(cum_pop >= 0.5) %>%
   slice(1)
 
+gini_val <- Gini(clean_df$total_income, na.rm = TRUE)
+
 p_lorenz <- ggplot(lorenz_df, aes(x = cum_pop, y = cum_income)) +
   geom_line(color = "#547d9d", linewidth = 1.1) +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "grey60") +
@@ -499,6 +501,10 @@ p_lorenz <- ggplot(lorenz_df, aes(x = cum_pop, y = cum_income)) +
     panel.grid.minor = element_blank(),
     plot.margin = margin(10, 30, 10, 10) 
   )
+
+p_lorenz <- p_lorenz + 
+  labs(subtitle = paste0("Gini Coefficient: ", round(gini_val, 3), 
+                         " | Widespread low-income clustering in the 20-60 range"))
 
 (p_quintile | p_lorenz) + 
   plot_layout(widths = c(1, 1.2))
@@ -572,6 +578,8 @@ p_lorenz
 ```{r}
 #| eval: false
 
+gini_val <- Gini(clean_df$total_income, na.rm = TRUE)
+
 lorenz_df <- clean_df %>%
   filter(!is.na(total_income), total_income >= 0) %>%
   arrange(total_income) %>%
@@ -606,6 +614,10 @@ p_lorenz <- ggplot(lorenz_df, aes(x = cum_pop, y = cum_income)) +
     plot.title = element_text(face = "bold"),
     panel.grid.minor = element_blank()
   )
+
+p_lorenz <- p_lorenz + 
+  labs(subtitle = paste0("Gini Coefficient: ", round(gini_val, 3), 
+                         " | Widespread low-income clustering in the 20-60 range"))
 
 p_lorenz
 ```
@@ -670,6 +682,12 @@ p_rain_split <- ggplot(df_income, aes(x = total_income, y = race, fill = gender)
   ) +
   guides(color = "none")
 
+p_rain_split <- p_rain_split + 
+  stat_compare_means(aes(group = gender), 
+                     method = "wilcox.test", 
+                     label = "p.signif", 
+                     label.x = 1.5)
+
 p_box_23 <- ggplot(df_income, aes(x = race, y = total_income, fill = gender)) +
   geom_boxplot(width = 0.6, outlier.alpha = 0.25) +
   coord_cartesian(ylim = c(0, 150)) +
@@ -719,6 +737,7 @@ Most respondents’ total income is concentrated below 100, with distributions t
 
 ```{r}
 #| echo: false
+#| fig-height: 5
 
 p_rain_split
 ```
@@ -727,6 +746,7 @@ p_rain_split
 
 ```{r}
 #| eval: false
+
 
 pal <- c("Male" = "#547d9d", "Female" = "#d8a437")
 
@@ -777,6 +797,12 @@ p_rain_split <- ggplot(df_income, aes(x = total_income, y = race, fill = gender)
     legend.position = "top"
   ) +
   guides(color = "none")
+
+p_rain_split <- p_rain_split + 
+  stat_compare_means(aes(group = gender), 
+                     method = "wilcox.test", 
+                     label = "p.signif", 
+                     label.x = 1.5)
 
 p_rain_split
 ```
@@ -879,62 +905,76 @@ p_density_23
 
 ```{r}
 #| echo: false
+#| fig-width: 12
+#| fig-height: 9
 
-quintile_order <- c("Unknown", "Lowest", "Second", "Middle", "Fourth", "Top")
+quintile_order_no_unk <- c("Lowest", "Second", "Middle", "Fourth", "Top")
 
 pal_src <- c(
-  "Agriculture" = "#6b8ba4",
-  "Service"     = "#d8a437",
-  "Other"       = "#f1e3c4"
+  "Agriculture" = "#6b8ba4", 
+  "Service"     = "#d8a437", 
+  "Other"       = "#f1e3c4"  
 )
 
-df_24 <- clean_df %>%
-  filter(!is.na(income_group), !is.na(total_income), total_income > 0) %>%
-  mutate(income_group = forcats::fct_relevel(income_group, quintile_order))
-
-comp_df <- df_24 %>%
-  transmute(
-    income_group,
-    Agriculture = agri_inc_ratio,
-    Service     = service_inc_ratio,
-    Other       = other_inc_ratio
-  ) %>%
-  pivot_longer(
-    cols = c(Agriculture, Service, Other),
-    names_to = "income_source",
-    values_to = "share"
-  ) %>%
-  group_by(income_group, income_source) %>%
-  summarise(share = mean(share, na.rm = TRUE), .groups = "drop") %>%
+mosaic_df <- clean_df %>%
+  filter(!is.na(total_income), total_income > 0, income_group != "Unknown") %>%
+  mutate(income_group = factor(income_group, levels = quintile_order_no_unk)) %>%
   group_by(income_group) %>%
-  mutate(share = share / sum(share, na.rm = TRUE)) %>%   # ensure =100%
+  summarise(
+    n = n(),
+    Agriculture = mean(agri_inc_ratio, na.rm = TRUE),
+    Service = mean(service_inc_ratio, na.rm = TRUE),
+    Other = mean(other_inc_ratio, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    width = n / sum(n),
+    xmax = cumsum(width),
+    xmin = xmax - width,
+    xmid = (xmin + xmax) / 2
+  ) %>%
+  pivot_longer(cols = c("Agriculture", "Service", "Other"), 
+               names_to = "income_source", values_to = "share") %>%
+  group_by(income_group) %>%
+  mutate(
+    share = share / sum(share), 
+    ymax = cumsum(share),
+    ymin = ymax - share,
+    ymid = (ymin + ymax) / 2
+  ) %>%
   ungroup()
 
-p_comp <- ggplot(comp_df, aes(x = income_group, y = share, fill = income_source)) +
-  geom_col(width = 0.7, alpha = 0.95) +
-  geom_text(
-    aes(label = ifelse(share >= 0.10, scales::percent(share, accuracy = 1), "")),
-    position = position_stack(vjust = 0.5),
-    color = "white",
-    size = 3
-  ) +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+p_comp <- ggplot(mosaic_df) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = income_source), 
+            color = "white", linewidth = 0.4) +
+  geom_text(aes(x = xmid, y = ymid, 
+                label = ifelse(share > 0.08, scales::percent(share, accuracy = 1), "")),
+            color = "white", size = 3.5, fontface = "bold") +
+  annotate("text", 
+           x = mosaic_df$xmid[seq(1, nrow(mosaic_df), 3)], 
+           y = 1.05, 
+           label = paste0(levels(mosaic_df$income_group), "\n(n=", mosaic_df$n[seq(1, nrow(mosaic_df), 3)], ")"),
+           size = 3.8, fontface = "bold", lineheight = 0.85) +
   scale_fill_manual(values = pal_src) +
-  labs(
-    title = "Income Source Composition by Quintile",
-    subtitle = "Higher quintiles rely more on service and other non-agricultural income",
-    x = "Income Quintile",
-    y = "Share of Total Income",
-    fill = "Income Source"
-  ) +
+  scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, 0.2)) +
+  scale_x_continuous(expand = expansion(mult = c(0.02, 0.08))) +
+  labs(title = "Income Source Composition by Population Weight",
+       subtitle = "Width represents group size; Height represents source share",
+       x = "Relative Population Weight",
+       y = "Income Source Proportion",
+       fill = "Source") +
   theme_minimal(base_size = 11) +
   theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank(),
-    legend.position = "top"
+    panel.grid = element_blank(),
+    axis.text.x = element_blank(),
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "bottom",
+    plot.margin = margin(t = 20, r = 50, b = 30, l = 10)
   )
 
-mean_df <- df_24 %>%
+mean_df <- clean_df %>%
+  filter(!is.na(total_income), total_income > 0, income_group != "Unknown") %>%
+  mutate(income_group = factor(income_group, levels = quintile_order_no_unk)) %>%
   group_by(income_group) %>%
   summarise(
     mean_income = mean(total_income, na.rm = TRUE),
@@ -947,22 +987,24 @@ mean_df <- df_24 %>%
   )
 
 p_mean <- ggplot(mean_df, aes(x = income_group, y = mean_income)) +
-  geom_col(fill = "#547d9d", width = 0.6, alpha = 0.9) +
-  geom_errorbar(aes(ymin = ci_low, ymax = ci_high), width = 0.2) +
-  scale_y_continuous(labels = scales::comma) +
+  geom_col(fill = "#547d9d", width = 0.5, alpha = 0.9) + 
+  geom_errorbar(aes(ymin = ci_low, ymax = ci_high), width = 0.15, color = "grey30") +
+  geom_text(aes(label = round(mean_income, 1)), vjust = -1, size = 3.5, fontface = "bold") +
+  scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) +
   labs(
     title = "Average Total Income by Quintile",
-    subtitle = "Mean income with 95% confidence intervals",
+    subtitle = "Mean income (with 95% Confidence Intervals)",
     x = "Income Quintile",
     y = "Mean Total Income"
   ) +
   theme_minimal(base_size = 11) +
   theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank()
+    plot.title = element_text(face = "bold", size = 14),
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_text(size = 10, face = "bold")
   )
 
-p_comp / p_mean
+p_comp / p_mean + plot_layout(heights = c(1.1, 1))
 ```
 
 **Observation**
@@ -977,7 +1019,68 @@ While higher income quintiles mechanically exhibit higher average income, the ke
 ```{r}
 #| echo: false
 
-p_comp
+mosaic_df <- clean_df %>%
+  filter(!is.na(total_income), total_income > 0, income_group != "Unknown") %>%
+  mutate(income_group = factor(income_group, 
+                               levels = c("Lowest", "Second", "Middle", "Fourth", "Top"))) %>%
+  group_by(income_group) %>%
+  summarise(
+    n = n(),
+    Agriculture = mean(agri_inc_ratio, na.rm = TRUE),
+    Service = mean(service_inc_ratio, na.rm = TRUE),
+    Other = mean(other_inc_ratio, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    width = n / sum(n),
+    xmax = cumsum(width),
+    xmin = xmax - width,
+    xmid = (xmin + xmax) / 2
+  ) %>%
+  pivot_longer(cols = c("Agriculture", "Service", "Other"), 
+               names_to = "source", values_to = "share") %>%
+  group_by(income_group) %>%
+  mutate(
+    share = share / sum(share), 
+    ymax = cumsum(share),
+    ymin = ymax - share,
+    ymid = (ymin + ymax) / 2
+  ) %>%
+  ungroup()
+
+ggplot(mosaic_df) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = source), 
+            color = "white", linewidth = 0.3) +
+  
+  geom_text(aes(x = xmid, y = ymid, 
+                label = ifelse(share > 0.05, scales::percent(share, accuracy = 1), "")),
+            color = "white", size = 3, fontface = "bold") +
+  
+  annotate("text", 
+           x = mosaic_df$xmid[seq(1, nrow(mosaic_df), 3)], 
+           y = 1.05, 
+           label = paste0(levels(mosaic_df$income_group), "\n(n=", mosaic_df$n[seq(1, nrow(mosaic_df), 3)], ")"),
+           size = 3.2, fontface = "bold", lineheight = 0.9) +
+  
+  scale_fill_manual(values = pal_src) +
+  scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, 0.2)) +
+  
+  scale_x_continuous(expand = expansion(mult = c(0.01, 0.05))) +
+  
+  labs(title = "Mosaic Plot of Income Composition",
+       subtitle = "Width: Group Size | Height: Source Share",
+       x = "Relative Population Weight",
+       y = "Income Source Proportion",
+       fill = "Source") +
+  
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_blank(),
+    plot.title = element_text(face = "bold", size = 14),
+    legend.position = "bottom",
+    plot.margin = margin(t = 20, r = 30, b = 20, l = 10)
+  )
 ```
 
 ### Code
@@ -985,59 +1088,68 @@ p_comp
 ```{r}
 #| eval: false
 
-pal_src <- c(
-  "Agriculture" = "#547d9d",
-  "Service"     = "#d8a437",
-  "Other"       = "#f3e4c7"
-)
-
-quintile_order <- c("Unknown", "Lowest", "Second", "Middle", "Fourth", "Top")
-
-comp_df <- clean_df %>%
-  filter(!is.na(total_income), total_income > 0) %>%
-  mutate(income_group = forcats::fct_relevel(income_group, quintile_order)) %>%
-  transmute(
-    income_group,
-    Agriculture = agri_inc_ratio,
-    Service     = service_inc_ratio,
-    Other       = other_inc_ratio
-  ) %>%
-  pivot_longer(
-    cols = c("Agriculture","Service","Other"),
-    names_to = "source",
-    values_to = "share"
-  ) %>%
-  group_by(income_group, source) %>%
-  summarise(share = mean(share, na.rm = TRUE), .groups = "drop") %>%
+mosaic_df <- clean_df %>%
+  filter(!is.na(total_income), total_income > 0, income_group != "Unknown") %>%
+  mutate(income_group = factor(income_group, 
+                               levels = c("Lowest", "Second", "Middle", "Fourth", "Top"))) %>%
   group_by(income_group) %>%
-  mutate(share = share / sum(share, na.rm = TRUE)) %>%
+  summarise(
+    n = n(),
+    Agriculture = mean(agri_inc_ratio, na.rm = TRUE),
+    Service = mean(service_inc_ratio, na.rm = TRUE),
+    Other = mean(other_inc_ratio, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    width = n / sum(n),
+    xmax = cumsum(width),
+    xmin = xmax - width,
+    xmid = (xmin + xmax) / 2
+  ) %>%
+  pivot_longer(cols = c("Agriculture", "Service", "Other"), 
+               names_to = "source", values_to = "share") %>%
+  group_by(income_group) %>%
+  mutate(
+    share = share / sum(share), 
+    ymax = cumsum(share),
+    ymin = ymax - share,
+    ymid = (ymin + ymax) / 2
+  ) %>%
   ungroup()
 
-p_comp <- ggplot(comp_df, aes(x = income_group, y = share, fill = source)) +
-  geom_col(width = 0.75, alpha = 0.95) +
-  geom_text(
-    aes(label = scales::percent(share, accuracy = 1)),
-    position = position_stack(vjust = 0.5),
-    color = "white",
-    size = 3.4
-  ) +
-  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+ggplot(mosaic_df) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = source), 
+            color = "white", linewidth = 0.3) +
+  
+  geom_text(aes(x = xmid, y = ymid, 
+                label = ifelse(share > 0.05, scales::percent(share, accuracy = 1), "")),
+            color = "white", size = 3, fontface = "bold") +
+  
+  annotate("text", 
+           x = mosaic_df$xmid[seq(1, nrow(mosaic_df), 3)], 
+           y = 1.05, 
+           label = paste0(levels(mosaic_df$income_group), "\n(n=", mosaic_df$n[seq(1, nrow(mosaic_df), 3)], ")"),
+           size = 3.2, fontface = "bold", lineheight = 0.9) +
+  
   scale_fill_manual(values = pal_src) +
-  labs(
-    title = "Income Source Composition by Income Quintile",
-    subtitle = "Higher quintiles show increasing reliance on non-agricultural income",
-    x = "Income Quintile",
-    y = "Share of Total Income",
-    fill = "Income Source"
-  ) +
-  theme_minimal(base_size = 11) +
+  scale_y_continuous(labels = scales::percent_format(), breaks = seq(0, 1, 0.2)) +
+  
+  scale_x_continuous(expand = expansion(mult = c(0.01, 0.05))) +
+  
+  labs(title = "Mosaic Plot of Income Composition",
+       subtitle = "Width: Group Size | Height: Source Share",
+       x = "Relative Population Weight",
+       y = "Income Source Proportion",
+       fill = "Source") +
+  
+  theme_minimal() +
   theme(
-    plot.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank(),
-    legend.position = "top"
+    panel.grid = element_blank(),
+    axis.text.x = element_blank(),
+    plot.title = element_text(face = "bold", size = 14),
+    legend.position = "bottom",
+    plot.margin = margin(t = 20, r = 30, b = 20, l = 10)
   )
-
-p_comp
 ```
 :::
 
@@ -1379,22 +1491,45 @@ p_tech
 
 ```{r}
 #| echo: false
+#| fig-width: 12
+#| fig-height: 9
 
-house_df <- clean_df %>%
+df_race_cleaned <- clean_df %>%
   filter(race != "Unknown") %>%
-  select(race, house_cottage, house_roofed, house_solid, house_buildings) %>%
-  pivot_longer(-race, names_to = "house_type", values_to = "status") %>%
-  filter(status == "Yes") %>%
-  group_by(race, house_type) %>%
-  summarise(count = n(), .groups = "drop") %>%
+  mutate(house_type = case_when(
+    house_buildings == "Yes" ~ "Multi-story",
+    house_solid     == "Yes" ~ "Solid/Perm",
+    house_roofed    == "Yes" ~ "Semi-perm",
+    house_cottage   == "Yes" ~ "Cottage/Temp",
+    TRUE                     ~ "Semi-perm"
+  )) %>%
+  mutate(house_type = factor(house_type, 
+                             levels = c("Cottage/Temp", "Semi-perm", "Solid/Perm", "Multi-story")))
+
+race_x_axis <- df_race_cleaned %>%
   group_by(race) %>%
-  mutate(percentage = count / sum(count)) %>%
-  mutate(house_type = factor(recode(house_type,
-    house_cottage   = "Cottage/Temp",
-    house_roofed    = "Semi-perm",
-    house_solid     = "Solid/Perm",
-    house_buildings = "Multi-story"),
-    levels = c("Cottage/Temp", "Semi-perm", "Solid/Perm", "Multi-story")))
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(
+    width = n / sum(n),
+    xmax = cumsum(width),
+    xmin = xmax - width,
+    xmid = (xmin + xmax) / 2
+  )
+
+race_housing_mosaic <- df_race_cleaned %>%
+  count(race, house_type) %>%
+  group_by(race) %>%
+  mutate(share = n / sum(n)) %>%
+  ungroup() %>%
+  left_join(race_x_axis, by = "race") %>%
+  arrange(race, house_type) %>%
+  group_by(race) %>%
+  mutate(
+    ymax = cumsum(share),
+    ymin = ymax - share,
+    ymid = (ymin + ymax) / 2
+  ) %>%
+  ungroup()
 
 df_26_final <- clean_df %>%
   filter(across(starts_with("policy_"), ~ .x != "Not Answered")) %>%
@@ -1410,39 +1545,75 @@ df_26_final <- clean_df %>%
   ) %>%
   filter(!is.na(transition_aspiration))
 
-theme_26_final <- theme_minimal(base_size = 10) +
-  theme(
-    plot.title = element_text(face = "bold", size = 12),
-    axis.title = element_text(size = 9),
-    axis.text.x = element_text(size = 8.5, color = "black", lineheight = 0.8), 
-    legend.position = "bottom",
-    legend.text = element_text(size = 8.5),
-    panel.grid.minor = element_blank(),
-    plot.margin = margin(10, 15, 20, 15)
-  )
+plot_gantt_data <- df_26_final %>%
+  mutate(aspiration_score = round(transition_aspiration)) %>%
+  mutate(aspiration_label = factor(aspiration_score, 
+                                   levels = 1:5, 
+                                   labels = c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"))) %>%
+  count(house_rank, aspiration_label) %>%
+  group_by(house_rank) %>%
+  mutate(
+    total_n = sum(n),
+    percentage = n / total_n,
+    neutral_mid = sum(percentage[aspiration_label %in% c("Strongly Disagree", "Disagree")]) + 
+                  0.5 * sum(percentage[aspiration_label == "Neutral"])
+  ) %>%
+  arrange(house_rank, aspiration_label) %>%
+  mutate(
+    xmax = cumsum(percentage) - neutral_mid,
+    xmin = xmax - percentage,
+    label_pos = (xmin + xmax) / 2,
+    label_text = ifelse(percentage > 0.05, scales::percent(percentage, accuracy = 1), "")
+  ) %>%
+  ungroup()
 
-p_left <- ggplot(house_df, aes(x = race, y = percentage, fill = house_type)) +
-  geom_col(position = "fill", width = 0.6, alpha = 0.9) +
-  geom_text(aes(label = scales::percent(percentage, accuracy = 1)), 
-            position = position_fill(vjust = 0.5), size = 3, color = "white", fontface = "bold") +
-  scale_y_continuous(labels = scales::percent_format()) +
+
+p_top <- ggplot(race_housing_mosaic) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = house_type), 
+            color = "white", linewidth = 0.4, alpha = 0.9) +
+  geom_text(aes(x = xmid, y = ymid, 
+                label = ifelse(share > 0.05, scales::percent(share, accuracy = 1), "")),
+            color = "white", size = 3.2, fontface = "bold") +
+  annotate("text", 
+           x = race_x_axis$xmid, 
+           y = 1.06, 
+           label = paste0(race_x_axis$race, "\n(n=", race_x_axis$n, ")"),
+           size = 3.5, fontface = "bold", lineheight = 0.85) +
   scale_fill_manual(values = c("#d8a437", "#cedbd3", "#8aa6b8", "#547d9d")) +
-  labs(title = "Housing Type by Race", x = "Race", y = "Share", fill = "Type") +
-  theme_26_final
+  scale_y_continuous(labels = scales::percent_format(), expand = expansion(mult = c(0, 0.05))) +
+  scale_x_continuous(expand = expansion(mult = c(0.02, 0.1))) +
+  labs(title = "Structural Mosaic: Housing Standards across Ethnic Groups",
+       subtitle = "Width represents ethnic population size; Height represents housing tier distribution",
+       x = "Population Weight of Ethnic Minorities",
+       y = "Housing Type Share",
+       fill = "Housing Level") +
+  theme_minimal(base_size = 11) +
+  theme(panel.grid = element_blank(), axis.text.x = element_blank(),
+        plot.title = element_text(face = "bold", size = 15), legend.position = "right",
+        plot.margin = margin(t = 30, r = 50, b = 20, l = 20))
 
-p_right <- ggplot(df_26_final, aes(x = house_rank, y = transition_aspiration)) +
-  geom_boxplot(fill = "#547d9d", alpha = 0.9, width = 0.5, outlier.alpha = 0.1) +
-  stat_summary(fun = mean, geom = "line", aes(group = 1), color = "#d8a437", linewidth = 1, linetype = "dashed") +
-  stat_summary(fun = mean, geom = "point", size = 2.5, color = "#d8a437") +
-  scale_x_discrete(labels = c("1. Temp\nCottage", "2. Semi\nPerm", "3. Solid\nPerm", "4. Multi\nStory")) +
-  scale_y_continuous(limits = c(0.5, 5.5), breaks = 1:5) +
-  labs(title = "Aspiration by Housing", x = "Housing Level", y = "Support Score") +
-  coord_cartesian(clip = "off") +
-  theme_26_final
+p_bottom <- ggplot(plot_gantt_data, aes(y = house_rank)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, 
+                ymin = as.numeric(factor(house_rank)) - 0.3, 
+                ymax = as.numeric(factor(house_rank)) + 0.3, 
+                fill = aspiration_label), alpha = 0.9) +
+  geom_text(aes(x = label_pos, label = label_text), 
+            size = 2.5, color = "white", fontface = "bold") +
+  geom_text(aes(x = 0.7, label = paste0("N=", total_n)), 
+            hjust = 0, size = 3.5, color = "#545454", fontface = "italic") +
+  scale_x_continuous(labels = function(x) abs(x), 
+                     breaks = seq(-0.5, 0.5, 0.25),
+                     expand = expansion(mult = c(0.1, 0.3))) +
+  scale_fill_manual(values = c("#d8a437", "#f1e3c4", "#cedbd3", "#8aa6b8", "#547d9d")) +
+  labs(title = "Diverging Policy Aspiration Index",
+       subtitle = "Score offset centered on Neutral (0.0) relative to housing tier",
+       y = "Housing Rank", x = "Sentiment Score Offset",
+       fill = "Sentiment Level") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "right", plot.title = element_text(face = "bold", size = 14),
+        panel.grid.minor = element_blank(), axis.text.y = element_text(face = "bold"))
 
-(p_left | p_right) + 
-  plot_layout(guides = "collect") & 
-  theme(legend.position = "bottom")
+p_top / p_bottom + plot_layout(heights = c(1, 1))
 ```
 
 ::: callout-note
@@ -1465,31 +1636,76 @@ Together, these patterns suggest that policy aspiration reflects perceived capac
 ```{r}
 #| echo: false
 
-house_df <- clean_df %>%
+df_race_cleaned <- clean_df %>%
   filter(race != "Unknown") %>%
-  select(race, house_cottage, house_roofed, house_solid, house_buildings) %>%
-  pivot_longer(-race, names_to = "house_type", values_to = "status") %>%
-  filter(status == "Yes") %>%
-  group_by(race, house_type) %>%
-  summarise(count = n(), .groups = "drop") %>%
+  mutate(house_type = case_when(
+    house_buildings == "Yes" ~ "Multi-story",
+    house_solid     == "Yes" ~ "Solid/Perm",
+    house_roofed    == "Yes" ~ "Semi-perm",
+    house_cottage   == "Yes" ~ "Cottage/Temp",
+    TRUE                     ~ "Semi-perm"
+  )) %>%
+  mutate(house_type = factor(house_type, 
+                             levels = c("Cottage/Temp", "Semi-perm", "Solid/Perm", "Multi-story")))
+
+race_x_axis <- df_race_cleaned %>%
   group_by(race) %>%
-  mutate(percentage = count / sum(count)) %>%
-  mutate(house_type = factor(recode(house_type,
-    house_cottage   = "Cottage/Temp",
-    house_roofed    = "Semi-perm",
-    house_solid     = "Solid/Perm",
-    house_buildings = "Multi-story"),
-    levels = c("Cottage/Temp", "Semi-perm", "Solid/Perm", "Multi-story")))
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(
+    width = n / sum(n),
+    xmax = cumsum(width),
+    xmin = xmax - width,
+    xmid = (xmin + xmax) / 2
+  )
 
-ggplot(house_df, aes(x = race, y = percentage, fill = house_type)) +
-  geom_col(position = "fill", width = 0.6, alpha = 0.9) +
-  geom_text(aes(label = scales::percent(percentage, accuracy = 1)), 
-            position = position_fill(vjust = 0.5), size = 3, color = "white", fontface = "bold") +
-  scale_y_continuous(labels = scales::percent_format()) +
+race_housing_mosaic <- df_race_cleaned %>%
+  count(race, house_type) %>%
+  group_by(race) %>%
+  mutate(share = n / sum(n)) %>%
+  ungroup() %>%
+  left_join(race_x_axis, by = "race") %>%
+  arrange(race, house_type) %>%
+  group_by(race) %>%
+  mutate(
+    ymax = cumsum(share),
+    ymin = ymax - share,
+    ymid = (ymin + ymax) / 2
+  ) %>%
+  ungroup()
+
+ggplot(race_housing_mosaic) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = house_type), 
+            color = "white", linewidth = 0.4) +
+
+  geom_text(aes(x = xmid, y = ymid, 
+                label = ifelse(share > 0.05, scales::percent(share, accuracy = 1), "")),
+            color = "white", size = 3.2, fontface = "bold") +
+
+  annotate("text", 
+           x = race_x_axis$xmid, 
+           y = 1.06, 
+           label = paste0(race_x_axis$race, "\n(n=", race_x_axis$n, ")"),
+           size = 3.5, fontface = "bold", lineheight = 0.85) +
+  
   scale_fill_manual(values = c("#d8a437", "#cedbd3", "#8aa6b8", "#547d9d")) +
-  labs(title = "Housing Type by Race", x = "Race", y = "Share", fill = "Type") +
-  theme_minimal(base_size = 10)
+  scale_y_continuous(labels = scales::percent_format(), expand = expansion(mult = c(0, 0.05))) +
 
+  scale_x_continuous(expand = expansion(mult = c(0.02, 0.1))) +
+  
+  labs(title = "Structural Mosaic: Housing Standards across Ethnic Groups",
+       subtitle = "Width represents ethnic population size; Height represents housing tier distribution",
+       x = "Population Weight of Ethnic Minorities",
+       y = "Housing Type Share",
+       fill = "Housing Level") +
+  
+  theme_minimal(base_size = 11) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_blank(),
+    plot.title = element_text(face = "bold", size = 15),
+    legend.position = "bottom",
+    plot.margin = margin(t = 30, r = 50, b = 20, l = 20)
+  )
 ```
 
 ### Code
@@ -1497,30 +1713,76 @@ ggplot(house_df, aes(x = race, y = percentage, fill = house_type)) +
 ```{r}
 #| eval: false
 
-house_df <- clean_df %>%
+df_race_cleaned <- clean_df %>%
   filter(race != "Unknown") %>%
-  select(race, house_cottage, house_roofed, house_solid, house_buildings) %>%
-  pivot_longer(-race, names_to = "house_type", values_to = "status") %>%
-  filter(status == "Yes") %>%
-  group_by(race, house_type) %>%
-  summarise(count = n(), .groups = "drop") %>%
-  group_by(race) %>%
-  mutate(percentage = count / sum(count)) %>%
-  mutate(house_type = factor(recode(house_type,
-    house_cottage   = "Cottage/Temp",
-    house_roofed    = "Semi-perm",
-    house_solid     = "Solid/Perm",
-    house_buildings = "Multi-story"),
-    levels = c("Cottage/Temp", "Semi-perm", "Solid/Perm", "Multi-story")))
+  mutate(house_type = case_when(
+    house_buildings == "Yes" ~ "Multi-story",
+    house_solid     == "Yes" ~ "Solid/Perm",
+    house_roofed    == "Yes" ~ "Semi-perm",
+    house_cottage   == "Yes" ~ "Cottage/Temp",
+    TRUE                     ~ "Semi-perm"
+  )) %>%
+  mutate(house_type = factor(house_type, 
+                             levels = c("Cottage/Temp", "Semi-perm", "Solid/Perm", "Multi-story")))
 
-ggplot(house_df, aes(x = race, y = percentage, fill = house_type)) +
-  geom_col(position = "fill", width = 0.6, alpha = 0.9) +
-  geom_text(aes(label = scales::percent(percentage, accuracy = 1)), 
-            position = position_fill(vjust = 0.5), size = 3, color = "white", fontface = "bold") +
-  scale_y_continuous(labels = scales::percent_format()) +
+race_x_axis <- df_race_cleaned %>%
+  group_by(race) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  mutate(
+    width = n / sum(n),
+    xmax = cumsum(width),
+    xmin = xmax - width,
+    xmid = (xmin + xmax) / 2
+  )
+
+race_housing_mosaic <- df_race_cleaned %>%
+  count(race, house_type) %>%
+  group_by(race) %>%
+  mutate(share = n / sum(n)) %>%
+  ungroup() %>%
+  left_join(race_x_axis, by = "race") %>%
+  arrange(race, house_type) %>%
+  group_by(race) %>%
+  mutate(
+    ymax = cumsum(share),
+    ymin = ymax - share,
+    ymid = (ymin + ymax) / 2
+  ) %>%
+  ungroup()
+
+ggplot(race_housing_mosaic) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = house_type, alpha = 0.9), 
+            color = "white", linewidth = 0.4) +
+
+  geom_text(aes(x = xmid, y = ymid, 
+                label = ifelse(share > 0.05, scales::percent(share, accuracy = 1), "")),
+            color = "white", size = 3.2, fontface = "bold") +
+
+  annotate("text", 
+           x = race_x_axis$xmid, 
+           y = 1.06, 
+           label = paste0(race_x_axis$race, "\n(n=", race_x_axis$n, ")"),
+           size = 3.5, fontface = "bold", lineheight = 0.85) +
+  
   scale_fill_manual(values = c("#d8a437", "#cedbd3", "#8aa6b8", "#547d9d")) +
-  labs(title = "Housing Type by Race", x = "Race", y = "Share", fill = "Type") +
-  theme_minimal(base_size = 10)
+  scale_y_continuous(labels = scales::percent_format(), expand = expansion(mult = c(0, 0.05))) +
+
+  scale_x_continuous(expand = expansion(mult = c(0.02, 0.1))) +
+  
+  labs(title = "Structural Mosaic: Housing Standards across Ethnic Groups",
+       subtitle = "Width represents ethnic population size; Height represents housing tier distribution",
+       x = "Population Weight of Ethnic Minorities",
+       y = "Housing Type Share",
+       fill = "Housing Level") +
+  
+  theme_minimal(base_size = 11) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_blank(),
+    plot.title = element_text(face = "bold", size = 15),
+    legend.position = "bottom",
+    plot.margin = margin(t = 30, r = 50, b = 20, l = 20)
+  )
 ```
 :::
 
@@ -1532,30 +1794,60 @@ ggplot(house_df, aes(x = race, y = percentage, fill = house_type)) +
 ```{r}
 #| echo: false
 
-df_26_final <- clean_df %>%
-  filter(across(starts_with("policy_"), ~ .x != "Not Answered")) %>%
+plot_gantt_data <- df_26_final %>%
+  mutate(aspiration_score = round(transition_aspiration)) %>%
+  mutate(aspiration_label = factor(aspiration_score, 
+                                   levels = 1:5, 
+                                   labels = c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"))) %>%
+  count(house_rank, aspiration_label) %>%
+  group_by(house_rank) %>%
   mutate(
-    house_rank = case_when(
-      house_buildings == "Yes" ~ "4. Multi-story",
-      house_solid     == "Yes" ~ "3. Solid/Perm",
-      house_roofed    == "Yes" ~ "2. Semi-perm",
-      house_cottage   == "Yes" ~ "1. Temp/Cottage",
-      TRUE                     ~ "2. Semi-perm"
-    ),
-    transition_aspiration = (as.numeric(policy_urban_jobs) + as.numeric(policy_training)) / 2
+    total_n = sum(n),
+    percentage = n / total_n
   ) %>%
-  filter(!is.na(transition_aspiration))
+  mutate(
+    neutral_mid = sum(percentage[aspiration_label %in% c("Strongly Disagree", "Disagree")]) + 
+                  0.5 * sum(percentage[aspiration_label == "Neutral"]),
+  
+    category_order = as.numeric(aspiration_label)
+  ) %>%
+  arrange(house_rank, aspiration_label) %>%
+  mutate(
+    xmax = cumsum(percentage) - neutral_mid,
+    xmin = xmax - percentage,
+    label_pos = (xmin + xmax) / 2,
+    label_text = ifelse(percentage > 0.04, scales::percent(percentage, accuracy = 1), "")
+  ) %>%
+  ungroup()
 
-ggplot(df_26_final, aes(x = house_rank, y = transition_aspiration)) +
-  geom_boxplot(fill = "#547d9d", alpha = 0.9, width = 0.5, outlier.alpha = 0.1) +
-  stat_summary(fun = mean, geom = "line", aes(group = 1), color = "#d8a437", linewidth = 1, linetype = "dashed") +
-  stat_summary(fun = mean, geom = "point", size = 2.5, color = "#d8a437") +
-  scale_x_discrete(labels = c("1. Temp\nCottage", "2. Semi\nPerm", "3. Solid\nPerm", "4. Multi\nStory")) +
-  scale_y_continuous(limits = c(0.5, 5.5), breaks = 1:5) +
-  labs(title = "Aspiration by Housing", x = "Housing Level", y = "Support Score") +
-  coord_cartesian(clip = "off") +
-  theme_minimal(base_size = 10)
+ggplot(plot_gantt_data, aes(y = house_rank)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, 
+                ymin = as.numeric(factor(house_rank)) - 0.35, 
+                ymax = as.numeric(factor(house_rank)) + 0.35, 
+                fill = aspiration_label), alpha = 0.9) +
+  geom_text(aes(x = label_pos, label = label_text), 
+            size = 3.2, color = "white", fontface = "bold") +
+  
+  geom_text(aes(x = 0.6, label = paste0("N=", total_n)), 
+            hjust = 0, size = 3.5, color = "#666666", fontface = "italic") +
+  
+  scale_x_continuous(labels = function(x) scales::percent(abs(x)), 
+                     breaks = seq(-1, 1, 0.25),
+                     expand = expansion(mult = c(0.1, 0.2))) +
+  
+  scale_fill_manual(values = c("#d8a437", "#f1e3c4", "#cedbd3", "#8aa6b8", "#547d9d")) +
 
+  labs(title = "Diverging Policy Aspiration Profile",
+       subtitle = "Centered on 'Neutral' sentiment to highlight the shift toward 'Strongly Agree'",
+       y = "", x = "Percentage",
+       fill = "Sentiment Level") +
+  
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom",
+        panel.grid.minor = element_blank(),
+        axis.text.y = element_text(face = "bold", size = 11),
+        plot.title = element_text(face = "bold", size = 14),
+        plot.margin = margin(10, 40, 10, 10))
 ```
 
 ### Code
@@ -1563,29 +1855,60 @@ ggplot(df_26_final, aes(x = house_rank, y = transition_aspiration)) +
 ```{r}
 #| eval: false
 
-df_26_final <- clean_df %>%
-  filter(across(starts_with("policy_"), ~ .x != "Not Answered")) %>%
+plot_gantt_data <- df_26_final %>%
+  mutate(aspiration_score = round(transition_aspiration)) %>%
+  mutate(aspiration_label = factor(aspiration_score, 
+                                   levels = 1:5, 
+                                   labels = c("Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"))) %>%
+  count(house_rank, aspiration_label) %>%
+  group_by(house_rank) %>%
   mutate(
-    house_rank = case_when(
-      house_buildings == "Yes" ~ "4. Multi-story",
-      house_solid     == "Yes" ~ "3. Solid/Perm",
-      house_roofed    == "Yes" ~ "2. Semi-perm",
-      house_cottage   == "Yes" ~ "1. Temp/Cottage",
-      TRUE                     ~ "2. Semi-perm"
-    ),
-    transition_aspiration = (as.numeric(policy_urban_jobs) + as.numeric(policy_training)) / 2
+    total_n = sum(n),
+    percentage = n / total_n
   ) %>%
-  filter(!is.na(transition_aspiration))
+  mutate(
+    neutral_mid = sum(percentage[aspiration_label %in% c("Strongly Disagree", "Disagree")]) + 
+                  0.5 * sum(percentage[aspiration_label == "Neutral"]),
+  
+    category_order = as.numeric(aspiration_label)
+  ) %>%
+  arrange(house_rank, aspiration_label) %>%
+  mutate(
+    xmax = cumsum(percentage) - neutral_mid,
+    xmin = xmax - percentage,
+    label_pos = (xmin + xmax) / 2,
+    label_text = ifelse(percentage > 0.04, scales::percent(percentage, accuracy = 1), "")
+  ) %>%
+  ungroup()
 
-ggplot(df_26_final, aes(x = house_rank, y = transition_aspiration)) +
-  geom_boxplot(fill = "#547d9d", alpha = 0.9, width = 0.5, outlier.alpha = 0.1) +
-  stat_summary(fun = mean, geom = "line", aes(group = 1), color = "#d8a437", linewidth = 1, linetype = "dashed") +
-  stat_summary(fun = mean, geom = "point", size = 2.5, color = "#d8a437") +
-  scale_x_discrete(labels = c("1. Temp\nCottage", "2. Semi\nPerm", "3. Solid\nPerm", "4. Multi\nStory")) +
-  scale_y_continuous(limits = c(0.5, 5.5), breaks = 1:5) +
-  labs(title = "Aspiration by Housing", x = "Housing Level", y = "Support Score") +
-  coord_cartesian(clip = "off") +
-  theme_minimal(base_size = 10)
+ggplot(plot_gantt_data, aes(y = house_rank)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, 
+                ymin = as.numeric(factor(house_rank)) - 0.35, 
+                ymax = as.numeric(factor(house_rank)) + 0.35, 
+                fill = aspiration_label), alpha = 0.9) +
+  geom_text(aes(x = label_pos, label = label_text), 
+            size = 3.2, color = "white", fontface = "bold") +
+  
+  geom_text(aes(x = 0.6, label = paste0("N=", total_n)), 
+            hjust = 0, size = 3.5, color = "#666666", fontface = "italic") +
+  
+  scale_x_continuous(labels = function(x) scales::percent(abs(x)), 
+                     breaks = seq(-1, 1, 0.25),
+                     expand = expansion(mult = c(0.1, 0.2))) +
+  
+  scale_fill_manual(values = c("#d8a437", "#f1e3c4", "#cedbd3", "#8aa6b8", "#547d9d")) +
+
+  labs(title = "Diverging Policy Aspiration Profile",
+       subtitle = "Centered on 'Neutral' sentiment to highlight the shift toward 'Strongly Agree'",
+       y = "", x = "Percentage",
+       fill = "Sentiment Level") +
+  
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom",
+        panel.grid.minor = element_blank(),
+        axis.text.y = element_text(face = "bold", size = 11),
+        plot.title = element_text(face = "bold", size = 14),
+        plot.margin = margin(10, 40, 10, 10))
 ```
 :::
 
