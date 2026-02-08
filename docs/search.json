@@ -91,6 +91,41 @@
     "text": "6. Dashboard Presentation\nFinally, we integrate these multi-dimensional views into a Dashboard. This provides a holistic perspective and utilizes interactivity to allow users to instantly identify the core regions and products driving the business.\n\n\n\nDashboard"
   },
   {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-4.html",
+    "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-4.html",
+    "title": "Hands-On Exercise 05-4",
+    "section": "",
+    "text": "Parallel coordinates plot is a data visualisation specially designed for visualising and analysing multivariate, numerical data. It is ideal for comparing multiple variables together and seeing the relationships between them. For example, the variables contribute to Happiness Index. Parallel coordinates was invented by Alfred Inselberg in the 1970s as a way to visualize high-dimensional data. This data visualisation technique is more often found in academic and scientific communities than in business and consumer data visualizations. As pointed out by Stephen Few(2006), “This certainly isn’t a chart that you would present to the board of directors or place on your Web site for the general public. In fact, the strength of parallel coordinates isn’t in their ability to communicate some truth in the data to others, but rather in their ability to bring meaningful multivariate patterns and comparisons to light when used interactively for analysis.” For example, parallel coordinates plot can be used to characterise clusters detected during customer segmentation.\nBy the end of this hands-on exercise, you will gain hands-on experience on:\n\nplotting statistic parallel coordinates plots by using ggparcoord() of GGally package, and\nplotting interactive parallel coordinates plots by using parallelPlot package."
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-4.html#overview",
+    "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-4.html#overview",
+    "title": "Hands-On Exercise 05-4",
+    "section": "",
+    "text": "Parallel coordinates plot is a data visualisation specially designed for visualising and analysing multivariate, numerical data. It is ideal for comparing multiple variables together and seeing the relationships between them. For example, the variables contribute to Happiness Index. Parallel coordinates was invented by Alfred Inselberg in the 1970s as a way to visualize high-dimensional data. This data visualisation technique is more often found in academic and scientific communities than in business and consumer data visualizations. As pointed out by Stephen Few(2006), “This certainly isn’t a chart that you would present to the board of directors or place on your Web site for the general public. In fact, the strength of parallel coordinates isn’t in their ability to communicate some truth in the data to others, but rather in their ability to bring meaningful multivariate patterns and comparisons to light when used interactively for analysis.” For example, parallel coordinates plot can be used to characterise clusters detected during customer segmentation.\nBy the end of this hands-on exercise, you will gain hands-on experience on:\n\nplotting statistic parallel coordinates plots by using ggparcoord() of GGally package, and\nplotting interactive parallel coordinates plots by using parallelPlot package."
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-4.html#getting-started",
+    "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-4.html#getting-started",
+    "title": "Hands-On Exercise 05-4",
+    "section": "1 Getting Started",
+    "text": "1 Getting Started\n\n1.1 Installing and launching R packages\nFor this exercise, the GGally, parallelPlot and tidyverse packages will be used.\nThe code chunks below are used to install and load the packages in R.\n\npacman::p_load(GGally, parallelPlot, tidyverse)\n\n\n\n1.2 Data Preparation\nIn this hands-on exercise, the World Happinees 2018 (http://worldhappiness.report/ed/2018/) data will be used. The data set is download at https://s3.amazonaws.com/happiness-report/2018/WHR2018Chapter2OnlineData.xls. The original data set is in Microsoft Excel format. It has been extracted and saved in csv file called WHData-2018.csv.\nIn the code chunk below, read_csv() of readr package is used to import WHData-2018.csv into R and save it into a tibble data frame object called wh.\n\nwh &lt;- read_csv(\"data/WHData-2018.csv\")"
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-4.html#plotting-static-parallel-coordinates-plot",
+    "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-4.html#plotting-static-parallel-coordinates-plot",
+    "title": "Hands-On Exercise 05-4",
+    "section": "2 Plotting Static Parallel Coordinates Plot",
+    "text": "2 Plotting Static Parallel Coordinates Plot\nIn this section, you will learn how to plot static parallel coordinates plot by using ggparcoord() of GGally package. Before getting started, it is a good practice to read the function description in detail.\n\n2.1 Plotting a simple parallel coordinates\nCode chunk below shows a typical syntax used to plot a basic static parallel coordinates plot by using ggparcoord().\n\nggparcoord(data = wh, \n           columns = c(7:12))\n\n\n\n\n\n\n\n\nNotice that only two argument namely data and columns is used. Data argument is used to map the data object (i.e. wh) and columns is used to select the columns for preparing the parallel coordinates plot.\n\n\n2.2 Plotting a parallel coordinates with boxplot\nThe basic parallel coordinates failed to reveal any meaning understanding of the World Happiness measures. In this section, you will learn how to makeover the plot by using a collection of arguments provided by ggparcoord().\n\nggparcoord(data = wh, \n           columns = c(7:12), \n           groupColumn =2,\n           scale = \"uniminmax\",\n           alphaLines = 0.3,\n           boxplot = TRUE, \n           title = \"Parallel Coordinates Plot of World Happines Variables\")\n\n\n\n\n\n\n\n\nThings to learn from the code chunk above.\n\ngroupColumn argument is used to group the observations (i.e. parallel lines) by using a single variable (i.e. Region) and colour the parallel coordinates lines by region name.\nscale argument is used to scale the variables in the parallel coordinate plot by using uniminmax method. The method univariately scale each variable so the minimum of the variable is zero and the maximum is one.\nalphaLines argument is used to reduce the intensity of the line colour to 0.2. The permissible value range is between 0 to 1.\nboxplot argument is used to turn on the boxplot by using logical TRUE. The default is FALSE.\ntitle argument is used to provide the parallel coordinates plot a title.\n\n\n\n2.3 Parallel coordinates with facet\nSince ggparcoord() is developed by extending ggplot2 package, we can combination use some of the ggplot2 function when plotting a parallel coordinates plot.\nIn the code chunk below, facet_wrap() of ggplot2 is used to plot 10 small multiple parallel coordinates plots. Each plot represent one geographical region such as East Asia.\n\nggparcoord(data = wh, \n           columns = c(7:12), \n           groupColumn = 2,\n           scale = \"uniminmax\",\n           alphaLines = 0.2,\n           boxplot = TRUE, \n           title = \"Multiple Parallel Coordinates Plots of World Happines Variables by Region\") +\n  facet_wrap(~ Region) +\n  theme(\n    legend.position = \"right\",           \n    legend.key.size = unit(0.4, \"cm\"),   \n    legend.text = element_text(size = 7),\n    legend.title = element_text(size = 8),\n\n    axis.text.x = element_text(angle = 45, hjust = 1) \n  )\n\n\n\n\n\n\n\n\nOne of the aesthetic defect of the current design is that some of the variable names overlap on x-axis.\n\n\n2.4 Rotating x-axis text label\nTo make the x-axis text label easy to read, let us rotate the labels by 30 degrees. We can rotate axis text labels using theme() function in ggplot2 as shown in the code chunk below\n\nggparcoord(data = wh, \n           columns = c(7:12), \n           groupColumn = 2,\n           scale = \"uniminmax\",\n           alphaLines = 0.2,\n           boxplot = TRUE, \n           title = \"Multiple Parallel Coordinates Plots of World Happines Variables by Region\") +\n  facet_wrap(~ Region)\n\n\n\n\n\n\n\n\nThing to learn from the code chunk above:\nTo rotate x-axis text labels, we use axis.text.x as argument to theme() function. And we specify element_text(angle = 30) to rotate the x-axis text by an angle 30 degree.\n\n\n2.5 Adjusting the rotated x-axis text label\nRotating x-axis text labels to 30 degrees makes the label overlap with the plot and we can avoid this by adjusting the text location using hjust argument to theme’s text element with element_text(). We use axis.text.x as we want to change the look of x-axis text.\n\nggparcoord(data = wh, \n           columns = c(7:12), \n           groupColumn = 2,\n           scale = \"uniminmax\",\n           alphaLines = 0.2,\n           boxplot = TRUE, \n           title = \"Multiple Parallel Coordinates Plots of World Happines Variables by Region\") +\n  facet_wrap(~ Region) + \n  theme(axis.text.x = element_text(angle = 30, hjust=1))"
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-4.html#plotting-interactive-parallel-coordinates-plot-parallelplot-methods",
+    "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-4.html#plotting-interactive-parallel-coordinates-plot-parallelplot-methods",
+    "title": "Hands-On Exercise 05-4",
+    "section": "3 Plotting Interactive Parallel Coordinates Plot: parallelPlot methods",
+    "text": "3 Plotting Interactive Parallel Coordinates Plot: parallelPlot methods\nparallelPlot is an R package specially designed to plot a parallel coordinates plot by using ‘htmlwidgets’ package and d3.js. In this section, you will learn how to use functions provided in parallelPlot package to build interactive parallel coordinates plot.\n\n3.1 The basic plot\nThe code chunk below plot an interactive parallel coordinates plot by using parallelPlot().\n\nwh &lt;- wh %&gt;%\n  select(\"Happiness score\", c(7:12))\nparallelPlot(wh,\n             width = 320,\n             height = 250)\n\n\n\n\n\nNotice that some of the axis labels are too long. You will learn how to overcome this problem in the next step.\n\n\n3.2 Rotate axis label\nIn the code chunk below, rotateTitle argument is used to avoid overlapping axis labels.\n\nparallelPlot(wh,\n             rotateTitle = TRUE)\n\n\n\n\n\nOne of the useful interactive feature of parallelPlot is we can click on a variable of interest, for example Happiness score, the monotonous blue colour (default) will change a blues with different intensity colour scheme will be used.\n\n\n3.3 Changing the colour scheme\nWe can change the default blue colour scheme by using continousCS argument as shown in the code chunl below.\n\nparallelPlot(wh,\n             continuousCS = \"YlOrRd\",\n             rotateTitle = TRUE)\n\n\n\n\n\n\n\n3.4 Parallel coordinates plot with histogram\nIn the code chunk below, histoVisibility argument is used to plot histogram along the axis of each variables.\n\nhistoVisibility &lt;- rep(TRUE, ncol(wh))\nparallelPlot(wh,\n             rotateTitle = TRUE,\n             histoVisibility = histoVisibility)"
+  },
+  {
     "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-2.html",
     "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-2.html",
     "title": "Hands-On Exercise 05-2",
@@ -539,48 +574,6 @@
     "text": "3 Plotting Ternary Diagram with R\n\n3.1 Plotting a static ternary diagram\nUse ggtern() function of ggtern package to create a simple ternary plot.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n#Building the static ternary plot\nggtern(data=agpop_mutated,aes(x=YOUNG,y=ACTIVE, z=OLD)) +\n  geom_point()\n\n\n\n\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n#Building the static ternary plot\nggtern(data=agpop_mutated, aes(x=YOUNG,y=ACTIVE, z=OLD)) +\n  geom_point() +\n  labs(title=\"Population structure, 2015\") +\n  theme_rgbw()\n\n\n\n\n\n\n3.2 Plotting an interative ternary diagram\nThe code below create an interactive ternary plot using plot_ly() function of Plotly R.\n\nPlotCode\n\n\n\n\n\n\n\n\n\n\n\n# reusable function for creating annotation object\nlabel &lt;- function(txt) {\n  list(\n    text = txt, \n    x = 0.1, y = 1,\n    ax = 0, ay = 0,\n    xref = \"paper\", yref = \"paper\", \n    align = \"center\",\n    font = list(family = \"serif\", size = 15, color = \"white\"),\n    bgcolor = \"#b3b3b3\", bordercolor = \"black\", borderwidth = 2\n  )\n}\n\n# reusable function for axis formatting\naxis &lt;- function(txt) {\n  list(\n    title = txt, tickformat = \".0%\", tickfont = list(size = 10)\n  )\n}\n\nternaryAxes &lt;- list(\n  aaxis = axis(\"Young\"), \n  baxis = axis(\"Active\"), \n  caxis = axis(\"Old\")\n)\n\n# Initiating a plotly visualization \nplot_ly(\n  agpop_mutated, \n  a = ~YOUNG, \n  b = ~ACTIVE, \n  c = ~OLD, \n  color = I(\"black\"), \n  type = \"scatterternary\"\n) %&gt;%\n  layout(\n    annotations = label(\"Ternary Markers\"), \n    ternary = ternaryAxes\n  )"
   },
   {
-    "objectID": "In-Class_Exercise/In-Class_Exercise01/IE01.html",
-    "href": "In-Class_Exercise/In-Class_Exercise01/IE01.html",
-    "title": "In-Class Exercise 01",
-    "section": "",
-    "text": "This session utilizes Tableau to explore the logic behind constructing fundamental visualizations. The primary focus is on temporal dimension analysis: practicing the ability to switch between different time scales (Year/Month/Day) through drill-down functions. By adjusting the granularity of time, we can more accurately identify performance variances across different periods, thereby enhancing our capacity to interpret business trends.\n\n\n\nDashboard"
-  },
-  {
-    "objectID": "In-Class_Exercise/In-Class_Exercise01/IE01.html#overview",
-    "href": "In-Class_Exercise/In-Class_Exercise01/IE01.html#overview",
-    "title": "In-Class Exercise 01",
-    "section": "",
-    "text": "This session utilizes Tableau to explore the logic behind constructing fundamental visualizations. The primary focus is on temporal dimension analysis: practicing the ability to switch between different time scales (Year/Month/Day) through drill-down functions. By adjusting the granularity of time, we can more accurately identify performance variances across different periods, thereby enhancing our capacity to interpret business trends.\n\n\n\nDashboard"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Visual Analytics and Applications",
-    "section": "",
-    "text": "Welcome to ISSS608 Visual Analytics and Applications homepage. In this website, you will find my coursework. Materials here are based on https://isss608-ay2025-26apr.netlify.app/ by Prof Kam Tin Seong from SMU.\nOverview:"
-  },
-  {
-    "objectID": "index.html#hands-on-exercise",
-    "href": "index.html#hands-on-exercise",
-    "title": "Visual Analytics and Applications",
-    "section": "Hands On Exercise",
-    "text": "Hands On Exercise\n\n\n\n\n\n\n\n\n\nHands-On Exercise 01\n\n\n\nChun-Han\n\n\nJan 12, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 02\n\n\n\nChun-Han\n\n\nJan 19, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-1\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-2\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-1\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-2\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-3\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-4\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 05-1\n\n\n\nChun-Han\n\n\nFeb 7, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 05-2\n\n\n\nChun-Han\n\n\nFeb 8, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 05-3\n\n\n\nChun-Han\n\n\nFeb 8, 2026\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "index.html#in-class-exercise",
-    "href": "index.html#in-class-exercise",
-    "title": "Visual Analytics and Applications",
-    "section": "In Class Exercise",
-    "text": "In Class Exercise\n\n\n\n\n\n\n\n\n\nIn-Class Exercise 01\n\n\n\nChun-Han\n\n\nJan 25, 2026\n\n\n\n\n\n\n\n\n\n\n\nIn-Class Exercise 02\n\n\n\nChun-Han\n\n\nJan 25, 2026\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "index.html#take-home-exercise",
-    "href": "index.html#take-home-exercise",
-    "title": "Visual Analytics and Applications",
-    "section": "Take Home Exercise",
-    "text": "Take Home Exercise\n\n\n\n\n\n\n\n\n\nTake-Home Exercise 01\n\n\n\nChun-Han\n\n\nFeb 2, 2026\n\n\n\n\n\n\nNo matching items"
-  },
-  {
     "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-3.html",
     "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-3.html",
     "title": "Hands-On Exercise 05-3",
@@ -642,5 +635,68 @@
     "title": "Hands-On Exercise 05-3",
     "section": "7 The finishing touch",
     "text": "7 The finishing touch\nBeside providing a wide collection of arguments for meeting the statistical analysis needs, heatmaply also provides many plotting features to ensure cartographic quality heatmap can be produced.\nIn the code chunk below the following arguments are used:\n\nk_row is used to produce 5 groups.\nmargins is used to change the top margin to 60 and row margin to 200.\nfontsizw_row and fontsize_col are used to change the font size for row and column labels to 4.\nmain is used to write the main title of the plot.\nxlab and ylab are used to write the x-axis and y-axis labels respectively.\n\n\nheatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),\n          Colv=NA,\n          seriate = \"none\",\n          colors = Blues,\n          k_row = 5,\n          margins = c(NA,200,60,NA),\n          fontsize_row = 4,\n          fontsize_col = 5,\n          main=\"World Happiness Score and Variables by Country, 2018 \\nDataTransformation using Normalise Method\",\n          xlab = \"World Happiness Indicators\",\n          ylab = \"World Countries\"\n          )"
+  },
+  {
+    "objectID": "In-Class_Exercise/In-Class_Exercise01/IE01.html",
+    "href": "In-Class_Exercise/In-Class_Exercise01/IE01.html",
+    "title": "In-Class Exercise 01",
+    "section": "",
+    "text": "This session utilizes Tableau to explore the logic behind constructing fundamental visualizations. The primary focus is on temporal dimension analysis: practicing the ability to switch between different time scales (Year/Month/Day) through drill-down functions. By adjusting the granularity of time, we can more accurately identify performance variances across different periods, thereby enhancing our capacity to interpret business trends.\n\n\n\nDashboard"
+  },
+  {
+    "objectID": "In-Class_Exercise/In-Class_Exercise01/IE01.html#overview",
+    "href": "In-Class_Exercise/In-Class_Exercise01/IE01.html#overview",
+    "title": "In-Class Exercise 01",
+    "section": "",
+    "text": "This session utilizes Tableau to explore the logic behind constructing fundamental visualizations. The primary focus is on temporal dimension analysis: practicing the ability to switch between different time scales (Year/Month/Day) through drill-down functions. By adjusting the granularity of time, we can more accurately identify performance variances across different periods, thereby enhancing our capacity to interpret business trends.\n\n\n\nDashboard"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Visual Analytics and Applications",
+    "section": "",
+    "text": "Welcome to ISSS608 Visual Analytics and Applications homepage. In this website, you will find my coursework. Materials here are based on https://isss608-ay2025-26apr.netlify.app/ by Prof Kam Tin Seong from SMU.\nOverview:"
+  },
+  {
+    "objectID": "index.html#hands-on-exercise",
+    "href": "index.html#hands-on-exercise",
+    "title": "Visual Analytics and Applications",
+    "section": "Hands On Exercise",
+    "text": "Hands On Exercise\n\n\n\n\n\n\n\n\n\nHands-On Exercise 01\n\n\n\nChun-Han\n\n\nJan 12, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 02\n\n\n\nChun-Han\n\n\nJan 19, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-1\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 03-2\n\n\n\nChun-Han\n\n\nJan 24, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-1\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-2\n\n\n\nChun-Han\n\n\nJan 31, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-3\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 04-4\n\n\n\nChun-Han\n\n\nFeb 1, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 05-1\n\n\n\nChun-Han\n\n\nFeb 8, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 05-2\n\n\n\nChun-Han\n\n\nFeb 8, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 05-3\n\n\n\nChun-Han\n\n\nFeb 8, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 05-4\n\n\n\nChun-Han\n\n\nFeb 8, 2026\n\n\n\n\n\n\n\n\n\n\n\nHands-On Exercise 05-5\n\n\n\nChun-Han\n\n\nFeb 8, 2026\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html#in-class-exercise",
+    "href": "index.html#in-class-exercise",
+    "title": "Visual Analytics and Applications",
+    "section": "In Class Exercise",
+    "text": "In Class Exercise\n\n\n\n\n\n\n\n\n\nIn-Class Exercise 01\n\n\n\nChun-Han\n\n\nJan 25, 2026\n\n\n\n\n\n\n\n\n\n\n\nIn-Class Exercise 02\n\n\n\nChun-Han\n\n\nJan 25, 2026\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html#take-home-exercise",
+    "href": "index.html#take-home-exercise",
+    "title": "Visual Analytics and Applications",
+    "section": "Take Home Exercise",
+    "text": "Take Home Exercise\n\n\n\n\n\n\n\n\n\nTake-Home Exercise 01\n\n\n\nChun-Han\n\n\nFeb 2, 2026\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-5.html",
+    "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-5.html",
+    "title": "Hands-On Exercise 05-5",
+    "section": "",
+    "text": "In this hands-on exercise, you will gain hands-on experiences on designing treemap using appropriate R packages. The hands-on exercise consists of three main section. First, you will learn how to manipulate transaction data into a treemap strcuture by using selected functions provided in dplyr package. Then, you will learn how to plot static treemap by using treemap package. In the third section, you will learn how to design interactive treemap by using d3treeR package."
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-5.html#overview",
+    "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-5.html#overview",
+    "title": "Hands-On Exercise 05-5",
+    "section": "",
+    "text": "In this hands-on exercise, you will gain hands-on experiences on designing treemap using appropriate R packages. The hands-on exercise consists of three main section. First, you will learn how to manipulate transaction data into a treemap strcuture by using selected functions provided in dplyr package. Then, you will learn how to plot static treemap by using treemap package. In the third section, you will learn how to design interactive treemap by using d3treeR package."
+  },
+  {
+    "objectID": "Hands-On_Exercise/Hands-On_Exercise05/HE05-5.html#getting-started",
+    "href": "Hands-On_Exercise/Hands-On_Exercise05/HE05-5.html#getting-started",
+    "title": "Hands-On Exercise 05-5",
+    "section": "1 Getting Started",
+    "text": "1 Getting Started\n\n1.1 Installing and Launching R Packages\nBefore we get started, you are required to check if treemap and tidyverse pacakges have been installed in you R.\n\npacman::p_load(treemap, treemapify, tidyverse) \n\npackage 'gridBase' successfully unpacked and MD5 sums checked\npackage 'igraph' successfully unpacked and MD5 sums checked\npackage 'treemap' successfully unpacked and MD5 sums checked\n\nThe downloaded binary packages are in\n    C:\\Users\\88696\\AppData\\Local\\Temp\\RtmpWSl3uW\\downloaded_packages\n\n\npackage 'png' successfully unpacked and MD5 sums checked\npackage 'jpeg' successfully unpacked and MD5 sums checked\npackage 'shades' successfully unpacked and MD5 sums checked\npackage 'gridtext' successfully unpacked and MD5 sums checked\npackage 'ggfittext' successfully unpacked and MD5 sums checked\npackage 'svglite' successfully unpacked and MD5 sums checked\npackage 'treemapify' successfully unpacked and MD5 sums checked\n\nThe downloaded binary packages are in\n    C:\\Users\\88696\\AppData\\Local\\Temp\\RtmpWSl3uW\\downloaded_packages\n\n\n\n\n1.2 Data Wrangling\nIn this exercise, REALIS2018.csv data will be used. This dataset provides information of private property transaction records in 2018. The dataset is extracted from REALIS portal (https://spring.ura.gov.sg/lad/ore/login/index.cfm) of Urban Redevelopment Authority (URA).\n\n1.2.1 Importing the data set\nIn the code chunk below, read_csv() of readr is used to import realis2018.csv into R and parsed it into tibble R data.frame format.\n\nrealis2018 &lt;- read_csv(\"data/realis2018.csv\")\n\nThe output tibble data.frame is called realis2018.\n\n\n1.2.2 Data Wrangling and Manipulation\nThe data.frame realis2018 is in trasaction record form, which is highly disaggregated and not appropriate to be used to plot a treemap. In this section, we will perform the following steps to manipulate and prepare a data.frtame that is appropriate for treemap visualisation:\n\ngroup transaction records by Project Name, Planning Region, Planning Area, Property Type and Type of Sale, and\ncompute Total Unit Sold, Total Area, Median Unit Price and Median Transacted Price by applying appropriate summary statistics on No. of Units, Area (sqm), Unit Price ($ psm) and Transacted Price ($) respectively.\n\nTwo key verbs of dplyr package, namely: group_by() and summarize() will be used to perform these steps.\ngroup_by() breaks down a data.frame into specified groups of rows. When you then apply the verbs above on the resulting object they’ll be automatically applied “by group”.\nGrouping affects the verbs as follows:\n\ngrouped select() is the same as ungrouped select(), except that grouping variables are always retained.\ngrouped arrange() is the same as ungrouped; unless you set .by_group = TRUE, in which case it orders first by the grouping variables.\nmutate() and filter() are most useful in conjunction with window functions (like rank(), or min(x) == x). They are described in detail in vignette(“window-functions”).\nsample_n() and sample_frac() sample the specified number/fraction of rows in each group.\nsummarise() computes the summary for each group.\n\nIn our case, group_by() will used together with summarise() to derive the summarised data.frame.\n\nStudents who are new to dplyr methods should consult Introduction to dplyr before moving on to the next section.\n\n\n\n1.2.3 Grouped summaries without the Pipe\nThe code chank below shows a typical two lines code approach to perform the steps.\n\nrealis2018_grouped &lt;- group_by(realis2018, `Project Name`,\n                               `Planning Region`, `Planning Area`, \n                               `Property Type`, `Type of Sale`)\nrealis2018_summarised &lt;- summarise(realis2018_grouped, \n                          `Total Unit Sold` = sum(`No. of Units`, na.rm = TRUE),\n                          `Total Area` = sum(`Area (sqm)`, na.rm = TRUE),\n                          `Median Unit Price ($ psm)` = median(`Unit Price ($ psm)`, na.rm = TRUE), \n                          `Median Transacted Price` = median(`Transacted Price ($)`, na.rm = TRUE))\n\n\nAggregation functions such as sum() and meadian() obey the usual rule of missing values: if there’s any missing value in the input, the output will be a missing value. The argument na.rm = TRUE removes the missing values prior to computation.\n\nThe code chunk above is not very efficient because we have to give each intermediate data.frame a name, even though we don’t have to care about it.\n\n\n1.2.4 Grouped summaries with the pipe\nThe code chunk below shows a more efficient way to tackle the same processes by using the pipe, %&gt;%:\n\nTo learn more about pipe, visit this excellent article: Pipes in R Tutorial For Beginners.\n\n\nrealis2018_summarised &lt;- realis2018 %&gt;% \n  group_by(`Project Name`,`Planning Region`, \n           `Planning Area`, `Property Type`, \n           `Type of Sale`) %&gt;%\n  summarise(`Total Unit Sold` = sum(`No. of Units`, na.rm = TRUE), \n            `Total Area` = sum(`Area (sqm)`, na.rm = TRUE),\n            `Median Unit Price ($ psm)` = median(`Unit Price ($ psm)`, na.rm = TRUE),\n            `Median Transacted Price` = median(`Transacted Price ($)`, na.rm = TRUE))\n\n\n\n\n2 Designing Treemap with treemap Package\ntreemap package is a R package specially designed to offer great flexibility in drawing treemaps. The core function, namely: treemap() offers at least 43 arguments. In this section, we will only explore the major arguments for designing elegent and yet truthful treemaps."
   }
 ]
