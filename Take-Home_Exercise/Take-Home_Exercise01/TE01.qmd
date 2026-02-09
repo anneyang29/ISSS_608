@@ -37,17 +37,26 @@ This report investigates the drivers of income inequality and socio-economic mob
 ### 1.1 Installing and loading the packages
 
 | Library | Description |
-|------------------|------------------------------------------------------|
-| tidyverse | A collection of core packages designed for data science, used extensively for data preparation and wrangling. |
-| readxl | Allows R to read Excel files (.xlsx). |
-| patchwork | For arranging multiple ggplot2 figures into a composite figure. |
-| patchwork | An R package used to combine separate ggplot2 objects into a unified, multi-panel layout using an intuitive mathematical syntax. |
-| ggthemes | Provides extra themes, geoms, and scales for ggplot2. |
-| scales | Supplies scale functions and tools for customizing axes, labels, and legends in ggplot2. |
-| ggdist | An extension of ggplot2 for visualising distributions and uncertainty, useful for half-violin or raincloud plots. |
+|---|---|
+| **pacman** | A package management utility used to install and load multiple R packages efficiently with a single command. |
+| **tidyverse** | A collection of core R packages for data science workflows (data cleaning, transformation, and visualization). |
+| **readxl** | Enables importing Excel files (.xls, .xlsx) into R without requiring external dependencies. |
+| **patchwork** | Provides an intuitive syntax for combining multiple ggplot2 objects into a unified multi-panel layout. |
+| **ggthemes** | Supplies additional themes and styling options for ggplot2 to improve visual aesthetics and consistency. |
+| **scales** | Offers scale functions and formatting utilities for axes, legends, and labels in ggplot2 (e.g., percentages, commas). |
+| **ggdist** | Extends ggplot2 for visualising distributions and uncertainty (e.g., half-violin / raincloud plots). |
+| **DescTools** | Provides descriptive statistics tools, including inequality measures such as the Gini coefficient. |
+| **ggpubr** | Adds publication-ready ggplot2 helpers, including statistical annotation layers and plot arrangement utilities. |
+| **ggstatsplot** | Integrates hypothesis tests directly into ggplot2 visualizations with transparent reporting of results. |
+| **ggplot2** | The foundational grammar-of-graphics package used for building statistical visualizations. |
+| **dplyr** | A core tidyverse package for data manipulation (filtering, grouping, summarizing). |
+| **forcats** | A tidyverse package for working with categorical variables (factors), including reordering and explicit NA handling. |
 
 ```{r}
-pacman::p_load(tidyverse, readxl, patchwork, ggthemes, scales, ggdist,DescTools, ggpubr)
+pacman::p_load(
+  pacman, tidyverse, readxl, patchwork, ggthemes, scales,
+  ggdist, DescTools, ggpubr, ggstatsplot, forcats
+)
 ```
 
 ### 1.2 Analytical Framework
@@ -363,7 +372,7 @@ ggplot(plot_data_21, aes(x = race, y = percentage, fill = gender)) +
     y = "Share of Province",
     fill = "Gender"
   ) +
-  theme_minimal(base_size = 12) +
+  theme_minimal(base_size = 10) +
   theme(
     legend.position = "top",
     strip.text = element_text(size = 11, face = "bold"),
@@ -410,7 +419,7 @@ ggplot(plot_data_21, aes(x = race, y = percentage, fill = gender)) +
     y = "Share of Province",
     fill = "Gender"
   ) +
-  theme_minimal(base_size = 12) +
+  theme_minimal(base_size = 10) +
   theme(
     legend.position = "top",
     strip.text = element_text(size = 11, face = "bold"),
@@ -452,7 +461,7 @@ p_quintile <- ggplot(plot_data_22, aes(x = income_group, y = percentage)) +
     x = "Income Quintile",
     y = "Share of Respondents"
   ) +
-  theme_minimal(base_size = 11) +
+  theme_minimal(base_size = 10) +
   theme(
     plot.title = element_text(face = "bold"),
     panel.grid.minor = element_blank()
@@ -495,7 +504,7 @@ p_lorenz <- ggplot(lorenz_df, aes(x = cum_pop, y = cum_income)) +
     x = "Cumulative Share of Population",
     y = "Cumulative Share of Income"
   ) +
-  theme_minimal(base_size = 11) +
+  theme_minimal(base_size = 10) +
   theme(
     plot.title = element_text(face = "bold"),
     panel.grid.minor = element_blank(),
@@ -552,7 +561,7 @@ p_quintile <- ggplot(plot_data_22, aes(x = income_group, y = percentage)) +
     x = "Income Quintile",
     y = "Share of Respondents"
   ) +
-  theme_minimal(base_size = 11) +
+  theme_minimal(base_size = 10) +
   theme(
     plot.title = element_text(face = "bold"),
     panel.grid.minor = element_blank()
@@ -609,7 +618,7 @@ p_lorenz <- ggplot(lorenz_df, aes(x = cum_pop, y = cum_income)) +
     x = "Cumulative Share of Population",
     y = "Cumulative Share of Income"
   ) +
-  theme_minimal(base_size = 11) +
+  theme_minimal(base_size = 10) +
   theme(
     plot.title = element_text(face = "bold"),
     panel.grid.minor = element_blank()
@@ -627,7 +636,7 @@ p_lorenz
 
 ```{r}
 #| echo: false
-
+#| fig-height: 8
 
 pal <- c("Male" = "#547d9d", "Female" = "#d8a437")
 
@@ -674,7 +683,7 @@ p_rain_split <- ggplot(df_income, aes(x = total_income, y = race, fill = gender)
     y = "Ethnic Group",
     fill = "Gender"
   ) +
-  theme_minimal(base_size = 11) +
+  theme_minimal(base_size = 10) +
   theme(
     plot.title = element_text(face = "bold"),
     panel.grid.minor = element_blank(),
@@ -698,7 +707,7 @@ p_box_23 <- ggplot(df_income, aes(x = race, y = total_income, fill = gender)) +
     x = "Ethnic Group",
     y = "Total Income"
   ) +
-  theme_minimal(base_size = 11) +
+  theme_minimal(base_size = 10) +
   theme(
     plot.title = element_text(face = "bold"),
     panel.grid.minor = element_blank(),
@@ -716,7 +725,7 @@ p_density_23 <- ggplot(df_income, aes(x = total_income, fill = gender)) +
     x = "Total Income",
     y = "Density"
   ) +
-  theme_minimal(base_size = 11) +
+  theme_minimal(base_size = 10) +
   theme(
     plot.title = element_text(face = "bold"),
     panel.grid.minor = element_blank(),
@@ -726,9 +735,93 @@ p_density_23 <- ggplot(df_income, aes(x = total_income, fill = gender)) +
 p_rain_split / (p_box_23 | p_density_23)
 ```
 
+```{r}
+#| echo: false
+#| fig-height: 9
+#| fig-width: 12
+
+df_hypo <- clean_df %>%
+  filter(
+    race %in% c("Kinh", "Minority"),
+    gender %in% c("Male", "Female"),
+    !is.na(total_income),
+    total_income >= 0
+  ) %>%
+  mutate(
+    race = droplevels(race),
+    gender = droplevels(gender),
+    log_income = log1p(total_income)
+  )
+
+pal_gender <- c("Male" = "#547d9d", "Female" = "#d8a437")
+pal_race   <- c("Kinh" = "#547d9d", "Minority" = "#d8a437")
+
+base_theme <- theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.margin = margin(10, 12, 10, 12),
+    legend.position = "top"
+  )
+
+# ---- 1) H1: race difference ----
+p_h1 <- ggstatsplot::ggbetweenstats(
+  data = df_hypo,
+  x = race,
+  y = log_income,
+  type = "np",
+  pairwise.comparisons = FALSE,
+  results.subtitle = TRUE,
+  xlab = "Ethnicity",
+  ylab = "log1p(Total Income)",
+  title = "H1: Income differs between ethnic groups (Kinh vs Minority)",
+  ggtheme = base_theme
+) +
+  scale_fill_manual(values = pal_race) +
+  scale_color_manual(values = pal_race)
+
+p_h2_kinh <- ggstatsplot::ggbetweenstats(
+  data = df_hypo %>% filter(race == "Kinh"),
+  x = gender,
+  y = log_income,
+  type = "np",
+  pairwise.comparisons = FALSE,
+  results.subtitle = TRUE,
+  xlab = "Gender",
+  ylab = "log1p(Total Income)",
+  title = "H2a: Gender-based income difference within Kinh",
+  ggtheme = base_theme
+) +
+  scale_fill_manual(values = pal_gender) +
+  scale_color_manual(values = pal_gender)
+
+p_h2_minority <- ggstatsplot::ggbetweenstats(
+  data = df_hypo %>% filter(race == "Minority"),
+  x = gender,
+  y = log_income,
+  type = "np",
+  pairwise.comparisons = FALSE,
+  results.subtitle = TRUE,
+  xlab = "Gender",
+  ylab = "log1p(Total Income)",
+  title = "H2b: Gender-based income difference within Minority",
+  ggtheme = base_theme
+) +
+  scale_fill_manual(values = pal_gender) +
+  scale_color_manual(values = pal_gender)
+
+(p_h1) / (p_h2_kinh | p_h2_minority) +
+  plot_layout(heights = c(1, 1))
+```
+
+:::callout-note
+- Given the right-skewed distribution of income and the presence of extreme values, non-parametric Wilcoxon rank-sum tests were employed, and group differences are summarized using median values rather than means.
+
+- Because total income exhibits a highly right-skewed distribution with extreme values, a log transformation `log1p` is applied prior to analysis. This transformation reduces the influence of outliers, stabilizes variance, and facilitates more meaningful comparisons of income distributions across groups while preserving zero-income observations.
+:::
+
 **Observation**
 
-Most respondents’ total income is concentrated below 100, with distributions tightly clustered in the 20–60 range, indicating generally low income levels across the sample. Clear ethnic disparities emerge: ethnic minority workers exhibit lower median incomes and a left-shifted distribution compared with Kinh workers, suggesting structurally constrained earning capacity rather than isolated poverty. Gender differences are not uniform across groups. Among Kinh workers, male and female income distributions largely overlap, whereas among ethnic minorities, male incomes are more compressed at the lower end, with weaker upper-tail dispersion. Together, these patterns indicate that income inequality is shaped by ethnicity and that gender-based income advantages are conditional on ethnic context, pointing to intersecting structural constraints rather than single-factor effects.
+Income distributions are concentrated below 100, with most observations clustered between 20 and 60. Clear ethnic disparities are evident: ethnic minority workers exhibit a lower median income and a left-shifted distribution compared with Kinh workers, suggesting systematic structural constraints rather than isolated low-income cases. Gender differences are not uniform across ethnic groups. Within the Kinh group, income differs significantly by gender, indicating persistent gender-based stratification. In contrast, among ethnic minorities, male and female income distributions largely overlap, with no significant difference, implying that broader ethnic disadvantages may dominate and attenuate gender effects. Overall, these findings suggest that ethnicity is the primary driver of income inequality, while gender-based disparities are conditional on ethnic context rather than universally observed.
 
 #### 2.3.1 Income Spread (Raincloud)
 
@@ -899,6 +992,179 @@ p_density_23
 -   Density plots are faceted by ethnicity with `scales = "free_y"` so each group’s distribution shape is readable.
 
 -   The x-axis is trimmed to the 95th percentile, focusing attention on the dominant income range.
+:::
+
+#### 2.3.4 H1: Ethnicity difference (Kinh vs Minority)
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_h1
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+df_hypo <- clean_df %>%
+  filter(
+    race %in% c("Kinh", "Minority"),
+    gender %in% c("Male", "Female"),
+    !is.na(total_income),
+    total_income >= 0
+  ) %>%
+  mutate(
+    race = droplevels(race),
+    gender = droplevels(gender),
+    log_income = log1p(total_income)
+  )
+
+pal_race <- c("Kinh" = "#547d9d", "Minority" = "#d8a437")
+
+base_theme <- theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(face = "bold", size = 12),
+    plot.subtitle = element_text(size = 9),
+    plot.margin = margin(12, 16, 12, 16)
+  )
+
+p_h1 <- ggstatsplot::ggbetweenstats(
+  data = df_hypo,
+  x = race,
+  y = log_income,
+  type = "np",
+  pairwise.comparisons = FALSE,
+  results.subtitle = TRUE,
+  xlab = "Ethnicity",
+  ylab = "log1p(Total Income)",
+  title = "H1: Income differs between ethnic groups (Kinh vs Minority)",
+  ggtheme = base_theme
+) +
+  scale_fill_manual(values = pal_race) +
+  scale_color_manual(values = pal_race)
+
+p_h1
+```
+:::
+
+#### 2.3.5  H2a: Gender difference within Kinh 
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_h2_kinh
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+df_hypo <- clean_df %>%
+  filter(
+    race %in% c("Kinh", "Minority"),
+    gender %in% c("Male", "Female"),
+    !is.na(total_income),
+    total_income >= 0
+  ) %>%
+  mutate(
+    race = droplevels(race),
+    gender = droplevels(gender),
+    log_income = log1p(total_income)
+  )
+
+pal_gender <- c("Male" = "#547d9d", "Female" = "#d8a437")
+
+base_theme <- theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(face = "bold", size = 12),
+    plot.subtitle = element_text(size = 9),
+    plot.margin = margin(12, 16, 12, 16),
+    legend.position = "top"
+  )
+
+p_h2_kinh <- ggstatsplot::ggbetweenstats(
+  data = df_hypo %>% filter(race == "Kinh"),
+  x = gender,
+  y = log_income,
+  type = "np",
+  pairwise.comparisons = FALSE,
+  results.subtitle = TRUE,
+  xlab = "Gender",
+  ylab = "log1p(Total Income)",
+  title = "H2a: Gender-based income difference within Kinh",
+  ggtheme = base_theme
+) +
+  scale_fill_manual(values = pal_gender) +
+  scale_color_manual(values = pal_gender)
+
+p_h2_kinh
+```
+:::
+
+#### 2.3.6  H2b: Gender difference within Minority 
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+p_h2_minority
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+df_hypo <- clean_df %>%
+  filter(
+    race %in% c("Kinh", "Minority"),
+    gender %in% c("Male", "Female"),
+    !is.na(total_income),
+    total_income >= 0
+  ) %>%
+  mutate(
+    race = droplevels(race),
+    gender = droplevels(gender),
+    log_income = log1p(total_income)
+  )
+
+pal_gender <- c("Male" = "#547d9d", "Female" = "#d8a437")
+
+base_theme <- theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(face = "bold", size = 12),
+    plot.subtitle = element_text(size = 9),
+    plot.margin = margin(12, 16, 12, 16),
+    legend.position = "top"
+  )
+
+p_h2_minority <- ggstatsplot::ggbetweenstats(
+  data = df_hypo %>% filter(race == "Minority"),
+  x = gender,
+  y = log_income,
+  type = "np",
+  pairwise.comparisons = FALSE,
+  results.subtitle = TRUE,
+  xlab = "Gender",
+  ylab = "log1p(Total Income)",
+  title = "H2b: Gender-based income difference within Minority",
+  ggtheme = base_theme
+) +
+  scale_fill_manual(values = pal_gender) +
+  scale_color_manual(values = pal_gender)
+
+p_h2_minority
+```
 :::
 
 ### 2.4 Income Composition
@@ -1215,6 +1481,7 @@ Error bars show 95% confidence intervals of the mean, computed as *mean ± 1.96 
 
 ```{r}
 #| echo: false
+#| fig-width: 10
 
 df_25 <- clean_df %>%
   filter(
@@ -1263,14 +1530,13 @@ y99_wage <- as.numeric(quantile(df_25$daily_wage, 0.99, na.rm = TRUE))
 x99_days <- as.numeric(quantile(df_25$working_days, 0.99, na.rm = TRUE))
 y99_inc  <- as.numeric(quantile(df_25$total_income, 0.99, na.rm = TRUE))
 
-# 3. 設定緊湊主題 (theme)
-theme_25_compact <- theme_minimal(base_size = 10) +
+theme_25_compact <- theme_minimal(base_size = 9) +
   theme(
     plot.title = element_text(face = "bold", size = 12, margin = margin(b = 5)),
     plot.subtitle = element_text(size = 9, margin = margin(b = 10)),
     axis.title.x = element_text(size = 9, margin = margin(t = 5)),
     axis.title.y = element_text(size = 9, margin = margin(r = 5)),
-    axis.text = element_text(size = 8),
+    axis.text = element_text(size = 7),
     legend.position = "bottom",
     panel.grid.minor = element_blank(),
     plot.margin = margin(5, 5, 5, 5) 
@@ -1327,11 +1593,118 @@ p_tech <- ggplot(df_25, aes(x = working_days, y = daily_wage, color = tech_level
   theme(legend.position = "bottom")
 ```
 
+:::callout-note
+Only four education–training combinations are observed due to strong sorting between education level and training type.
+
+```{r}
+#| echo: false
+df_25 %>%
+  count(education, training_status) %>%
+  group_by(education) %>%
+  mutate(prop = n/sum(n)) %>%
+  arrange(education, training_status)
+```
+:::
+
+```{r}
+#| echo: false
+#| fig-width: 13
+#| fig-height: 9
+
+library(broom)
+
+df_25_test <- df_25 %>% mutate(log_wage = log1p(daily_wage))
+
+base_theme_test <- theme_minimal(base_size = 10) +
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.margin = margin(10, 12, 10, 12),
+    legend.position = "top"
+  )
+
+p_test_job <- ggstatsplot::ggbetweenstats(
+  data = df_25_test,
+  x = job_type,
+  y = log_wage,
+  type = "np",
+  pairwise.comparisons = TRUE,
+  p.adjust.method = "holm",
+  results.subtitle = TRUE,
+  xlab = "Job Type",
+  ylab = "log1p(Daily Wage)",
+  title = "H1: Daily wage differs across job types",
+  ggtheme = base_theme_test
+) +
+  scale_fill_manual(values = pal_job) +
+  scale_color_manual(values = pal_job)
+
+p_test_tech <- ggstatsplot::ggbetweenstats(
+  data = df_25_test,
+  x = tech_level,
+  y = log_wage,
+  type = "np",
+  pairwise.comparisons = FALSE,
+  results.subtitle = TRUE,
+  xlab = "Technology Level",
+  ylab = "log1p(Daily Wage)",
+  title = "H2: Daily wage differs by technology access",
+  ggtheme = base_theme_test
+) +
+  scale_fill_manual(values = pal_tech) +
+  scale_color_manual(values = pal_tech)
+
+df_h5 <- df_25 %>%
+  filter(
+    !is.na(daily_wage), daily_wage > 0,
+    !is.na(working_days), working_days > 0,
+    job_type %in% c("Agricultural", "Service/Industrial", "Other"),
+    tech_level %in% c("Low", "Adequate")
+  ) %>%
+  mutate(
+    log_wage = log1p(daily_wage),
+    job_type = droplevels(job_type),
+    tech_level = droplevels(tech_level)
+  )
+
+model_h5 <- lm(
+  log_wage ~ job_type + tech_level + working_days,
+  data = df_h5
+)
+
+coef_df <- broom::tidy(model_h5, conf.int = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(
+    term = recode(term,
+      "job_typeService/Industrial" = "Service / Industrial job",
+      "job_typeOther"              = "Other job",
+      "tech_levelAdequate"         = "Adequate technology",
+      "working_days"               = "Working days"
+    )
+  )
+
+h3 <- ggplot(coef_df, aes(x = estimate, y = reorder(term, estimate))) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey60") +
+  geom_point(size = 3, color = "#547d9d") +
+  geom_errorbarh(
+    aes(xmin = conf.low, xmax = conf.high),
+    height = 0.2
+  ) +
+  labs(
+    title = "Estimated Effects on Daily Wage (log scale)",
+    subtitle = "OLS regression controlling for job type, technology, and working days",
+    x = "Coefficient estimate (log points)",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 11)
+
+(p_test_job | p_test_tech) / h3 + plot_layout(widths = c(1.2, 1))
+```
+
 **Observation**
 
-Income dispersion increases with education level and training intensity. Higher education groups, especially those with long-course training, display not only higher mean income but also wider income distributions driven by an expanded upper tail. Training therefore raises income in a heterogeneous manner rather than uniformly benefiting all workers.
+Income dispersion increases with education level and training intensity. Higher education groups, particularly those associated with long-course training, exhibit higher average income and greater dispersion, driven mainly by an expanded upper tail rather than uniform gains across workers.
 
-The daily wage analysis clarifies the mechanism behind this pattern. Daily wages decline as working days increase, suggesting diminishing returns to labor intensity in informal work. However, service and industrial jobs consistently offer higher daily wages than agricultural work, and adequate technology access further lifts productivity per day. These results indicate that higher income is achieved not by working more days, but by accessing higher-productivity jobs and technologies.
+Hypothesis testing clarifies the underlying mechanisms. Daily wages differ significantly across job types, with service and industrial employment offering higher productivity per day than agricultural work. Technology access alone does not produce a statistically significant difference in daily wages at the distributional level; however, regression results indicate a modest positive effect once job type and working days are controlled for. Overall, income heterogeneity is primarily driven by occupational sorting into higher-productivity jobs, with technology playing a secondary, conditional role.
 
 #### 2.5.1 Income by Education & Training (Boxplot)
 
@@ -1340,6 +1713,20 @@ The daily wage analysis clarifies the mechanism behind this pattern. Daily wages
 
 ```{r}
 #| echo: false
+
+p_edu_train <- ggplot(df_25, aes(x = education, y = total_income, fill = training_status)) +
+  geom_boxplot(width = 0.65, outlier.alpha = 0.18) +
+  coord_cartesian(ylim = c(0, y99_inc), clip = "off") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  scale_fill_manual(values = pal_train) +
+  labs(
+    title = "Income by Education & Training",
+    subtitle = "Wider spread at higher levels",
+    x = "Education",
+    y = "Total Income",
+    fill = "Training"
+  ) +
+  theme_25
 
 p_edu_train
 
@@ -1484,6 +1871,267 @@ p_tech <- ggplot(df_25, aes(x = working_days, y = daily_wage, color = tech_level
   theme_25
 
 p_tech
+```
+:::
+
+#### 2.5.5 H1 : Daily wage differs across job types
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+pal_job <- c(
+  "Agricultural" = "#547d9d",
+  "Service/Industrial" = "#d8a437",
+  "Other" = "#cedbd3"
+)
+
+df_h3 <- df_25 %>%
+  filter(
+    !is.na(daily_wage), daily_wage > 0,
+    job_type %in% c("Agricultural", "Service/Industrial", "Other")
+  ) %>%
+  mutate(
+    job_type = droplevels(job_type),
+    log_wage = log1p(daily_wage)
+  )
+
+p_h3_job <- ggstatsplot::ggbetweenstats(
+  data = df_h3,
+  x = job_type,
+  y = log_wage,
+  type = "np",                    
+  pairwise.comparisons = TRUE,  
+  pairwise.display = "significant",
+  p.adjust.method = "holm",
+  xlab = "Job Type",
+  ylab = "log1p(Daily Wage)",
+  title = "H3: Daily wage differs across job types",
+  subtitle = "Kruskal–Wallis test with Dunn post-hoc (Holm-adjusted)",
+) +
+  scale_fill_manual(values = pal_job) +
+  scale_color_manual(values = pal_job)
+
+p_h3_job
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+df_h3 <- df_25 %>%
+  filter(
+    !is.na(daily_wage), daily_wage > 0,
+    job_type %in% c("Agricultural", "Service/Industrial", "Other")
+  ) %>%
+  mutate(
+    job_type = droplevels(job_type),
+    log_wage = log1p(daily_wage)
+  )
+
+p_h3_job <- ggstatsplot::ggbetweenstats(
+  data = df_h3,
+  x = job_type,
+  y = log_wage,
+  type = "np",                   
+  pairwise.comparisons = TRUE,   
+  pairwise.display = "significant",
+  p.adjust.method = "holm",
+  xlab = "Job Type",
+  ylab = "log1p(Daily Wage)",
+  title = "H3: Daily wage differs across job types",
+  subtitle = "Kruskal–Wallis test with Dunn post-hoc (Holm-adjusted)"
+) +
+  scale_fill_manual(values = pal_job) +
+  scale_color_manual(values = pal_job)
+
+p_h3_job
+```
+:::
+
+#### 2.5.6 H2 : Daily wage differs by technology access
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+pal_tech <- c(
+  "Low"      = "#547d9d",
+  "Adequate" = "#d8a437"
+)
+
+df_h4 <- df_25 %>%
+  filter(
+    !is.na(daily_wage), daily_wage > 0,
+    tech_level %in% c("Low", "Adequate")
+  ) %>%
+  mutate(
+    tech_level = droplevels(tech_level),
+    log_wage = log1p(daily_wage)
+  )
+
+p_h4_tech <- ggstatsplot::ggbetweenstats(
+  data = df_h4,
+  x = tech_level,
+  y = log_wage,
+  type = "np",                    
+  pairwise.comparisons = FALSE,   
+  xlab = "Technology Level",
+  ylab = "log1p(Daily Wage)",
+  title = "H4: Daily wage differs by technology access",
+  subtitle = "Wilcoxon rank-sum test (non-parametric)"
+)+
+  scale_fill_manual(values = pal_tech) +
+  scale_color_manual(values = pal_tech)
+
+p_h4_tech
+
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+df_h4 <- df_25 %>%
+  filter(
+    !is.na(daily_wage), daily_wage > 0,
+    tech_level %in% c("Low", "Adequate")
+  ) %>%
+  mutate(
+    tech_level = droplevels(tech_level),
+    log_wage = log1p(daily_wage)
+  )
+
+p_h4_tech <- ggstatsplot::ggbetweenstats(
+  data = df_h4,
+  x = tech_level,
+  y = log_wage,
+  type = "np",                   
+  pairwise.comparisons = FALSE,   
+  xlab = "Technology Level",
+  ylab = "log1p(Daily Wage)",
+  title = "H4: Daily wage differs by technology access",
+  subtitle = "Wilcoxon rank-sum test (non-parametric)"
+)+
+  scale_fill_manual(values = pal_tech) +
+  scale_color_manual(values = pal_tech)
+
+p_h4_tech
+```
+:::
+
+#### 2.5.7 H3 : Conditional Effects on Daily Wage
+
+:::panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+library(broom)
+
+df_h5 <- df_25 %>%
+  filter(
+    !is.na(daily_wage), daily_wage > 0,
+    !is.na(working_days), working_days > 0,
+    job_type %in% c("Agricultural", "Service/Industrial", "Other"),
+    tech_level %in% c("Low", "Adequate")
+  ) %>%
+  mutate(
+    log_wage = log1p(daily_wage),
+    job_type = droplevels(job_type),
+    tech_level = droplevels(tech_level)
+  )
+
+model_h5 <- lm(
+  log_wage ~ job_type + tech_level + working_days,
+  data = df_h5
+)
+
+coef_df <- broom::tidy(model_h5, conf.int = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(
+    term = recode(term,
+      "job_typeService/Industrial" = "Service / Industrial job",
+      "job_typeOther"              = "Other job",
+      "tech_levelAdequate"         = "Adequate technology",
+      "working_days"               = "Working days"
+    )
+  )
+
+h3 <- ggplot(coef_df, aes(x = estimate, y = reorder(term, estimate))) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey60") +
+  geom_point(size = 3, color = "#547d9d") +
+  geom_errorbarh(
+    aes(xmin = conf.low, xmax = conf.high),
+    height = 0.2
+  ) +
+  labs(
+    title = "Estimated Effects on Daily Wage (log scale)",
+    subtitle = "OLS regression controlling for job type, technology, and working days",
+    x = "Coefficient estimate (log points)",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 11)
+h3
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+library(broom)
+
+df_h5 <- df_25 %>%
+  filter(
+    !is.na(daily_wage), daily_wage > 0,
+    !is.na(working_days), working_days > 0,
+    job_type %in% c("Agricultural", "Service/Industrial", "Other"),
+    tech_level %in% c("Low", "Adequate")
+  ) %>%
+  mutate(
+    log_wage = log1p(daily_wage),
+    job_type = droplevels(job_type),
+    tech_level = droplevels(tech_level)
+  )
+
+model_h5 <- lm(
+  log_wage ~ job_type + tech_level + working_days,
+  data = df_h5
+)
+
+coef_df <- broom::tidy(model_h5, conf.int = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(
+    term = recode(term,
+      "job_typeService/Industrial" = "Service / Industrial job",
+      "job_typeOther"              = "Other job",
+      "tech_levelAdequate"         = "Adequate technology",
+      "working_days"               = "Working days"
+    )
+  )
+
+h3 <- ggplot(coef_df, aes(x = estimate, y = reorder(term, estimate))) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "grey60") +
+  geom_point(size = 3, color = "#547d9d") +
+  geom_errorbarh(
+    aes(xmin = conf.low, xmax = conf.high),
+    height = 0.2
+  ) +
+  labs(
+    title = "Estimated Effects on Daily Wage (log scale)",
+    subtitle = "OLS regression controlling for job type, technology, and working days",
+    x = "Coefficient estimate (log points)",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 11)
 ```
 :::
 
@@ -1933,3 +2581,16 @@ Based on the progressive visual analytics conducted in this report, we draw the 
 -   Bridging the Tech-Gap: Since technology access significantly lifts the wage curve regardless of working days, subsidized access to digital tools and modern equipment could be a more efficient poverty reduction tool than direct cash transfers.
 
 -   Regional Integration: Policy focus should shift from "keeping labourers on the farm" to facilitating a smooth transition into urban and industrial value chains, as this is where the highest productivity gains are observed.
+
+### 3.3 Limitations and Future Extensions
+
+This study is subject to several limitations that should be acknowledged when interpreting the results.
+
+- The analysis is based on cross-sectional survey data, which constrains causal inference. While strong associations are observed between job type, technology access, and daily wage productivity, the direction of causality cannot be definitively established. For example, higher wages may enable access to better technology, rather than technology directly causing wage increases. Longitudinal or panel data would be required to distinguish productivity effects from selection effects.
+
+- Income and working days are self-reported measures and may be affected by recall bias or reporting error, particularly in informal labour settings where earnings fluctuate seasonally. Although non-parametric methods and log transformations mitigate the influence of extreme values, measurement noise may still attenuate estimated relationships.
+
+- The education–training dimension exhibits strong sorting, resulting in only four observed education–training combinations rather than a full factorial structure. This reflects real-world constraints in vocational access rather than a data-processing issue, but it limits the ability to separately identify interaction effects between education level and training intensity.
+
+- The findings are context-specific to rural informal labourers in Northern Vietnam and should not be mechanically generalized to urban workers or other developing regions without accounting for institutional and labour market differences.
+
