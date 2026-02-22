@@ -1,5 +1,5 @@
 ---
-title: "Hands-On Exercise 06"
+title: "Hands-On Exercise 07"
 author: "Chun-Han"
 date: "February 15, 2026"
 date-modified: "last-modified"
@@ -11,7 +11,6 @@ execute:
 ---
 
 ## Overview
-
 
 ## 1 Getting Started
 
@@ -29,13 +28,13 @@ In this section, you will learn how to plot a calender heatmap programmatically 
 
 By the end of this section, you will be able to:
 
-- plot a calender heatmap by using ggplot2 functions and extension,
+-   plot a calender heatmap by using ggplot2 functions and extension,
 
-- to write function using R programming,
+-   to write function using R programming,
 
-- to derive specific date and time related field by using base R and lubridate packages
+-   to derive specific date and time related field by using base R and lubridate packages
 
-- to perform data preparation task by using tidyr and dplyr packages.
+-   to perform data preparation task by using tidyr and dplyr packages.
 
 ### 1.3 The Data
 
@@ -59,11 +58,11 @@ kable(head(attacks))
 
 There are three columns, namely timestamp, source_country and tz.
 
-- timestamp field stores date-time values in POSIXct format.
+-   timestamp field stores date-time values in POSIXct format.
 
-- source_country field stores the source of the attack. It is in ISO 3166-1 alpha-2 country code.
+-   source_country field stores the source of the attack. It is in ISO 3166-1 alpha-2 country code.
 
-- tz field stores time zone of the source IP address.
+-   tz field stores time zone of the source IP address.
 
 ### 1.6 Data Preparation
 
@@ -176,19 +175,18 @@ theme(axis.ticks = element_blank(),
 ```
 :::
 
-:::callout-note
-- A tibble data table called grouped is derived by aggregating the attack by wkday and hour fields.
+::: callout-note
+-   A tibble data table called grouped is derived by aggregating the attack by wkday and hour fields.
 
-- A new field called n is derived by using `group_by()` and `count()` functions.
-na.omit() is used to exclude missing value.
+-   A new field called n is derived by using `group_by()` and `count()` functions. na.omit() is used to exclude missing value.
 
-- `geom_tile()` is used to plot tiles (grids) at each x and y position. `color` and `size` arguments are used to specify the border color and line size of the tiles.
+-   `geom_tile()` is used to plot tiles (grids) at each x and y position. `color` and `size` arguments are used to specify the border color and line size of the tiles.
 
-- `theme_tufte()` of ggthemes package is used to remove unnecessary chart junk. To learn which visual components of default ggplot2 have been excluded, you are encouraged to comment out this line to examine the default plot.
+-   `theme_tufte()` of ggthemes package is used to remove unnecessary chart junk. To learn which visual components of default ggplot2 have been excluded, you are encouraged to comment out this line to examine the default plot.
 
-- `coord_equal()` is used to ensure the plot will have an aspect ratio of 1:1.
+-   `coord_equal()` is used to ensure the plot will have an aspect ratio of 1:1.
 
-- `scale_fill_gradient()` function is used to creates a two colour gradient (low-high).
+-   `scale_fill_gradient()` function is used to creates a two colour gradient (low-high).
 :::
 
 ### 2.2 Building Multiple Calendar Heatmaps
@@ -197,11 +195,11 @@ na.omit() is used to exclude missing value.
 
 In order to identify the top 4 countries with the highest number of attacks, you are required to do the followings:
 
-- count the number of attacks by country,
+-   count the number of attacks by country,
 
-- calculate the percent of attackes by country, and
+-   calculate the percent of attackes by country, and
 
-- save the results in a tibble data frame.
+-   save the results in a tibble data frame.
 
 ```{r}
 attacks_by_country <- count(
@@ -286,9 +284,9 @@ ggplot(top4_attacks,
 
 This heatmap visualizes the distribution of cyber attacks across weekdays for each country, helping identify whether certain countries exhibit recurring weekly attack patterns.
 
-:::panel-tabset
-
+::: panel-tabset
 ### The Plot
+
 ```{r}
 #| echo: false
 
@@ -366,9 +364,9 @@ ggplot(filter(country_wkday, source_country %in% topN),
 
 This heatmap shows daily and hourly attack intensity, helping detect spike days and intra-day bursts.
 
-:::panel-tabset
-
+::: panel-tabset
 ### The Plot
+
 ```{r}
 #| echo: false
 
@@ -437,7 +435,6 @@ ggplot(filter(tz_hour, tz %in% topTZ),
 
 ```
 :::
-
 
 ## 3 Visualization : Cycle Plot
 
@@ -549,6 +546,179 @@ ggplot() +
   theme_tufte(base_family = "Helvetica")+
   theme(  axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
   panel.grid.major = element_line(colour = "gray90", size = 0.2))
+```
+:::
+
+This version removes the monthly average (de-meaning) so the y-axis represents deviation from the typical level of that month. It highlights unusually high/low years within each month and improves comparability across months by focusing on relative departures instead of absolute volume.
+
+::: panel-tabset
+### Table
+
+```{r}
+#| echo: false
+#| fig-width: 12
+
+Vietnam_dev <- Vietnam %>%
+  group_by(month) %>%
+  mutate(avg = mean(Vietnam, na.rm = TRUE),
+         deviation = Vietnam - avg) %>%
+  ungroup()
+
+ggplot(Vietnam_dev, aes(year, deviation)) +
+  geom_line(color = "#2c3e50", linewidth = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#e74c3c", linewidth = 0.6) +
+  facet_wrap(~month, nrow = 3) +
+  labs(title = "De-meaned Cycle Plot: Deviation from Monthly Average",
+       x = NULL, y = "Deviation (Visitors)") +
+  theme_minimal(base_size = 11) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+
+```
+
+### Code
+
+```{r}
+#| eval: false
+#| fig-width: 12
+
+Vietnam_dev <- Vietnam %>%
+  group_by(month) %>%
+  mutate(avg = mean(Vietnam, na.rm = TRUE),
+         deviation = Vietnam - avg) %>%
+  ungroup()
+
+ggplot(Vietnam_dev, aes(year, deviation)) +
+  geom_line(color = "#2c3e50", linewidth = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#e74c3c", linewidth = 0.6) +
+  facet_wrap(~month, nrow = 3) +
+  labs(title = "De-meaned Cycle Plot: Deviation from Monthly Average",
+       x = NULL, y = "Deviation (Visitors)") +
+  theme_minimal(base_size = 11) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+```
+:::
+
+This plot expresses deviations as percentages: (value − average) / average. Compared with absolute deviation, percentage deviation avoids scale effects (peak months naturally have larger absolute swings), making volatility more comparable across low- and high-volume months.
+
+::: panel-tabset
+### Table
+
+```{r}
+#| echo: false
+#| fig-width: 12
+
+Vietnam_pct <- Vietnam %>%
+  group_by(month) %>%
+  mutate(avg = mean(Vietnam, na.rm = TRUE),
+         pct_dev = (Vietnam - avg) / avg) %>%
+  ungroup()
+
+ggplot(Vietnam_pct, aes(year, pct_dev)) +
+  geom_line(color = "#1b9e77", linewidth = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#e74c3c", linewidth = 0.6) +
+  facet_wrap(~month, nrow = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Percentage Deviation Cycle Plot",
+       x = NULL, y = "Deviation (%)") +
+  theme_minimal(base_size = 11) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+
+```
+
+### Code
+
+```{r}
+#| eval: false
+#| fig-width: 12
+
+Vietnam_pct <- Vietnam %>%
+  group_by(month) %>%
+  mutate(avg = mean(Vietnam, na.rm = TRUE),
+         pct_dev = (Vietnam - avg) / avg) %>%
+  ungroup()
+
+ggplot(Vietnam_pct, aes(year, pct_dev)) +
+  geom_line(color = "#1b9e77", linewidth = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#e74c3c", linewidth = 0.6) +
+  facet_wrap(~month, nrow = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Percentage Deviation Cycle Plot",
+       x = NULL, y = "Deviation (%)") +
+  theme_minimal(base_size = 11) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+```
+:::
+
+This plot computes year-over-year (YoY) growth by comparing each month to the same month in the previous year. YoY is often more business-relevant than raw counts because it measures expansion pace and highlights volatility patterns across months.
+
+::: panel-tabset
+### Table
+
+```{r}
+#| echo: false
+#| fig-width: 12
+
+Vietnam_yoy <- Vietnam %>%
+  arrange(year, month) %>%
+  mutate(yoy = (Vietnam - lag(Vietnam, 12)) / lag(Vietnam, 12)) %>%
+  drop_na(yoy)
+
+ggplot(Vietnam_yoy, aes(year, yoy)) +
+  geom_line(color = "#d95f02", linewidth = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#2c3e50", linewidth = 0.6) +
+  facet_wrap(~month, nrow = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "YoY Growth Cycle Plot (Month-over-Month across years)",
+       x = NULL, y = "YoY Growth") +
+  theme_minimal(base_size = 11) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+
+```
+
+### Code
+
+```{r}
+#| eval: false
+#| fig-width: 12
+
+Vietnam_yoy <- Vietnam %>%
+  arrange(year, month) %>%
+  mutate(yoy = (Vietnam - lag(Vietnam, 12)) / lag(Vietnam, 12)) %>%
+  drop_na(yoy)
+
+ggplot(Vietnam_yoy, aes(year, yoy)) +
+  geom_line(color = "#d95f02", linewidth = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#2c3e50", linewidth = 0.6) +
+  facet_wrap(~month, nrow = 3) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "YoY Growth Cycle Plot (Month-over-Month across years)",
+       x = NULL, y = "YoY Growth") +
+  theme_minimal(base_size = 11) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
 ```
 :::
 
