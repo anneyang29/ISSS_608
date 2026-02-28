@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Chun-Han">
+<meta name="dcterms.date" content="2026-02-28">
+
+<title>Take-home Exercise 2 – Clustering Module Prototype – ISSS608-Coursework</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-4c97959f51cbeabf347fefa2a080b205.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">ISSS608-Coursework</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-hands-on-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Hands-On Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise01/HE01.html">
+ <span class="dropdown-text">Hands-On Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise02/HE02.html">
+ <span class="dropdown-text">Hands-On Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise03/HE03-1.html">
+ <span class="dropdown-text">Hands-On Exercise 3-1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise03/HE03-2.html">
+ <span class="dropdown-text">Hands-On Exercise 3-2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise04/HE04-1.html">
+ <span class="dropdown-text">Hands-On Exercise 4-1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise04/HE04-2.html">
+ <span class="dropdown-text">Hands-On Exercise 4-2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise04/HE04-3.html">
+ <span class="dropdown-text">Hands-On Exercise 4-3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise04/HE04-4.html">
+ <span class="dropdown-text">Hands-On Exercise 4-4</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise05/HE05-1.html">
+ <span class="dropdown-text">Hands-On Exercise 5-1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise05/HE05-2.html">
+ <span class="dropdown-text">Hands-On Exercise 5-2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise05/HE05-3.html">
+ <span class="dropdown-text">Hands-On Exercise 5-3</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise05/HE05-4.html">
+ <span class="dropdown-text">Hands-On Exercise 5-4</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise05/HE05-5.html">
+ <span class="dropdown-text">Hands-On Exercise 5-5</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-On_Exercise/Hands-On_Exercise07/HE07.html">
+ <span class="dropdown-text">Hands-On Exercise 7</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">In-Class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../In-Class_Exercise/In-Class_Exercise01/IE01.html">
+ <span class="dropdown-text">In-Class Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-Class_Exercise/In-Class_Exercise02/IE02.html">
+ <span class="dropdown-text">In-Class Exercise 2</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-Home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Take-Home_Exercise/Take-Home_Exercise01/TE01.html">
+ <span class="dropdown-text">Take-Home Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-Home_Exercise/Take-Home_Exercise02/TE02.html">
+ <span class="dropdown-text">Take-Home Exercise 2</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">1 Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#installing-and-loading-the-packages" id="toc-installing-and-loading-the-packages" class="nav-link" data-scroll-target="#installing-and-loading-the-packages">1.1 Installing and loading the packages</a></li>
+  </ul></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">2 Data Preparation</a>
+  <ul class="collapse">
+  <li><a href="#loading-the-dataset" id="toc-loading-the-dataset" class="nav-link" data-scroll-target="#loading-the-dataset">2.1 Loading the Dataset</a></li>
+  <li><a href="#data-integrity-checks" id="toc-data-integrity-checks" class="nav-link" data-scroll-target="#data-integrity-checks">2.2 Data Integrity Checks</a></li>
+  </ul></li>
+  <li><a href="#variable-selection-for-clustering" id="toc-variable-selection-for-clustering" class="nav-link" data-scroll-target="#variable-selection-for-clustering">3 Variable Selection for Clustering</a></li>
+  <li><a href="#preprocessing" id="toc-preprocessing" class="nav-link" data-scroll-target="#preprocessing">4 Preprocessing</a>
+  <ul class="collapse">
+  <li><a href="#create-original-dataset" id="toc-create-original-dataset" class="nav-link" data-scroll-target="#create-original-dataset">4.1 Create Original Dataset</a></li>
+  <li><a href="#skewness-assessment" id="toc-skewness-assessment" class="nav-link" data-scroll-target="#skewness-assessment">4.2 Skewness Assessment</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">4.3 Interpretation</a></li>
+  <li><a href="#log-transformation" id="toc-log-transformation" class="nav-link" data-scroll-target="#log-transformation">4.4 Log Transformation</a></li>
+  <li><a href="#skewness-comparison" id="toc-skewness-comparison" class="nav-link" data-scroll-target="#skewness-comparison">4.5 Skewness Comparison</a></li>
+  <li><a href="#standardisation" id="toc-standardisation" class="nav-link" data-scroll-target="#standardisation">4.6 Standardisation</a></li>
+  </ul></li>
+  <li><a href="#clustering-implementation" id="toc-clustering-implementation" class="nav-link" data-scroll-target="#clustering-implementation">5 Clustering Implementation</a>
+  <ul class="collapse">
+  <li><a href="#determining-optimal-number-of-clusters" id="toc-determining-optimal-number-of-clusters" class="nav-link" data-scroll-target="#determining-optimal-number-of-clusters">5.1 Determining Optimal Number of Clusters</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Take-home Exercise 2 – Clustering Module Prototype</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Chun-Han </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 28, 2026</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">February 28, 2026</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>This take-home exercise develops a prototype of the Customer Segmentation Module for the final Shiny application.</p>
+<p>The dataset is already structured at the customer level, meaning each row represents a unique customer with demographic, behavioural, engagement, and satisfaction attributes. Therefore, no transaction-level aggregation is required.</p>
+<p>The purpose of this prototype is to:</p>
+<ul>
+<li><p>Feature engineering from transaction-level data</p></li>
+<li><p>Feasibility of k-means clustering</p></li>
+<li><p>Interactive parameters (k and variable selection)</p></li>
+<li><p>Visual outputs for cluster exploration</p></li>
+</ul>
+</section>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">1 Getting Started</h2>
+<section id="installing-and-loading-the-packages" class="level3">
+<h3 class="anchored" data-anchor-id="installing-and-loading-the-packages">1.1 Installing and loading the packages</h3>
+<p>Before performing analysis, the required packages are loaded. These packages support data manipulation, clustering evaluation, and visualisation.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Library</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>pacman</strong></td>
+<td>Install and load multiple packages in one command.</td>
+</tr>
+<tr class="even">
+<td><strong>tidyverse</strong></td>
+<td>Data wrangling + ggplot2 visualization workflow .</td>
+</tr>
+<tr class="odd">
+<td><strong>lubridate</strong></td>
+<td>Date parsing and date arithmetic.</td>
+</tr>
+<tr class="even">
+<td><strong>cluster</strong></td>
+<td>Clustering evaluation utilities (e.g., silhouette).</td>
+</tr>
+<tr class="odd">
+<td><strong>factoextra</strong></td>
+<td>Helper functions for visualising clusters and PCA results .</td>
+</tr>
+<tr class="even">
+<td><strong>DT</strong></td>
+<td>Interactive tables for cluster profile summaries in Shiny.</td>
+</tr>
+<tr class="odd">
+<td><strong>shiny</strong></td>
+<td>UI and server framework for integrating this module into the final Shiny app.</td>
+</tr>
+<tr class="even">
+<td><strong>plotly</strong></td>
+<td>Interactive plotting for cluster maps and exploratory visuals.</td>
+</tr>
+</tbody>
+</table>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  pacman, tidyverse, lubridate, cluster, factoextra, DT, shiny, plotly</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="data-preparation" class="level2">
+<h2 class="anchored" data-anchor-id="data-preparation">2 Data Preparation</h2>
+<section id="loading-the-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="loading-the-dataset">2.1 Loading the Dataset</h3>
+<p>We first import the customer-level dataset and inspect its structure to confirm variable types.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>customers <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/customer_data.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(customers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 48,723
+Columns: 54
+$ customer_id                &lt;dbl&gt; 93716481, 49020929, 52690950, 23199751, 619…
+$ age                        &lt;dbl&gt; 44, 44, 45, 45, 44, 45, 44, 44, 45, 44, 44,…
+$ gender                     &lt;chr&gt; "Male", "Male", "Male", "Male", "Female", "…
+$ location                   &lt;chr&gt; "Pereira, Risaralda", "Cali, Valle del Cauc…
+$ income_bracket             &lt;chr&gt; "Very High", "Medium", "High", "High", "Med…
+$ occupation                 &lt;chr&gt; "Engineer", "Construction Worker", "Constru…
+$ education_level            &lt;chr&gt; "Master", "Bachelor", "Bachelor", "High Sch…
+$ marital_status             &lt;chr&gt; "Married", "Married", "Married", "Single", …
+$ household_size             &lt;dbl&gt; 5, 2, 4, 2, 3, 4, 4, 3, 1, 3, 5, 3, 3, 7, 3…
+$ acquisition_channel        &lt;chr&gt; "Partnership", "Paid Ad", "Paid Ad", "Refer…
+$ customer_segment           &lt;chr&gt; "occasional", "regular", "inactive", "inact…
+$ savings_account            &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, T…
+$ credit_card                &lt;lgl&gt; TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE…
+$ personal_loan              &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, F…
+$ investment_account         &lt;lgl&gt; FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, FALS…
+$ insurance_product          &lt;lgl&gt; TRUE, FALSE, TRUE, FALSE, FALSE, FALSE, FAL…
+$ active_products            &lt;dbl&gt; 1, 5, 3, 2, 1, 1, 1, 4, 2, 3, 1, 5, 3, 1, 1…
+$ app_logins_frequency       &lt;dbl&gt; 15, 30, 4, 15, 19, 15, 44, 22, 7, 11, 7, 30…
+$ feature_usage_diversity    &lt;dbl&gt; 3, 0, 4, 4, 1, 4, 6, 1, 1, 6, 3, 1, 2, 1, 3…
+$ bill_payment_user          &lt;lgl&gt; FALSE, TRUE, TRUE, TRUE, FALSE, TRUE, TRUE,…
+$ auto_savings_enabled       &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FA…
+$ credit_utilization_ratio   &lt;dbl&gt; 0.17871029, NA, NA, NA, 0.40360553, 0.07786…
+$ international_transactions &lt;dbl&gt; 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0…
+$ failed_transactions        &lt;dbl&gt; 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0…
+$ tx_count                   &lt;dbl&gt; 76, 10, 10, 23, 18, 15, 24, 45, 134, 13, 18…
+$ avg_tx_value               &lt;dbl&gt; 1679872.4, 5445810.0, 640335.0, 660180.4, 1…
+$ total_tx_volume            &lt;dbl&gt; 127670300, 54458100, 6403350, 15184150, 262…
+$ first_tx                   &lt;date&gt; 2023-01-05, 2023-02-05, 2023-01-31, 2023-0…
+$ last_tx                    &lt;date&gt; 2023-12-25, 2023-12-20, 2023-12-12, 2023-1…
+$ base_satisfaction          &lt;dbl&gt; 9.213372, 6.073093, 8.198643, 7.529577, 6.6…
+$ tx_satisfaction            &lt;dbl&gt; 0.380, 0.050, 0.050, 0.115, 0.090, 0.075, 0…
+$ product_satisfaction       &lt;dbl&gt; 0.6, 0.2, 0.6, 0.4, 0.4, 0.6, 0.4, 0.4, 0.6…
+$ satisfaction_score         &lt;dbl&gt; 5, 3, 4, 4, 3, 4, 4, 4, 5, 4, 4, 5, 4, 3, 4…
+$ nps_score                  &lt;dbl&gt; -7, -46, -29, -31, -47, -29, -34, -36, -4, …
+$ last_survey_date           &lt;date&gt; 2023-12-16, 2023-05-05, 2023-11-16, 2023-0…
+$ support_tickets_count      &lt;dbl&gt; 1, 1, 0, 2, 2, 1, 1, 0, 2, 0, 0, 2, 3, 1, 0…
+$ resolved_tickets_ratio     &lt;dbl&gt; 0.0000000, 1.0000000, 0.0000000, 0.5000000,…
+$ app_store_rating           &lt;dbl&gt; 3.5, 4.0, 5.0, 4.5, 4.0, 4.0, 5.0, 4.5, 4.5…
+$ feedback_sentiment         &lt;chr&gt; "Neutral", "Positive", "Positive", "Positiv…
+$ feature_requests           &lt;chr&gt; "Budgeting tools", NA, NA, "Cryptocurrency …
+$ complaint_topics           &lt;chr&gt; NA, NA, NA, NA, "App performance", NA, NA, …
+$ clv_segment                &lt;chr&gt; "Gold", "Bronze", "Gold", "Bronze", "Gold",…
+$ monthly_transaction_count  &lt;dbl&gt; 1.428571, 1.571429, 2.500000, 1.555556, 2.1…
+$ average_transaction_value  &lt;dbl&gt; 6054025.0, 2127413.6, 3575915.0, 1513353.6,…
+$ total_transaction_volume   &lt;dbl&gt; 60540250, 23401550, 35759150, 21186950, 116…
+$ transaction_frequency      &lt;dbl&gt; 0.03076923, 0.03293413, 0.05000000, 0.04778…
+$ last_transaction_date      &lt;date&gt; 2023-12-05, 2023-12-18, 2023-10-27, 2023-1…
+$ preferred_transaction_type &lt;chr&gt; "Transfer", "Transfer", "Transfer", "Transf…
+$ first_transaction_date     &lt;date&gt; 2023-01-05, 2023-02-05, 2023-01-31, 2023-0…
+$ weekend_transaction_ratio  &lt;dbl&gt; 0.30000000, 0.18181818, 0.30000000, 0.14285…
+$ avg_daily_transactions     &lt;dbl&gt; 0.03076923, 0.03293413, 0.05000000, 0.04778…
+$ customer_tenure            &lt;dbl&gt; 11.633333, 11.500000, 8.766667, 10.733333, …
+$ churn_probability          &lt;dbl&gt; 0.3622688, 0.1817896, 0.3212651, 0.3366287,…
+$ customer_lifetime_value    &lt;dbl&gt; 312414808, 167022286, 19403711, 35978105, 3…</code></pre>
+</div>
+</div>
+</section>
+<section id="data-integrity-checks" class="level3">
+<h3 class="anchored" data-anchor-id="data-integrity-checks">2.2 Data Integrity Checks</h3>
+<section id="missing-values" class="level4">
+<h4 class="anchored" data-anchor-id="missing-values">2.2.1 Missing Values</h4>
+<p>Missing values may distort clustering results. Therefore, we inspect NA counts.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>customers <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span><span class="fu">sum</span>(<span class="fu">is.na</span>(.))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 54
+  customer_id   age gender location income_bracket occupation education_level
+        &lt;int&gt; &lt;int&gt;  &lt;int&gt;    &lt;int&gt;          &lt;int&gt;      &lt;int&gt;           &lt;int&gt;
+1           0     0      0        0              0          0               0
+# ℹ 47 more variables: marital_status &lt;int&gt;, household_size &lt;int&gt;,
+#   acquisition_channel &lt;int&gt;, customer_segment &lt;int&gt;, savings_account &lt;int&gt;,
+#   credit_card &lt;int&gt;, personal_loan &lt;int&gt;, investment_account &lt;int&gt;,
+#   insurance_product &lt;int&gt;, active_products &lt;int&gt;, app_logins_frequency &lt;int&gt;,
+#   feature_usage_diversity &lt;int&gt;, bill_payment_user &lt;int&gt;,
+#   auto_savings_enabled &lt;int&gt;, credit_utilization_ratio &lt;int&gt;,
+#   international_transactions &lt;int&gt;, failed_transactions &lt;int&gt;, …</code></pre>
+</div>
+</div>
+<p>The missing value inspection shows that all 54 variables contain zero missing entries.</p>
+<p>This indicates that the dataset is fully observed at the customer level. No imputation or row removal procedures are required.</p>
+</section>
+<section id="duplicate-records" class="level4">
+<h4 class="anchored" data-anchor-id="duplicate-records">2.2.2 Duplicate Records</h4>
+<p>Since clustering is performed at the customer level, duplicate rows would bias the segmentation.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">duplicated</span>(customers))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>The result indicates that no duplicate rows exist, confirming dataset integrity.</p>
+</section>
+</section>
+</section>
+<section id="variable-selection-for-clustering" class="level2">
+<h2 class="anchored" data-anchor-id="variable-selection-for-clustering">3 Variable Selection for Clustering</h2>
+<p>Clustering should rely on behavioural and engagement signals, rather than identifiers or pre-existing labels.</p>
+<p>The following variables are selected:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cluster_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"monthly_transaction_count"</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"average_transaction_value"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"total_transaction_volume"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"transaction_frequency"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"avg_daily_transactions"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"app_logins_frequency"</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"feature_usage_diversity"</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"active_products"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"credit_utilization_ratio"</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"weekend_transaction_ratio"</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"customer_tenure"</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>These variables capture:</p>
+<ul>
+<li><p>Transaction intensity</p></li>
+<li><p>Spending behaviour</p></li>
+<li><p>App engagement</p></li>
+<li><p>Product breadth</p></li>
+<li><p>Credit behaviour</p></li>
+<li><p>Customer tenure</p></li>
+</ul>
+</section>
+<section id="preprocessing" class="level2">
+<h2 class="anchored" data-anchor-id="preprocessing">4 Preprocessing</h2>
+<p>Clustering algorithms such as K-means rely on Euclidean distance. Therefore, proper preprocessing is essential to:</p>
+<ul>
+<li><p>Prevent scale dominance</p></li>
+<li><p>Reduce skewness effects</p></li>
+<li><p>Ensure fair distance computation</p></li>
+</ul>
+<p>The preprocessing pipeline follows three steps:</p>
+<ul>
+<li><p>Preserve original data for interpretation</p></li>
+<li><p>Apply log transformation to skewed variables</p></li>
+<li><p>Standardise variables before clustering</p></li>
+</ul>
+<section id="create-original-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="create-original-dataset">4.1 Create Original Dataset</h3>
+<p>Before transformation, we preserve the original numeric values. This dataset will later be used to compute cluster profile summaries.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_original <span class="ot">&lt;-</span> customers <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(cluster_vars)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), as.numeric)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(df_original)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 30460    11</code></pre>
+</div>
+</div>
+</section>
+<section id="skewness-assessment" class="level3">
+<h3 class="anchored" data-anchor-id="skewness-assessment">4.2 Skewness Assessment</h3>
+<p>Before applying log transformation, we quantify skewness to determine whether transformation is necessary.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>skew_table <span class="ot">&lt;-</span> df_original <span class="sc">%&gt;%</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span><span class="fu">skewness</span>(.))) <span class="sc">%&gt;%</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"variable"</span>, <span class="at">values_to =</span> <span class="st">"skewness"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(<span class="fu">abs</span>(skewness)))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>skew_table</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 11 × 2
+   variable                  skewness
+   &lt;chr&gt;                        &lt;dbl&gt;
+ 1 total_transaction_volume    89.4  
+ 2 monthly_transaction_count   40.9  
+ 3 transaction_frequency       40.9  
+ 4 avg_daily_transactions      40.9  
+ 5 customer_tenure             -2.22 
+ 6 average_transaction_value    2.22 
+ 7 app_logins_frequency         0.932
+ 8 active_products              0.909
+ 9 credit_utilization_ratio     0.592
+10 feature_usage_diversity      0.414
+11 weekend_transaction_ratio    0.293</code></pre>
+</div>
+</div>
+</section>
+<section id="interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation">4.3 Interpretation</h3>
+<p>Variables with absolute <code>skewness &gt; 1</code> are considered highly skewed and candidates for log transformation.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>skew_vars <span class="ot">&lt;-</span> skew_table <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">abs</span>(skewness) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(variable)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>skew_vars</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "total_transaction_volume"  "monthly_transaction_count"
+[3] "transaction_frequency"     "avg_daily_transactions"   
+[5] "customer_tenure"           "average_transaction_value"</code></pre>
+</div>
+</div>
+</section>
+<section id="log-transformation" class="level3">
+<h3 class="anchored" data-anchor-id="log-transformation">4.4 Log Transformation</h3>
+<p>Since the skewness assessment identified highly skewed variables, we apply log transformation only to those variables.</p>
+<p>We use <code>log1p(x)</code> (log(1 + x)) to safely handle zero values.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df_model <span class="ot">&lt;-</span> df_original <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(skew_vars), <span class="sc">~</span><span class="fu">log1p</span>(.)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="skewness-comparison" class="level3">
+<h3 class="anchored" data-anchor-id="skewness-comparison">4.5 Skewness Comparison</h3>
+<p>To validate the effectiveness of transformation, we recompute skewness after applying log transformation.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>skew_after <span class="ot">&lt;-</span> df_model <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span><span class="fu">skewness</span>(.))) <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"variable"</span>, <span class="at">values_to =</span> <span class="st">"skew_after"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>skew_compare <span class="ot">&lt;-</span> skew_table <span class="sc">%&gt;%</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(skew_after, <span class="at">by =</span> <span class="st">"variable"</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>skew_compare</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 11 × 3
+   variable                  skewness skew_after
+   &lt;chr&gt;                        &lt;dbl&gt;      &lt;dbl&gt;
+ 1 total_transaction_volume    89.4        0.726
+ 2 monthly_transaction_count   40.9        3.14 
+ 3 transaction_frequency       40.9        8.23 
+ 4 avg_daily_transactions      40.9        8.23 
+ 5 customer_tenure             -2.22      -2.63 
+ 6 average_transaction_value    2.22       0.232
+ 7 app_logins_frequency         0.932      0.932
+ 8 active_products              0.909      0.909
+ 9 credit_utilization_ratio     0.592      0.592
+10 feature_usage_diversity      0.414      0.414
+11 weekend_transaction_ratio    0.293      0.293</code></pre>
+</div>
+</div>
+<p>This confirms that transformation improved distribution symmetry without over-transforming already well-behaved variables.</p>
+</section>
+<section id="standardisation" class="level3">
+<h3 class="anchored" data-anchor-id="standardisation">4.6 Standardisation</h3>
+<p>K-means clustering relies on Euclidean distance, which is sensitive to variable scale.</p>
+<p>Without standardisation:</p>
+<ul>
+<li><p>Variables with larger magnitude (e.g., transaction volume) would dominate distance computation.</p></li>
+<li><p>Smaller-scale variables (e.g., ratios) would have negligible influence.</p></li>
+</ul>
+<p>Therefore, we apply z-score scaling.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_scaled <span class="ot">&lt;-</span> <span class="fu">scale</span>(df_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="clustering-implementation" class="level2">
+<h2 class="anchored" data-anchor-id="clustering-implementation">5 Clustering Implementation</h2>
+<p>With preprocessing completed, we proceed to implement clustering using K-means.</p>
+<p>K-means is selected because:</p>
+<ul>
+<li><p>It is computationally efficient</p></li>
+<li><p>It is suitable for numeric, standardised variables</p></li>
+<li><p>It integrates well with interactive Shiny applications</p></li>
+<li><p>It allows user-controlled selection of <code>k</code></p></li>
+</ul>
+<section id="determining-optimal-number-of-clusters" class="level3">
+<h3 class="anchored" data-anchor-id="determining-optimal-number-of-clusters">5.1 Determining Optimal Number of Clusters</h3>
+<p>Before fixing k, we evaluate cluster compactness using the Elbow Method.</p>
+<p>The Elbow Method examines the total within-cluster sum of squares (WSS) as k increases.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TE02_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2022</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>wss <span class="ot">&lt;-</span> <span class="fu">map_dbl</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">10</span>, <span class="cf">function</span>(k){</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kmeans</span>(df_scaled, <span class="at">centers =</span> k, <span class="at">nstart =</span> <span class="dv">20</span>)<span class="sc">$</span>tot.withinss</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>elbow_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">k =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">10</span>,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">wss =</span> wss</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(elbow_df, <span class="fu">aes</span>(k, wss)) <span class="sc">+</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Elbow Method"</span>,</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Number of Clusters (k)"</span>,</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Total Within-Cluster Sum of Squares"</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,304 @@
+---
+title: "Take-home Exercise 2 – Clustering Module Prototype"
+author: "Chun-Han"
+date: "February 28, 2026"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+  freeze: true
+---
+
+## Overview
+
+This take-home exercise develops a prototype of the Customer Segmentation Module for the final Shiny application.
+
+The dataset is already structured at the customer level, meaning each row represents a unique customer with demographic, behavioural, engagement, and satisfaction attributes. Therefore, no transaction-level aggregation is required.
+
+The purpose of this prototype is to:
+
+-   Feature engineering from transaction-level data
+
+-   Feasibility of k-means clustering
+
+-   Interactive parameters (k and variable selection)
+
+-   Visual outputs for cluster exploration
+
+## 1 Getting Started
+
+### 1.1 Installing and loading the packages
+
+Before performing analysis, the required packages are loaded. These packages support data manipulation, clustering evaluation, and visualisation.
+
+| Library | Description |
+|------------------------------------|------------------------------------|
+| **pacman** | Install and load multiple packages in one command. |
+| **tidyverse** | Data wrangling + ggplot2 visualization workflow . |
+| **lubridate** | Date parsing and date arithmetic. |
+| **cluster** | Clustering evaluation utilities (e.g., silhouette). |
+| **factoextra** | Helper functions for visualising clusters and PCA results . |
+| **DT** | Interactive tables for cluster profile summaries in Shiny. |
+| **shiny** | UI and server framework for integrating this module into the final Shiny app. |
+| **plotly** | Interactive plotting for cluster maps and exploratory visuals. |
+
+```{r}
+pacman::p_load(
+  pacman, tidyverse, lubridate, cluster, factoextra, DT, shiny, plotly
+)
+```
+
+## 2 Data Preparation
+
+### 2.1 Loading the Dataset
+
+We first import the customer-level dataset and inspect its structure to confirm variable types.
+
+```{r}
+customers <- read_csv("data/customer_data.csv")
+glimpse(customers)
+```
+
+### 2.2 Data Integrity Checks
+
+#### 2.2.1 Missing Values
+
+Missing values may distort clustering results. Therefore, we inspect NA counts.
+
+```{r}
+customers %>%
+  summarise(across(everything(), ~sum(is.na(.))))
+```
+
+The missing value inspection shows that all 54 variables contain zero missing entries.
+
+This indicates that the dataset is fully observed at the customer level. 
+No imputation or row removal procedures are required.
+
+#### 2.2.2 Duplicate Records
+
+Since clustering is performed at the customer level, duplicate rows would bias the segmentation.
+
+```{r}
+sum(duplicated(customers))
+```
+
+The result indicates that no duplicate rows exist, confirming dataset integrity.
+
+## 3 Variable Selection for Clustering
+
+Clustering should rely on behavioural and engagement signals, rather than identifiers or pre-existing labels.
+
+The following variables are selected:
+
+```{r}
+cluster_vars <- c(
+  "monthly_transaction_count",
+  "average_transaction_value",
+  "total_transaction_volume",
+  "transaction_frequency",
+  "avg_daily_transactions",
+  "app_logins_frequency",
+  "feature_usage_diversity",
+  "active_products",
+  "credit_utilization_ratio",
+  "weekend_transaction_ratio",
+  "customer_tenure"
+)
+```
+
+These variables capture:
+
+- Transaction intensity
+
+- Spending behaviour
+
+- App engagement
+
+- Product breadth
+
+- Credit behaviour
+
+- Customer tenure
+
+## 4 Preprocessing
+
+Clustering algorithms such as K-means rely on Euclidean distance.
+Therefore, proper preprocessing is essential to:
+
+- Prevent scale dominance
+
+- Reduce skewness effects
+
+- Ensure fair distance computation
+
+The preprocessing pipeline follows three steps:
+
+- Preserve original data for interpretation
+
+- Apply log transformation to skewed variables
+
+- Standardise variables before clustering
+
+### 4.1 Create Original Dataset 
+
+Before transformation, we preserve the original numeric values. This dataset will later be used to compute cluster profile summaries.
+
+```{r}
+df_original <- customers %>%
+  select(all_of(cluster_vars)) %>%
+  mutate(across(everything(), as.numeric)) %>%
+  drop_na()
+
+dim(df_original)
+```
+
+### 4.2 Skewness Assessment
+
+Before applying log transformation, we quantify skewness to determine whether transformation is necessary.
+
+```{r}
+library(e1071)
+
+skew_table <- df_original %>%
+  summarise(across(everything(), ~skewness(.))) %>%
+  pivot_longer(everything(), names_to = "variable", values_to = "skewness") %>%
+  arrange(desc(abs(skewness)))
+
+skew_table
+```
+
+### 4.3 Interpretation
+
+Variables with absolute `skewness > 1` are considered highly skewed and candidates for log transformation.
+
+```{r}
+skew_vars <- skew_table %>%
+  filter(abs(skewness) > 1) %>%
+  pull(variable)
+
+skew_vars
+```
+
+### 4.4 Log Transformation
+
+Since the skewness assessment identified highly skewed variables,
+we apply log transformation only to those variables.
+
+We use `log1p(x)` (log(1 + x)) to safely handle zero values.
+
+```{r}
+df_model <- df_original %>%
+  mutate(across(all_of(skew_vars), ~log1p(.)))
+```
+
+### 4.5 Skewness Comparison
+
+To validate the effectiveness of transformation, we recompute skewness after applying log transformation.
+
+```{r}
+skew_after <- df_model %>%
+  summarise(across(everything(), ~skewness(.))) %>%
+  pivot_longer(everything(), names_to = "variable", values_to = "skew_after")
+
+skew_compare <- skew_table %>%
+  left_join(skew_after, by = "variable")
+
+skew_compare
+```
+
+This confirms that transformation improved distribution symmetry
+without over-transforming already well-behaved variables.
+
+### 4.6 Standardisation
+
+K-means clustering relies on Euclidean distance, which is sensitive to variable scale.
+
+Without standardisation:
+
+- Variables with larger magnitude (e.g., transaction volume)
+would dominate distance computation.
+
+- Smaller-scale variables (e.g., ratios) would have negligible influence.
+
+Therefore, we apply z-score scaling.
+
+```{r}
+df_scaled <- scale(df_model)
+```
+
+## 5 Clustering Implementation
+
+With preprocessing completed, we proceed to implement clustering using K-means.
+
+K-means is selected because:
+
+- It is computationally efficient
+
+- It is suitable for numeric, standardised variables
+
+- It integrates well with interactive Shiny applications
+
+- It allows user-controlled selection of `k`
+
+### 5.1 Determining Optimal Number of Clusters
+
+Before fixing k, we evaluate cluster compactness using the Elbow Method.
+
+The Elbow Method examines the total within-cluster sum of squares (WSS) as k increases.
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+set.seed(2022)
+
+wss <- map_dbl(2:10, function(k){
+  kmeans(df_scaled, centers = k, nstart = 20)$tot.withinss
+})
+
+elbow_df <- tibble(
+  k = 2:10,
+  wss = wss
+)
+
+ggplot(elbow_df, aes(k, wss)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Elbow Method",
+    x = "Number of Clusters (k)",
+    y = "Total Within-Cluster Sum of Squares"
+  )
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+set.seed(2022)
+
+wss <- map_dbl(2:10, function(k){
+  kmeans(df_scaled, centers = k, nstart = 20)$tot.withinss
+})
+
+elbow_df <- tibble(
+  k = 2:10,
+  wss = wss
+)
+
+ggplot(elbow_df, aes(k, wss)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Elbow Method",
+    x = "Number of Clusters (k)",
+    y = "Total Within-Cluster Sum of Squares"
+  )
+```
+:::
+

@@ -37,7 +37,7 @@ This report investigates the drivers of income inequality and socio-economic mob
 ### 1.1 Installing and loading the packages
 
 | Library | Description |
-|---|---|
+|------------------------------------|------------------------------------|
 | **pacman** | A package management utility used to install and load multiple R packages efficiently with a single command. |
 | **tidyverse** | A collection of core R packages for data science workflows (data cleaning, transformation, and visualization). |
 | **readxl** | Enables importing Excel files (.xls, .xlsx) into R without requiring external dependencies. |
@@ -130,22 +130,21 @@ raw_df <- read_excel("data/Upload for elsiver.xlsx",
                      na = c("", "NA"))
 ```
 
-
 ### 1.4 Filtering data for selected variables
 
 To ensure a focused analysis, a subset of variables was extracted from the raw dataset, covering six critical socio-economic dimensions:
 
-- Demographics (CPRO, CGEN, CRAC): Capturing province, gender, and ethnicity to identify structural grouping.
+-   Demographics (CPRO, CGEN, CRAC): Capturing province, gender, and ethnicity to identify structural grouping.
 
-- Income Profiles (TEIN, TAIN, TSII, TOIN): Identifying total income and its breakdown across agriculture, service, and other sectors.
+-   Income Profiles (TEIN, TAIN, TSII, TOIN): Identifying total income and its breakdown across agriculture, service, and other sectors.
 
-- Human Capital & Credit (FEDU, FVTP, FCRA, FTAP): Measuring education, vocational training, credit access, and technology adoption.
+-   Human Capital & Credit (FEDU, FVTP, FCRA, FTAP): Measuring education, vocational training, credit access, and technology adoption.
 
-- Labor Supply (LWDA): Recording working days to calculate daily wage efficiency.
+-   Labor Supply (LWDA): Recording working days to calculate daily wage efficiency.
 
-- Policy & Wellbeing (PPO, ARO4): Assessing respondent perceptions of rural development policies and self-reported wellbeing improvements.
+-   Policy & Wellbeing (PPO, ARO4): Assessing respondent perceptions of rural development policies and self-reported wellbeing improvements.
 
-- Living Conditions (LHO): Using housing characteristics as a proxy for material asset stability.
+-   Living Conditions (LHO): Using housing characteristics as a proxy for material asset stability.
 
 ```{r}
 selected_df <- raw_df %>%
@@ -813,10 +812,10 @@ p_h2_minority <- ggstatsplot::ggbetweenstats(
   plot_layout(heights = c(1, 1))
 ```
 
-:::callout-note
-- Given the right-skewed distribution of income and the presence of extreme values, non-parametric Wilcoxon rank-sum tests were employed, and group differences are summarized using median values rather than means.
+::: callout-note
+-   Given the right-skewed distribution of income and the presence of extreme values, non-parametric Wilcoxon rank-sum tests were employed, and group differences are summarized using median values rather than means.
 
-- Because total income exhibits a highly right-skewed distribution with extreme values, a log transformation `log1p` is applied prior to analysis. This transformation reduces the influence of outliers, stabilizes variance, and facilitates more meaningful comparisons of income distributions across groups while preserving zero-income observations.
+-   Because total income exhibits a highly right-skewed distribution with extreme values, a log transformation `log1p` is applied prior to analysis. This transformation reduces the influence of outliers, stabilizes variance, and facilitates more meaningful comparisons of income distributions across groups while preserving zero-income observations.
 :::
 
 **Observation**
@@ -1051,7 +1050,7 @@ p_h1
 ```
 :::
 
-#### 2.3.5  H2a: Gender difference within Kinh 
+#### 2.3.5 H2a: Gender difference within Kinh
 
 ::: panel-tabset
 ### Plot
@@ -1109,7 +1108,7 @@ p_h2_kinh
 ```
 :::
 
-#### 2.3.6  H2b: Gender difference within Minority 
+#### 2.3.6 H2b: Gender difference within Minority
 
 ::: panel-tabset
 ### Plot
@@ -1593,7 +1592,7 @@ p_tech <- ggplot(df_25, aes(x = working_days, y = daily_wage, color = tech_level
   theme(legend.position = "bottom")
 ```
 
-:::callout-note
+::: callout-note
 Only four education–training combinations are observed due to strong sorting between education level and training type.
 
 ```{r}
@@ -2028,7 +2027,7 @@ p_h4_tech
 
 #### 2.5.7 H3 : Conditional Effects on Daily Wage
 
-:::panel-tabset
+::: panel-tabset
 ### Plot
 
 ```{r}
@@ -2586,11 +2585,10 @@ Based on the progressive visual analytics conducted in this report, we draw the 
 
 This study is subject to several limitations that should be acknowledged when interpreting the results.
 
-- The analysis is based on cross-sectional survey data, which constrains causal inference. While strong associations are observed between job type, technology access, and daily wage productivity, the direction of causality cannot be definitively established. For example, higher wages may enable access to better technology, rather than technology directly causing wage increases. Longitudinal or panel data would be required to distinguish productivity effects from selection effects.
+-   The analysis is based on cross-sectional survey data, which constrains causal inference. While strong associations are observed between job type, technology access, and daily wage productivity, the direction of causality cannot be definitively established. For example, higher wages may enable access to better technology, rather than technology directly causing wage increases. Longitudinal or panel data would be required to distinguish productivity effects from selection effects.
 
-- Income and working days are self-reported measures and may be affected by recall bias or reporting error, particularly in informal labour settings where earnings fluctuate seasonally. Although non-parametric methods and log transformations mitigate the influence of extreme values, measurement noise may still attenuate estimated relationships.
+-   Income and working days are self-reported measures and may be affected by recall bias or reporting error, particularly in informal labour settings where earnings fluctuate seasonally. Although non-parametric methods and log transformations mitigate the influence of extreme values, measurement noise may still attenuate estimated relationships.
 
-- The education–training dimension exhibits strong sorting, resulting in only four observed education–training combinations rather than a full factorial structure. This reflects real-world constraints in vocational access rather than a data-processing issue, but it limits the ability to separately identify interaction effects between education level and training intensity.
+-   The education–training dimension exhibits strong sorting, resulting in only four observed education–training combinations rather than a full factorial structure. This reflects real-world constraints in vocational access rather than a data-processing issue, but it limits the ability to separately identify interaction effects between education level and training intensity.
 
-- The findings are context-specific to rural informal labourers in Northern Vietnam and should not be mechanically generalized to urban workers or other developing regions without accounting for institutional and labour market differences.
-
+-   The findings are context-specific to rural informal labourers in Northern Vietnam and should not be mechanically generalized to urban workers or other developing regions without accounting for institutional and labour market differences.
