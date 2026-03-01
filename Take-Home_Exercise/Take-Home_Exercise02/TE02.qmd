@@ -147,11 +147,11 @@ Before transformation, we preserve the original numeric values. This dataset wil
 
 ```{r}
 df_original <- customers %>%
-  select(all_of(cluster_vars)) %>%
-  mutate(across(everything(), as.numeric)) %>%
+  select(customer_id, all_of(cluster_vars)) %>%     
+  mutate(across(all_of(cluster_vars), as.numeric)) %>%
   drop_na()
 
-dim(df_original)
+nrow(df_original)
 ```
 
 ### 4.2 Skewness Assessment
@@ -230,23 +230,25 @@ df_scaled <- scale(df_model)
 
 ## 5 Clustering Implementation
 
-With preprocessing completed, we proceed to implement clustering using K-means.
+With preprocessing completed, we proceed to implement customer segmentation using K-means clustering.
 
-K-means is selected because:
+K-means is selected because it is:
 
-- It is computationally efficient
+- Computationally efficient for large customer datasets
 
-- It is suitable for numeric, standardised variables
+- Suitable for numeric, standardised variables
 
-- It integrates well with interactive Shiny applications
+- Simple to parameterise for interactive exploration (e.g., user-controlled k)
 
-- It allows user-controlled selection of `k`
+:::callout-note
+In the final Shiny app, users will be able to adjust k and select variables.
+This prototype demonstrates the computation workflow and the planned output components.
+:::
 
-### 5.1 Determining Optimal Number of Clusters
+### 5.1 Model Selection Metrics: Elbow (WSS)
 
-Before fixing k, we evaluate cluster compactness using the Elbow Method.
-
-The Elbow Method examines the total within-cluster sum of squares (WSS) as k increases.
+Before choosing k, we inspect compactness using the Elbow Method.The metric used is **Total Within-Cluster Sum of Squares (WSS)**.
+A sharp reduction followed by a flattening curve suggests diminishing returns.
 
 ::: panel-tabset
 ### Plot
@@ -260,16 +262,13 @@ wss <- map_dbl(2:15, function(k){
   kmeans(df_scaled, centers = k, nstart = 20)$tot.withinss
 })
 
-elbow_df <- tibble(
-  k = 2:15,
-  wss = wss
-)
+elbow_df <- tibble(k = 2:15, wss = wss)
 
 ggplot(elbow_df, aes(k, wss)) +
   geom_line() +
   geom_point() +
   labs(
-    title = "Elbow Method",
+    title = "Elbow Method (WSS)",
     x = "Number of Clusters (k)",
     y = "Total Within-Cluster Sum of Squares"
   )
@@ -286,19 +285,266 @@ wss <- map_dbl(2:15, function(k){
   kmeans(df_scaled, centers = k, nstart = 20)$tot.withinss
 })
 
-elbow_df <- tibble(
-  k = 2:15,
-  wss = wss
-)
+elbow_df <- tibble(k = 2:15, wss = wss)
 
 ggplot(elbow_df, aes(k, wss)) +
   geom_line() +
   geom_point() +
   labs(
-    title = "Elbow Method",
+    title = "Elbow Method (WSS)",
     x = "Number of Clusters (k)",
     y = "Total Within-Cluster Sum of Squares"
   )
 ```
 :::
+
+### 5.2 Model Selection Metrics: Silhouette
+
+While the Elbow Method focuses on compactness, Silhouette measures separation quality.
+
+Silhouette values range from:
+
+- Close to 1 : well-separated clusters
+
+- Around 0 : overlapping clusters
+
+- Negative : misclassification
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+set.seed(2022)
+
+X <- as.matrix(df_scaled)
+d <- dist(X)
+
+sil_df <- map_dfr(2:15, function(k){
+  km_tmp <- kmeans(X, centers = k, nstart = 20)
+  sil <- silhouette(km_tmp$cluster, d)
+  tibble(k = k, silhouette_score = mean(sil[, 3]))
+})
+
+ggplot(sil_df, aes(x = k, y = silhouette_score)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Average Silhouette Score",
+    x = "Number of Clusters (k)",
+    y = "Silhouette Score"
+  )
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+set.seed(2022)
+
+X <- as.matrix(df_scaled)
+d <- dist(X)
+
+sil_df <- map_dfr(2:15, function(k){
+  km_tmp <- kmeans(X, centers = k, nstart = 20)
+  sil <- silhouette(km_tmp$cluster, d)
+  tibble(k = k, silhouette_score = mean(sil[, 3]))
+})
+
+ggplot(sil_df, aes(x = k, y = silhouette_score)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Average Silhouette Score",
+    x = "Number of Clusters (k)",
+    y = "Silhouette Score"
+  )
+```
+:::
+
+### 5.3 Provisional k for Prototype Demonstration
+
+Based on the Elbow and Silhouette patterns, k = 2 is provisionally chosen for this prototype demonstration.
+This does not imply that k = 2 is the only valid solution; rather, it provides a simple baseline for designing Shiny outputs.
+
+```{r}
+set.seed(2022)
+k <- 2
+km <- kmeans(df_scaled, centers = k, nstart = 50)
+
+table(km$cluster)
+```
+
+## 6 Prototype Outputs for Shiny Integration
+
+This section demonstrates a complete prototype workflow for the Customer Segmentation Module.
+
+For demonstration purposes, we fix:
+
+- Number of clusters: k = 2
+- Behavioural clustering variables: predefined in Section 3
+- Demographic interpretation variable: gender
+
+In the final Shiny application, these parameters will be user-controlled. Here, we present a structured analytical flow.
+
+### 6.1 Cluster Membership Output
+
+Each customer included in the clustering dataset receives a cluster label. We store cluster labels with `customer_id` and join back to the full customer dataset.
+
+```{r}
+cluster_labels <- df_original %>%
+  transmute(customer_id, cluster = factor(km$cluster))
+
+customers_labeled <- customers %>%
+  left_join(cluster_labels, by = "customer_id")
+
+customers_labeled %>% 
+  select(customer_id, cluster) %>%
+  head()
+```
+
+### 6.2 Cluster Size Distribution
+
+Cluster size reveals whether segmentation identifies a dominant segment or a niche group.
+
+```{r}
+cluster_size <- customers_labeled %>%
+  count(cluster) %>%
+  mutate(proportion = n / sum(n))
+
+ggplot(cluster_size, aes(cluster, proportion, fill = cluster)) +
+  geom_col(show.legend = FALSE) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Cluster Size Distribution",
+    x = "Cluster",
+    y = "Proportion of Customers"
+  )
+```
+
+
+### 6.3 Behavioural Contrast
+
+To understand how clusters differ behaviourally, we visualise standardised means.
+
+Red → above dataset average
+
+Blue → below dataset average
+
+```{r}
+cluster_profile <- as_tibble(df_scaled) %>%
+  mutate(cluster = factor(km$cluster)) %>%
+  group_by(cluster) %>%
+  summarise(across(everything(), mean))
+
+cluster_long <- cluster_profile %>%
+  pivot_longer(-cluster,
+               names_to = "variable",
+               values_to = "mean_scaled")
+
+ggplot(cluster_long, aes(variable, cluster, fill = mean_scaled)) +
+  geom_tile() +
+  scale_fill_gradient2(
+    low = "#2c7bb6",
+    mid = "white",
+    high = "#d7191c",
+    midpoint = 0
+  ) +
+  labs(
+    title = "Cluster Profile Heatmap (Standardised Mean)",
+    x = "Variable",
+    y = "Cluster"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### 6.4 Key Behavioural Drivers
+
+To objectively identify which variables drive separation, we rank absolute mean differences.
+
+```{r}
+cluster_means <- df_original %>%
+  mutate(cluster = factor(km$cluster)) %>%
+  group_by(cluster) %>%
+  summarise(across(all_of(cluster_vars), mean), .groups = "drop")
+
+diff_rank <- cluster_means %>%
+  pivot_longer(-cluster, names_to = "variable", values_to = "mean_value") %>%
+  pivot_wider(names_from = cluster, values_from = mean_value) %>%
+  mutate(abs_diff = abs(`2` - `1`)) %>%
+  arrange(desc(abs_diff))
+
+diff_rank %>% head(5)
+```
+
+### 6.5 Demographic Profiling
+
+Segmentation becomes meaningful when linked to demographic characteristics.
+
+We examine whether cluster membership differs by gender.
+
+```{r}
+gender_profile <- customers_labeled %>%
+  group_by(cluster, gender) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  group_by(cluster) %>%
+  mutate(prop = n / sum(n))
+
+ggplot(gender_profile,
+       aes(cluster, prop, fill = gender)) +
+  geom_col(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Gender Composition by Cluster",
+    x = "Cluster",
+    y = "Proportion"
+  )
+```
+
+### 6.6 Distribution Comparison
+
+To further illustrate behavioural contrast, we visualise the top-ranked variable.
+
+```{r}
+selected_var <- diff_rank$variable[1]
+
+ggplot(customers_labeled,
+       aes(cluster, log1p(.data[[selected_var]]), fill = cluster)) +
+  geom_boxplot(show.legend = FALSE) +
+  labs(
+    title = paste("Log Distribution of", selected_var),
+    x = "Cluster",
+    y = "log(1 + value)"
+  )
+```
+
+### 6.7 PCA Projection
+
+```{r}
+pca_res <- prcomp(df_scaled)
+
+variance_explained <- summary(pca_res)$importance[2, 1:2]
+variance_explained
+```
+
+```{r}
+set.seed(2022)
+sample_index <- sample(1:nrow(df_scaled), 5000)
+
+pca_df <- as_tibble(pca_res$x[sample_index, 1:2]) %>%
+  mutate(cluster = factor(km$cluster[sample_index]))
+
+ggplot(pca_df, aes(PC1, PC2, color = cluster)) +
+  geom_point(alpha = 0.4) +
+  stat_ellipse(level = 0.8) +
+  labs(
+    title = "Cluster Separation (PCA Projection)",
+    subtitle = paste("PC1 + PC2 explain",
+                     round(sum(variance_explained) * 100, 1),
+                     "% of variance")
+  )
+```
+
 
