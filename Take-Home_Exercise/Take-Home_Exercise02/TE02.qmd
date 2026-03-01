@@ -256,12 +256,12 @@ The Elbow Method examines the total within-cluster sum of squares (WSS) as k inc
 
 set.seed(2022)
 
-wss <- map_dbl(2:10, function(k){
+wss <- map_dbl(2:15, function(k){
   kmeans(df_scaled, centers = k, nstart = 20)$tot.withinss
 })
 
 elbow_df <- tibble(
-  k = 2:10,
+  k = 2:15,
   wss = wss
 )
 
@@ -282,12 +282,12 @@ ggplot(elbow_df, aes(k, wss)) +
 
 set.seed(2022)
 
-wss <- map_dbl(2:10, function(k){
+wss <- map_dbl(2:15, function(k){
   kmeans(df_scaled, centers = k, nstart = 20)$tot.withinss
 })
 
 elbow_df <- tibble(
-  k = 2:10,
+  k = 2:15,
   wss = wss
 )
 
