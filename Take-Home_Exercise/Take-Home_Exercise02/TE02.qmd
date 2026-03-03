@@ -8,6 +8,16 @@ execute:
   echo: true
   warning: false
   freeze: true
+  
+format:
+  html:
+    theme:
+      - plain
+      - brand
+    css: styles.css
+    toc: true
+    code-block-bg: "#f0f0ed"
+    code-block-border-left: "#8e9aaf"
 ---
 
 ## Overview
@@ -42,10 +52,11 @@ Before performing analysis, the required packages are loaded. These packages sup
 | **DT** | Interactive tables for cluster profile summaries in Shiny. |
 | **shiny** | UI and server framework for integrating this module into the final Shiny app. |
 | **plotly** | Interactive plotting for cluster maps and exploratory visuals. |
+| **e1071** | Skewness computation. |
 
 ```{r}
 pacman::p_load(
-  pacman, tidyverse, lubridate, cluster, factoextra, DT, shiny, plotly
+  pacman, tidyverse, lubridate, cluster, factoextra, DT, shiny, plotly,e1071
 )
 ```
 
@@ -102,7 +113,6 @@ cluster_vars <- c(
   "app_logins_frequency",
   "feature_usage_diversity",
   "active_products",
-  "credit_utilization_ratio",
   "weekend_transaction_ratio",
   "customer_tenure"
 )
@@ -111,15 +121,9 @@ cluster_vars <- c(
 These variables capture:
 
 - Transaction intensity
-
 - Spending behaviour
-
 - App engagement
-
 - Product breadth
-
-- Credit behaviour
-
 - Customer tenure
 
 ## 4 Preprocessing
@@ -128,17 +132,13 @@ Clustering algorithms such as K-means rely on Euclidean distance.
 Therefore, proper preprocessing is essential to:
 
 - Prevent scale dominance
-
 - Reduce skewness effects
-
 - Ensure fair distance computation
 
 The preprocessing pipeline follows three steps:
 
 - Preserve original data for interpretation
-
 - Apply log transformation to skewed variables
-
 - Standardise variables before clustering
 
 ### 4.1 Create Original Dataset 
@@ -147,11 +147,32 @@ Before transformation, we preserve the original numeric values. This dataset wil
 
 ```{r}
 df_original <- customers %>%
-  select(customer_id, all_of(cluster_vars)) %>%     
-  mutate(across(all_of(cluster_vars), as.numeric)) %>%
-  drop_na()
+  dplyr::select(customer_id, dplyr::all_of(cluster_vars)) %>%
+  dplyr::mutate(
+    dplyr::across(
+      dplyr::all_of(cluster_vars),
+      ~ readr::parse_number(as.character(.))
+    )
+  )
 
-nrow(df_original)
+# Audit NA introduced by parsing
+na_after_parse <- df_original %>%
+  dplyr::summarise(dplyr::across(dplyr::all_of(cluster_vars), ~ sum(is.na(.)))) %>%
+  tidyr::pivot_longer(dplyr::everything(), names_to = "variable", values_to = "na_n") %>%
+  dplyr::arrange(dplyr::desc(na_n))
+
+na_after_parse
+
+# Keep complete cases for clustering variables
+df_original_cc <- df_original %>%
+  dplyr::filter(dplyr::if_all(dplyr::all_of(cluster_vars), ~ !is.na(.)))
+
+# Quick sanity check
+tibble::tibble(
+  total_rows = nrow(df_original),
+  rows_used_for_clustering = nrow(df_original_cc),
+  rows_removed = nrow(df_original) - nrow(df_original_cc)
+)
 ```
 
 ### 4.2 Skewness Assessment
@@ -159,51 +180,52 @@ nrow(df_original)
 Before applying log transformation, we quantify skewness to determine whether transformation is necessary.
 
 ```{r}
-library(e1071)
-
-skew_table <- df_original %>%
-  summarise(across(everything(), ~skewness(.))) %>%
-  pivot_longer(everything(), names_to = "variable", values_to = "skewness") %>%
-  arrange(desc(abs(skewness)))
+skew_table <- df_original_cc %>%
+  dplyr::summarise(
+    dplyr::across(
+      dplyr::all_of(cluster_vars),
+      ~ e1071::skewness(., na.rm = TRUE)
+    )
+  ) %>%
+  tidyr::pivot_longer(dplyr::everything(), names_to = "variable", values_to = "skewness") %>%
+  dplyr::arrange(dplyr::desc(abs(skewness)))
 
 skew_table
 ```
 
-### 4.3 Interpretation
+### 4.3 Interpretation & Log Transformation
 
-Variables with absolute `skewness > 1` are considered highly skewed and candidates for log transformation.
+Variables with absolute `skewness > 1` are considered highly skewed and candidates for log transformation. We apply `log1p(x)` (log(1 + x)) to safely handle zero values.
 
 ```{r}
 skew_vars <- skew_table %>%
-  filter(abs(skewness) > 1) %>%
-  pull(variable)
+  dplyr::filter(abs(skewness) > 1) %>%
+  dplyr::pull(variable)
 
 skew_vars
+
+df_model <- df_original_cc %>%
+  mutate(across(all_of(skew_vars), ~ sign(.) * log1p(abs(.))))
 ```
 
-### 4.4 Log Transformation
-
-Since the skewness assessment identified highly skewed variables,
-we apply log transformation only to those variables.
-
-We use `log1p(x)` (log(1 + x)) to safely handle zero values.
-
-```{r}
-df_model <- df_original %>%
-  mutate(across(all_of(skew_vars), ~log1p(.)))
-```
-
-### 4.5 Skewness Comparison
+### 4.4 Skewness Comparison
 
 To validate the effectiveness of transformation, we recompute skewness after applying log transformation.
 
 ```{r}
 skew_after <- df_model %>%
-  summarise(across(everything(), ~skewness(.))) %>%
-  pivot_longer(everything(), names_to = "variable", values_to = "skew_after")
+  dplyr::summarise(
+    dplyr::across(
+      dplyr::all_of(cluster_vars),
+      ~ e1071::skewness(., na.rm = TRUE)
+    )
+  ) %>%
+  tidyr::pivot_longer(dplyr::everything(), names_to = "variable", values_to = "skew_after")
 
 skew_compare <- skew_table %>%
-  left_join(skew_after, by = "variable")
+  dplyr::left_join(skew_after, by = "variable") %>%
+  dplyr::mutate(skew_reduction = abs(skewness) - abs(skew_after)) %>%
+  dplyr::arrange(dplyr::desc(skew_reduction))
 
 skew_compare
 ```
@@ -211,21 +233,40 @@ skew_compare
 This confirms that transformation improved distribution symmetry
 without over-transforming already well-behaved variables.
 
-### 4.6 Standardisation
+### 4.5 Standardisation
 
-K-means clustering relies on Euclidean distance, which is sensitive to variable scale.
-
-Without standardisation:
-
-- Variables with larger magnitude (e.g., transaction volume)
-would dominate distance computation.
-
-- Smaller-scale variables (e.g., ratios) would have negligible influence.
-
-Therefore, we apply z-score scaling.
+K-means clustering relies on Euclidean distance, which is sensitive to variable scale. We apply z-score scaling to prevent variables with larger magnitude from dominating distance computation.
 
 ```{r}
-df_scaled <- scale(df_model)
+X <- df_model %>%
+  dplyr::select(dplyr::all_of(cluster_vars)) %>%
+  as.matrix()
+
+# 1) Drop zero-variance columns
+sds <- apply(X, 2, sd, na.rm = TRUE)
+keep_cols <- is.finite(sds) & sds > 0
+X <- X[, keep_cols, drop = FALSE]
+
+# 2) Remove rows with any non-finite values (Inf/NaN) as final guard
+good_rows <- apply(X, 1, function(r) all(is.finite(r)))
+X <- X[good_rows, , drop = FALSE]
+
+# 3) Keep customer_id aligned with X rows (for joining labels later)
+df_id <- df_model %>%
+  dplyr::select(customer_id) %>%
+  dplyr::slice(which(good_rows))
+
+# 4) Scale
+df_scaled <- scale(X)
+
+# Final sanity checks (must pass)
+stopifnot(nrow(df_scaled) == nrow(df_id))
+stopifnot(all(is.finite(df_scaled)))
+
+tibble::tibble(
+  final_rows_for_kmeans = nrow(df_scaled),
+  final_cols_for_kmeans = ncol(df_scaled)
+)
 ```
 
 ## 5 Clustering Implementation
@@ -258,8 +299,12 @@ A sharp reduction followed by a flattening curve suggests diminishing returns.
 
 set.seed(2022)
 
-wss <- map_dbl(2:15, function(k){
-  kmeans(df_scaled, centers = k, nstart = 20)$tot.withinss
+sample_size_elbow <- min(10000, nrow(df_scaled))
+sample_index_elbow <- sample(1:nrow(df_scaled), sample_size_elbow)
+df_scaled_sample <- df_scaled[sample_index_elbow, , drop = FALSE]
+
+wss <- purrr::map_dbl(2:15, function(k){
+  kmeans(df_scaled_sample, centers = k, nstart = 20)$tot.withinss
 })
 
 elbow_df <- tibble(k = 2:15, wss = wss)
@@ -271,7 +316,8 @@ ggplot(elbow_df, aes(k, wss)) +
     title = "Elbow Method (WSS)",
     x = "Number of Clusters (k)",
     y = "Total Within-Cluster Sum of Squares"
-  )
+  ) +
+  theme_minimal()
 ```
 
 ### Code
@@ -281,8 +327,12 @@ ggplot(elbow_df, aes(k, wss)) +
 
 set.seed(2022)
 
-wss <- map_dbl(2:15, function(k){
-  kmeans(df_scaled, centers = k, nstart = 20)$tot.withinss
+sample_size_elbow <- min(10000, nrow(df_scaled))
+sample_index_elbow <- sample(1:nrow(df_scaled), sample_size_elbow)
+df_scaled_sample <- df_scaled[sample_index_elbow, , drop = FALSE]
+
+wss <- purrr::map_dbl(2:15, function(k){
+  kmeans(df_scaled_sample, centers = k, nstart = 20)$tot.withinss
 })
 
 elbow_df <- tibble(k = 2:15, wss = wss)
@@ -294,7 +344,8 @@ ggplot(elbow_df, aes(k, wss)) +
     title = "Elbow Method (WSS)",
     x = "Number of Clusters (k)",
     y = "Total Within-Cluster Sum of Squares"
-  )
+  ) +
+  theme_minimal()
 ```
 :::
 
@@ -318,23 +369,27 @@ Silhouette values range from:
 
 set.seed(2022)
 
-X <- as.matrix(df_scaled)
-d <- dist(X)
+sample_size_sil <- min(5000, nrow(df_scaled))
+sample_index_sil <- sample(1:nrow(df_scaled), sample_size_sil)
+
+X_sample <- as.matrix(df_scaled[sample_index_sil, , drop = FALSE])
+d_sample <- dist(X_sample) 
 
 sil_df <- map_dfr(2:15, function(k){
-  km_tmp <- kmeans(X, centers = k, nstart = 20)
-  sil <- silhouette(km_tmp$cluster, d)
+  km_tmp <- kmeans(X_sample, centers = k, nstart = 20)
+  sil <- silhouette(km_tmp$cluster, d_sample)
   tibble(k = k, silhouette_score = mean(sil[, 3]))
 })
 
 ggplot(sil_df, aes(x = k, y = silhouette_score)) +
-  geom_line() +
-  geom_point() +
+  geom_line(color = "#7B8B97", size = 1) +
+  geom_point(color = "#C3A6A0", size = 3) +
   labs(
-    title = "Average Silhouette Score",
+    title = "Average Silhouette Score (Sampled)",
     x = "Number of Clusters (k)",
     y = "Silhouette Score"
-  )
+  ) +
+  theme_minimal()
 ```
 
 ### Code
@@ -344,23 +399,27 @@ ggplot(sil_df, aes(x = k, y = silhouette_score)) +
 
 set.seed(2022)
 
-X <- as.matrix(df_scaled)
-d <- dist(X)
+sample_size_sil <- min(5000, nrow(df_scaled))
+sample_index_sil <- sample(1:nrow(df_scaled), sample_size_sil)
+
+X_sample <- as.matrix(df_scaled[sample_index_sil, , drop = FALSE])
+d_sample <- dist(X_sample) 
 
 sil_df <- map_dfr(2:15, function(k){
-  km_tmp <- kmeans(X, centers = k, nstart = 20)
-  sil <- silhouette(km_tmp$cluster, d)
+  km_tmp <- kmeans(X_sample, centers = k, nstart = 20)
+  sil <- silhouette(km_tmp$cluster, d_sample)
   tibble(k = k, silhouette_score = mean(sil[, 3]))
 })
 
 ggplot(sil_df, aes(x = k, y = silhouette_score)) +
-  geom_line() +
-  geom_point() +
+  geom_line(color = "#7B8B97", size = 1) +
+  geom_point(color = "#C3A6A0", size = 3) +
   labs(
-    title = "Average Silhouette Score",
+    title = "Average Silhouette Score (Sampled)",
     x = "Number of Clusters (k)",
     y = "Silhouette Score"
-  )
+  ) +
+  theme_minimal()
 ```
 :::
 
@@ -394,34 +453,51 @@ In the final Shiny application, these parameters will be user-controlled. Here, 
 Each customer included in the clustering dataset receives a cluster label. We store cluster labels with `customer_id` and join back to the full customer dataset.
 
 ```{r}
-cluster_labels <- df_original %>%
-  transmute(customer_id, cluster = factor(km$cluster))
+#| code-fold: true
+#| code-summary: "Code"
+
+
+cluster_labels <- df_id %>%
+  mutate(cluster = factor(km$cluster))
 
 customers_labeled <- customers %>%
   left_join(cluster_labels, by = "customer_id")
 
-customers_labeled %>% 
-  select(customer_id, cluster) %>%
-  head()
+customers_clustered <- customers_labeled %>%
+  filter(!is.na(cluster))
+
+tibble(
+  total_customers = nrow(customers_labeled),
+  clustered_customers = nrow(customers_clustered),
+  excluded_customers = nrow(customers_labeled) - nrow(customers_clustered)
+)
 ```
+
+Customers without cluster labels (not included in the clustering matrix after preprocessing) are excluded from downstream profiling and visual outputs.
 
 ### 6.2 Cluster Size Distribution
 
 Cluster size reveals whether segmentation identifies a dominant segment or a niche group.
 
 ```{r}
-cluster_size <- customers_labeled %>%
+#| code-fold: true
+#| code-summary: "Code"
+
+
+cluster_size <- customers_clustered %>%
   count(cluster) %>%
   mutate(proportion = n / sum(n))
 
 ggplot(cluster_size, aes(cluster, proportion, fill = cluster)) +
   geom_col(show.legend = FALSE) +
   scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("#9297A0", "#D4C5B9")) +
   labs(
     title = "Cluster Size Distribution",
     x = "Cluster",
     y = "Proportion of Customers"
-  )
+  ) +
+  theme_minimal()
 ```
 
 
@@ -429,11 +505,14 @@ ggplot(cluster_size, aes(cluster, proportion, fill = cluster)) +
 
 To understand how clusters differ behaviourally, we visualise standardised means.
 
-Red → above dataset average
-
-Blue → below dataset average
+- **Muted Rose (Positive)** → above dataset average
+- **Slate Grey (Negative)** → below dataset average
+- **White (Near 0)** → close to dataset average
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Code"
+
 cluster_profile <- as_tibble(df_scaled) %>%
   mutate(cluster = factor(km$cluster)) %>%
   group_by(cluster) %>%
@@ -445,11 +524,11 @@ cluster_long <- cluster_profile %>%
                values_to = "mean_scaled")
 
 ggplot(cluster_long, aes(variable, cluster, fill = mean_scaled)) +
-  geom_tile() +
+  geom_tile(color = "white") +
   scale_fill_gradient2(
-    low = "#2c7bb6",
-    mid = "white",
-    high = "#d7191c",
+    low = "#7B8B97",   
+    mid = "#F8F9FA",   
+    high = "#C3A6A0",  
     midpoint = 0
   ) +
   labs(
@@ -457,6 +536,7 @@ ggplot(cluster_long, aes(variable, cluster, fill = mean_scaled)) +
     x = "Variable",
     y = "Cluster"
   ) +
+  theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
@@ -465,8 +545,15 @@ ggplot(cluster_long, aes(variable, cluster, fill = mean_scaled)) +
 To objectively identify which variables drive separation, we rank absolute mean differences.
 
 ```{r}
-cluster_means <- df_original %>%
-  mutate(cluster = factor(km$cluster)) %>%
+#| code-fold: true
+#| code-summary: "Code"
+
+
+df_profile <- df_model %>%             
+  left_join(cluster_labels, by = "customer_id") %>%
+  filter(!is.na(cluster))
+
+cluster_means <- df_profile %>%
   group_by(cluster) %>%
   summarise(across(all_of(cluster_vars), mean), .groups = "drop")
 
@@ -486,7 +573,11 @@ Segmentation becomes meaningful when linked to demographic characteristics.
 We examine whether cluster membership differs by gender.
 
 ```{r}
-gender_profile <- customers_labeled %>%
+#| code-fold: true
+#| code-summary: "Code"
+
+
+gender_profile <- customers_clustered %>%
   group_by(cluster, gender) %>%
   summarise(n = n(), .groups = "drop") %>%
   group_by(cluster) %>%
@@ -496,11 +587,13 @@ ggplot(gender_profile,
        aes(cluster, prop, fill = gender)) +
   geom_col(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("#9297A0", "#D4C5B9", "#A8B7AB")) +
   labs(
     title = "Gender Composition by Cluster",
     x = "Cluster",
     y = "Proportion"
-  )
+  ) +
+  theme_minimal()
 ```
 
 ### 6.6 Distribution Comparison
@@ -508,16 +601,22 @@ ggplot(gender_profile,
 To further illustrate behavioural contrast, we visualise the top-ranked variable.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Code"
+
+
 selected_var <- diff_rank$variable[1]
 
-ggplot(customers_labeled,
+ggplot(customers_clustered,
        aes(cluster, log1p(.data[[selected_var]]), fill = cluster)) +
   geom_boxplot(show.legend = FALSE) +
+  scale_fill_manual(values = c("#A8B7AB", "#C3A6A0")) +
   labs(
     title = paste("Log Distribution of", selected_var),
     x = "Cluster",
     y = "log(1 + value)"
-  )
+  ) +
+  theme_minimal()
 ```
 
 ### 6.7 PCA Projection
@@ -530,21 +629,28 @@ variance_explained
 ```
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Code"
+
+
 set.seed(2022)
-sample_index <- sample(1:nrow(df_scaled), 5000)
+sample_size <- min(5000, nrow(df_scaled))
+sample_index <- sample(1:nrow(df_scaled), sample_size)
 
 pca_df <- as_tibble(pca_res$x[sample_index, 1:2]) %>%
   mutate(cluster = factor(km$cluster[sample_index]))
 
 ggplot(pca_df, aes(PC1, PC2, color = cluster)) +
-  geom_point(alpha = 0.4) +
+  geom_point(alpha = 0.6) +
   stat_ellipse(level = 0.8) +
+  scale_color_manual(values = c("#A8B7AB", "#C3A6A0")) +
   labs(
     title = "Cluster Separation (PCA Projection)",
     subtitle = paste("PC1 + PC2 explain",
                      round(sum(variance_explained) * 100, 1),
                      "% of variance")
-  )
+  ) +
+  theme_minimal()
 ```
 
 
