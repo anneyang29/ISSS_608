@@ -16,11 +16,11 @@ In this in-class exercise, you will gain hands-on experience on using appropriat
 
 Learning outcome:
 
-- Importing geospatial data in rds format into R environment.
-- Creating cartographic quality choropleth maps by using appropriate tmap functions.
-- Creating rate map
-- Creating percentile map
-- Creating boxmap
+-   Importing geospatial data in rds format into R environment.
+-   Creating cartographic quality choropleth maps by using appropriate tmap functions.
+-   Creating rate map
+-   Creating percentile map
+-   Creating boxmap
 
 ## 1 Getting Started
 
@@ -34,7 +34,7 @@ pacman::p_load(tmap, tidyverse, sf)
 
 ### 1.2 Importing data
 
-For the purpose of this hands-on exercise, a prepared data set called *NGA_wp.rds* will be used. The data set is a polygon feature data.frame providing information on water point of Nigeria at the LGA level. 
+For the purpose of this hands-on exercise, a prepared data set called *NGA_wp.rds* will be used. The data set is a polygon feature data.frame providing information on water point of Nigeria at the LGA level.
 
 ```{r}
 NGA_wp <- read_rds("data/NGA_wp.rds")
@@ -135,7 +135,7 @@ tmap_arrange(p2, p1, nrow = 1)
 
 In much of our readings we have now seen the importance to map rates rather than counts of things, and that is for the simple reason that water points are not equally distributed in space. That means that if we do not account for how many water points are somewhere, we end up mapping total water point size rather than our topic of interest.
 
-#### 2.2.1  Deriving Proportion of Functional Water Points and Non-Functional Water Points
+#### 2.2.1 Deriving Proportion of Functional Water Points and Non-Functional Water Points
 
 We will tabulate the proportion of functional water points and the proportion of non-functional water points in each LGA. In the following code chunk, `mutate()` from *dplyr* package is used to derive two fields, namely pct_functional and pct_nonfunctional.
 
@@ -207,12 +207,14 @@ The percentile map is a special type of quantile map with six specific categorie
 #### 2.3.1.1 Data Preparation
 
 Step 1: Exclude records with NA by using the code chunk below.
+
 ```{r}
 NGA_wp <- NGA_wp %>%
   drop_na()
 ```
 
 Step 2: Creating customised classification and extracting values
+
 ```{r}
 percent <- c(0,.01,.1,.5,.9,.99,1)
 var <- NGA_wp["pct_functional"] %>%
@@ -224,12 +226,12 @@ quantile(var[,1], percent)
 
 Firstly, we will write an R function as shown below to extract a variable (i.e. wp_nonfunctional) as a vector out of an sf data.frame.
 
-- arguments:
-  - vname: variable name (as character, in quotes)
-  - df: name of sf data frame
-- returns:
-  - v: vector with values (without a column name)
-  
+-   arguments:
+    -   vname: variable name (as character, in quotes)
+    -   df: name of sf data frame
+-   returns:
+    -   v: vector with values (without a column name)
+
 ```{r}
 get.var <- function(vname,df) {
   v <- df[vname] %>% 
@@ -468,20 +470,20 @@ ggplot(data = NGA_wp,
   geom_boxplot()
 ```
 
-- Displaying summary statistics on a choropleth map by using the basic principles of boxplot.
+-   Displaying summary statistics on a choropleth map by using the basic principles of boxplot.
 
-- To create a box map, a custom breaks specification will be used. However, there is a complication. The break points for the box map vary depending on whether lower or upper outliers are present.
+-   To create a box map, a custom breaks specification will be used. However, there is a complication. The break points for the box map vary depending on whether lower or upper outliers are present.
 
 #### 2.3.2.1 Creating the boxbreaks function
 
 The code chunk below is an R function that creating break points for a box map.
 
-- arguments:
-  - v: vector with observations
-  - mult: multiplier for IQR (default 1.5)
-- returns:
-  - bb: vector with 7 break points compute quartile and fences
-  
+-   arguments:
+    -   v: vector with observations
+    -   mult: multiplier for IQR (default 1.5)
+-   returns:
+    -   bb: vector with 7 break points compute quartile and fences
+
 ```{r}
 boxbreaks <- function(v,mult=1.5) {
   qv <- unname(quantile(v))
@@ -514,12 +516,12 @@ boxbreaks <- function(v,mult=1.5) {
 
 The code chunk below is an R function to extract a variable as a vector out of an sf data frame.
 
-- arguments:
-  - vname: variable name (as character, in quotes)
-  - df: name of sf data frame
-- returns:
-  - v: vector with values (without a column name)
-  
+-   arguments:
+    -   vname: variable name (as character, in quotes)
+    -   df: name of sf data frame
+-   returns:
+    -   v: vector with values (without a column name)
+
 ```{r}
 get.var <- function(vname,df) {
   v <- df[vname] %>% st_set_geometry(NULL)
