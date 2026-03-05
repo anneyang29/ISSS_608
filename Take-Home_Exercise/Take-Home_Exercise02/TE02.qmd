@@ -175,7 +175,60 @@ tibble::tibble(
 )
 ```
 
-### 4.2 Skewness Assessment
+### 4.2 Correlation Analysis
+
+Before proceeding with dimensionality reduction and clustering, it is crucial to check for multicollinearity among the selected variables. K-means relies on Euclidean distance; therefore, highly correlated variables can disproportionately weight the distance calculation, inadvertently dominating the clustering results.
+
+We compute the Pearson correlation matrix and visualise it using a lower triangular heatmap.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Code"
+
+
+cor_matrix <- cor(df_original_cc %>% select(all_of(cluster_vars)),
+                  use = "pairwise.complete.obs")
+
+cor_matrix[upper.tri(cor_matrix, diag = FALSE)] <- NA
+
+cor_long <- as.data.frame(as.table(cor_matrix)) %>%
+  rename(Variable1 = Var1, Variable2 = Var2, Correlation = Freq) %>%
+  drop_na()
+
+var_order <- colnames(cor_matrix)
+
+cor_long$Variable1 <- factor(cor_long$Variable1, levels = rev(var_order))
+cor_long$Variable2 <- factor(cor_long$Variable2, levels = var_order)
+
+ggplot(cor_long, aes(Variable1, Variable2, fill = Correlation)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(
+    low = "#7B8B97",
+    mid = "#F8F9FA",
+    high = "#C3A6A0",
+    midpoint = 0,
+    limits = c(-1, 1),
+    name = "Correlation"
+  ) +
+  geom_text(aes(label = round(Correlation, 3)), color = "black", size = 3) +
+  labs(
+    title = "Correlation Matrix of Clustering Variables (Lower Triangular)",
+    x = "", y = ""
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major = element_blank()
+  )
+```
+
+:::callout-note
+Shiny design note (feature selection guardrail).
+
+In the final Shiny application, users will be allowed to select clustering variables interactively. To mitigate redundancy and distance domination in K-means, the app will automatically compute the correlation matrix for the selected variables and flag highly correlated pairs (e.g., |r| ≥ 0.8). When such cases occur, the interface will display a warning and recommend selecting only one representative variable from each highly correlated group. This guardrail improves interpretability and helps maintain balanced distance contributions across features.
+:::
+
+### 4.3 Skewness Assessment
 
 Before applying log transformation, we quantify skewness to determine whether transformation is necessary.
 
@@ -193,7 +246,7 @@ skew_table <- df_original_cc %>%
 skew_table
 ```
 
-### 4.3 Interpretation & Log Transformation
+### 4.4 Interpretation & Log Transformation
 
 Variables with absolute `skewness > 1` are considered highly skewed and candidates for log transformation. We apply `log1p(x)` (log(1 + x)) to safely handle zero values.
 
@@ -208,7 +261,7 @@ df_model <- df_original_cc %>%
   mutate(across(all_of(skew_vars), ~ sign(.) * log1p(abs(.))))
 ```
 
-### 4.4 Skewness Comparison
+### 4.5 Skewness Comparison
 
 To validate the effectiveness of transformation, we recompute skewness after applying log transformation.
 
@@ -233,7 +286,7 @@ skew_compare
 This confirms that transformation improved distribution symmetry
 without over-transforming already well-behaved variables.
 
-### 4.5 Standardisation
+### 4.6 Standardisation
 
 K-means clustering relies on Euclidean distance, which is sensitive to variable scale. We apply z-score scaling to prevent variables with larger magnitude from dominating distance computation.
 
@@ -619,38 +672,5 @@ ggplot(customers_clustered,
   theme_minimal()
 ```
 
-### 6.7 PCA Projection
-
-```{r}
-pca_res <- prcomp(df_scaled)
-
-variance_explained <- summary(pca_res)$importance[2, 1:2]
-variance_explained
-```
-
-```{r}
-#| code-fold: true
-#| code-summary: "Code"
-
-
-set.seed(2022)
-sample_size <- min(5000, nrow(df_scaled))
-sample_index <- sample(1:nrow(df_scaled), sample_size)
-
-pca_df <- as_tibble(pca_res$x[sample_index, 1:2]) %>%
-  mutate(cluster = factor(km$cluster[sample_index]))
-
-ggplot(pca_df, aes(PC1, PC2, color = cluster)) +
-  geom_point(alpha = 0.6) +
-  stat_ellipse(level = 0.8) +
-  scale_color_manual(values = c("#A8B7AB", "#C3A6A0")) +
-  labs(
-    title = "Cluster Separation (PCA Projection)",
-    subtitle = paste("PC1 + PC2 explain",
-                     round(sum(variance_explained) * 100, 1),
-                     "% of variance")
-  ) +
-  theme_minimal()
-```
 
 
