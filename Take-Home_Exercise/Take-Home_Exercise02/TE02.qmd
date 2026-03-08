@@ -56,7 +56,7 @@ Before performing analysis, the required packages are loaded. These packages sup
 
 ```{r}
 pacman::p_load(
-  pacman, tidyverse, lubridate, cluster, factoextra, DT, shiny, plotly,e1071
+  pacman, tidyverse, lubridate, cluster, factoextra, DT, shiny, plotly,e1071,h2o,mclust,parallelPlot
 )
 ```
 
@@ -128,17 +128,12 @@ These variables capture:
 
 ## 4 Preprocessing
 
-Clustering algorithms such as K-means rely on Euclidean distance.
-Therefore, proper preprocessing is essential to:
-
-- Prevent scale dominance
-- Reduce skewness effects
-- Ensure fair distance computation
+Clustering results can be strongly affected by variable scale, skewness, and redundancy among features. This applies not only to K-means, but also to other clustering methods such as PAM and Gaussian Mixture Models (GMM). Therefore, preprocessing is essential to ensure fair comparison across clustering approaches.
 
 The preprocessing pipeline follows three steps:
 
 - Preserve original data for interpretation
-- Apply log transformation to skewed variables
+- Apply transformation to highly skewed variables
 - Standardise variables before clustering
 
 ### 4.1 Create Original Dataset 
@@ -177,7 +172,7 @@ tibble::tibble(
 
 ### 4.2 Correlation Analysis
 
-Before proceeding with dimensionality reduction and clustering, it is crucial to check for multicollinearity among the selected variables. K-means relies on Euclidean distance; therefore, highly correlated variables can disproportionately weight the distance calculation, inadvertently dominating the clustering results.
+Before proceeding with clustering, it is crucial to check for multicollinearity among the selected variables. Highly correlated variables can distort clustering by disproportionately weighting similar information, especially in distance-based methods such as K-means and PAM, and may also reduce interpretability in model-based clustering such as GMM.
 
 We compute the Pearson correlation matrix and visualise it using a lower triangular heatmap.
 
@@ -295,51 +290,84 @@ X <- df_model %>%
   dplyr::select(dplyr::all_of(cluster_vars)) %>%
   as.matrix()
 
-# 1) Drop zero-variance columns
 sds <- apply(X, 2, sd, na.rm = TRUE)
 keep_cols <- is.finite(sds) & sds > 0
 X <- X[, keep_cols, drop = FALSE]
 
-# 2) Remove rows with any non-finite values (Inf/NaN) as final guard
 good_rows <- apply(X, 1, function(r) all(is.finite(r)))
 X <- X[good_rows, , drop = FALSE]
 
-# 3) Keep customer_id aligned with X rows (for joining labels later)
 df_id <- df_model %>%
   dplyr::select(customer_id) %>%
   dplyr::slice(which(good_rows))
 
-# 4) Scale
 df_scaled <- scale(X)
 
-# Final sanity checks (must pass)
-stopifnot(nrow(df_scaled) == nrow(df_id))
 stopifnot(all(is.finite(df_scaled)))
-
-tibble::tibble(
-  final_rows_for_kmeans = nrow(df_scaled),
-  final_cols_for_kmeans = ncol(df_scaled)
-)
 ```
 
-## 5 Clustering Implementation
+## 5 Clustering Methods and Prototype Workflow
 
-With preprocessing completed, we proceed to implement customer segmentation using K-means clustering.
+This prototype is designed to support multiple clustering methods so that users can compare segmentation outcomes under different algorithmic assumptions.
 
-K-means is selected because it is:
+Three clustering methods are included:
 
-- Computationally efficient for large customer datasets
+- K-means: centroid-based baseline
+- PAM: medoid-based robust alternative
+- GMM: model-based probabilistic alternative
 
-- Suitable for numeric, standardised variables
-
-- Simple to parameterise for interactive exploration (e.g., user-controlled k)
+This design is motivated by the fact that some behavioural variables remain highly skewed even after log transformation, and different clustering methods may respond differently to skewness, outliers, and cluster shape assumptions.
 
 :::callout-note
 In the final Shiny app, users will be able to adjust k and select variables.
 This prototype demonstrates the computation workflow and the planned output components.
 :::
 
-### 5.1 Model Selection Metrics: Elbow (WSS)
+### 5.1 K-means
+
+K-means is used as the baseline clustering method because it is computationally efficient, widely interpretable, and integrates well with Shiny-based interactive analysis.
+
+For full-data model selection, we use H2O K-means to evaluate candidate k values on the complete standardised matrix. H2O exposes metrics such as total within-cluster sum of squares and between-cluster sum of squares for scalable K-means training.
+
+#### 5.1.1 Full-data K selection with H2O
+
+```{r}
+# Initialise H2O
+h2o::h2o.init(nthreads = -1)
+h2o::h2o.no_progress()
+
+# Convert the full scaled matrix into an H2OFrame
+h2o_X <- as.h2o(as.data.frame(df_scaled))
+
+# Candidate k values
+k_grid <- 2:15
+
+# Run full-data H2O K-means across candidate k
+k_results <- purrr::map_dfr(k_grid, function(k_val) {
+
+  km_h2o <- h2o::h2o.kmeans(
+    training_frame = h2o_X,
+    k = k_val,
+    standardize = FALSE,   # already standardised in Section 4
+    seed = 2022
+  )
+
+  tot_withinss <- as.numeric(h2o::h2o.tot_withinss(km_h2o))
+  betweenss <- as.numeric(h2o::h2o.betweenss(km_h2o))
+  total_ss <- tot_withinss + betweenss
+
+  tibble(
+    k = k_val,
+    tot_withinss = tot_withinss,
+    betweenss = betweenss,
+    between_ratio = betweenss / total_ss
+  )
+})
+
+k_results
+```
+
+#### 5.1.2 Model Selection Metrics: Elbow (WSS)
 
 Before choosing k, we inspect compactness using the Elbow Method.The metric used is **Total Within-Cluster Sum of Squares (WSS)**.
 A sharp reduction followed by a flattening curve suggests diminishing returns.
@@ -350,23 +378,11 @@ A sharp reduction followed by a flattening curve suggests diminishing returns.
 ```{r}
 #| echo: false
 
-set.seed(2022)
-
-sample_size_elbow <- min(10000, nrow(df_scaled))
-sample_index_elbow <- sample(1:nrow(df_scaled), sample_size_elbow)
-df_scaled_sample <- df_scaled[sample_index_elbow, , drop = FALSE]
-
-wss <- purrr::map_dbl(2:15, function(k){
-  kmeans(df_scaled_sample, centers = k, nstart = 20)$tot.withinss
-})
-
-elbow_df <- tibble(k = 2:15, wss = wss)
-
-ggplot(elbow_df, aes(k, wss)) +
-  geom_line() +
-  geom_point() +
+ggplot(k_results, aes(k, tot_withinss)) +
+  geom_line(color = "#7B8B97", linewidth = 1) +
+  geom_point(color = "#C3A6A0", size = 3) +
   labs(
-    title = "Elbow Method (WSS)",
+    title = "Elbow Method",
     x = "Number of Clusters (k)",
     y = "Total Within-Cluster Sum of Squares"
   ) +
@@ -378,23 +394,11 @@ ggplot(elbow_df, aes(k, wss)) +
 ```{r}
 #| eval: false
 
-set.seed(2022)
-
-sample_size_elbow <- min(10000, nrow(df_scaled))
-sample_index_elbow <- sample(1:nrow(df_scaled), sample_size_elbow)
-df_scaled_sample <- df_scaled[sample_index_elbow, , drop = FALSE]
-
-wss <- purrr::map_dbl(2:15, function(k){
-  kmeans(df_scaled_sample, centers = k, nstart = 20)$tot.withinss
-})
-
-elbow_df <- tibble(k = 2:15, wss = wss)
-
-ggplot(elbow_df, aes(k, wss)) +
-  geom_line() +
-  geom_point() +
+ggplot(k_results, aes(k, tot_withinss)) +
+  geom_line(color = "#7B8B97", linewidth = 1) +
+  geom_point(color = "#C3A6A0", size = 3) +
   labs(
-    title = "Elbow Method (WSS)",
+    title = "Elbow Method",
     x = "Number of Clusters (k)",
     y = "Total Within-Cluster Sum of Squares"
   ) +
@@ -402,17 +406,7 @@ ggplot(elbow_df, aes(k, wss)) +
 ```
 :::
 
-### 5.2 Model Selection Metrics: Silhouette
-
-While the Elbow Method focuses on compactness, Silhouette measures separation quality.
-
-Silhouette values range from:
-
-- Close to 1 : well-separated clusters
-
-- Around 0 : overlapping clusters
-
-- Negative : misclassification
+#### 5.1.3 BetweenSS / TotalSS ratio
 
 ::: panel-tabset
 ### Plot
@@ -420,27 +414,14 @@ Silhouette values range from:
 ```{r}
 #| echo: false
 
-set.seed(2022)
-
-sample_size_sil <- min(5000, nrow(df_scaled))
-sample_index_sil <- sample(1:nrow(df_scaled), sample_size_sil)
-
-X_sample <- as.matrix(df_scaled[sample_index_sil, , drop = FALSE])
-d_sample <- dist(X_sample) 
-
-sil_df <- map_dfr(2:15, function(k){
-  km_tmp <- kmeans(X_sample, centers = k, nstart = 20)
-  sil <- silhouette(km_tmp$cluster, d_sample)
-  tibble(k = k, silhouette_score = mean(sil[, 3]))
-})
-
-ggplot(sil_df, aes(x = k, y = silhouette_score)) +
-  geom_line(color = "#7B8B97", size = 1) +
-  geom_point(color = "#C3A6A0", size = 3) +
+ggplot(k_results, aes(k, between_ratio)) +
+  geom_line(color = "#7B8B97", linewidth = 1) +
+  geom_point(color = "#A8B7AB", size = 3) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(
-    title = "Average Silhouette Score (Sampled)",
+    title = "BetweenSS / TotalSS Ratio",
     x = "Number of Clusters (k)",
-    y = "Silhouette Score"
+    y = "BetweenSS / TotalSS"
   ) +
   theme_minimal()
 ```
@@ -450,68 +431,173 @@ ggplot(sil_df, aes(x = k, y = silhouette_score)) +
 ```{r}
 #| eval: false
 
-set.seed(2022)
-
-sample_size_sil <- min(5000, nrow(df_scaled))
-sample_index_sil <- sample(1:nrow(df_scaled), sample_size_sil)
-
-X_sample <- as.matrix(df_scaled[sample_index_sil, , drop = FALSE])
-d_sample <- dist(X_sample) 
-
-sil_df <- map_dfr(2:15, function(k){
-  km_tmp <- kmeans(X_sample, centers = k, nstart = 20)
-  sil <- silhouette(km_tmp$cluster, d_sample)
-  tibble(k = k, silhouette_score = mean(sil[, 3]))
-})
-
-ggplot(sil_df, aes(x = k, y = silhouette_score)) +
-  geom_line(color = "#7B8B97", size = 1) +
-  geom_point(color = "#C3A6A0", size = 3) +
+ggplot(k_results, aes(k, between_ratio)) +
+  geom_line(color = "#7B8B97", linewidth = 1) +
+  geom_point(color = "#A8B7AB", size = 3) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(
-    title = "Average Silhouette Score (Sampled)",
+    title = "BetweenSS / TotalSS Ratio",
     x = "Number of Clusters (k)",
-    y = "Silhouette Score"
+    y = "BetweenSS / TotalSS"
   ) +
   theme_minimal()
 ```
 :::
 
-### 5.3 Provisional k for Prototype Demonstration
+### 5.2 CLARA
 
-Based on the Elbow and Silhouette patterns, k = 2 is provisionally chosen for this prototype demonstration.
-This does not imply that k = 2 is the only valid solution; rather, it provides a simple baseline for designing Shiny outputs.
+CLARA (Clustering Large Applications) is included as a large-data medoid-based alternative to K-means.
+
+Compared with K-means, CLARA is less sensitive to extreme values because it is based on medoids rather than means. It is also more suitable than standard PAM when the dataset is large.
+
+For CLARA, the most natural model-selection criterion is average silhouette width.
+
+#### 5.2.1 CLARA Model Selection
 
 ```{r}
-set.seed(2022)
-k <- 2
-km <- kmeans(df_scaled, centers = k, nstart = 50)
+clara_results <- purrr::map_dfr(2:15, function(k_val) {
+  clara_fit <- cluster::clara(df_scaled, k = k_val, samples = 5)
 
-table(km$cluster)
+  tibble(
+    k = k_val,
+    avg_silhouette = clara_fit$silinfo$avg.width
+  )
+})
+
+clara_results
+```
+
+#### 5.2.2 CLARA Plot
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+ggplot(clara_results, aes(k, avg_silhouette)) + 
+  geom_line(color = "#7B8B97", linewidth = 1) +
+  geom_point(color = "#C3A6A0", size = 3) +
+  labs(
+    title = "CLARA Score",
+    x = "Number of Clusters (k)",
+    y = "Average Silhouette"
+  ) +
+  theme_minimal()
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+ggplot(clara_results, aes(k, avg_silhouette)) +
+  geom_line(color = "#7B8B97", linewidth = 1) +
+  geom_point(color = "#C3A6A0", size = 3) +
+  labs(
+    title = "CLARA Score",
+    x = "Number of Clusters (k)",
+    y = "Average Silhouette"
+  ) +
+  theme_minimal()
+```
+:::
+
+### 5.3 GMM
+
+Gaussian Mixture Models (GMM) are included as a model-based clustering alternative.
+
+Unlike K-means and PAM, GMM does not assume spherical clusters and instead models the data as a mixture of Gaussian components. For GMM, model selection is based on BIC rather than elbow or silhouette.
+
+#### 5.3.1 GMM Fitting
+
+```{r}
+gmm_fit <- mclust::Mclust(df_scaled, G = 2:15)
+
+summary(gmm_fit)
+```
+
+#### 5.3.2 GMM BIC Plot
+
+::: panel-tabset
+### Plot
+
+```{r}
+#| echo: false
+
+par(xpd = TRUE, mar = c(5, 4, 4, 16))  
+plot(gmm_fit, what = "BIC", legendArgs = list(x = "right", inset = c(-0.32, 0)))
+par(xpd = FALSE)
+```
+
+### Code
+
+```{r}
+#| eval: false
+
+par(xpd = TRUE, mar = c(5, 4, 4, 16))  
+plot(gmm_fit, what = "BIC", legendArgs = list(x = "right", inset = c(-0.32, 0)))
+par(xpd = FALSE)
+```
+:::
+
+
+
+### 5.4 Prototype Method for Demonstration
+
+For the remainder of this prototype, one method is selected to demonstrate downstream visual outputs.
+
+In the final Shiny implementation, users will be able to:
+
+- choose the clustering method
+- inspect the corresponding model-selection plot
+- select the final number of clusters
+- compare the resulting segmentation outputs
+
+For consistency of explanation and ease of interpretation, the downstream prototype outputs below are demonstrated using K-means with k=2.
+
+```{r}
+k_demo <- 2
+method_demo <- "K-means"
+
+set.seed(2022)
+km <- kmeans(df_scaled, centers = k_demo, nstart = 50)
+
+cluster_vector <- km$cluster
+
+tibble(
+  method_demo = method_demo,
+  k_demo = k_demo,
+  n_clusters = length(unique(cluster_vector))
+)
 ```
 
 ## 6 Prototype Outputs for Shiny Integration
 
-This section demonstrates a complete prototype workflow for the Customer Segmentation Module.
+This section presents the common output panels that will be exposed in the final Shiny Customer Segmentation Module.
 
-For demonstration purposes, we fix:
+Regardless of the clustering method selected, the module will provide a consistent interpretation layer, including:
 
-- Number of clusters: k = 2
-- Behavioural clustering variables: predefined in Section 3
-- Demographic interpretation variable: gender
+- cluster membership output
+- cluster size distribution
+- behavioural contrast
+- key behavioural drivers
+- demographic profiling
+- variable-level distribution comparison
 
-In the final Shiny application, these parameters will be user-controlled. Here, we present a structured analytical flow.
+For demonstration purposes, the outputs below are generated using the selected prototype method stored in method_demo. In the final Shiny application, these panels will update dynamically according to the selected clustering algorithm.
 
 ### 6.1 Cluster Membership Output
 
-Each customer included in the clustering dataset receives a cluster label. We store cluster labels with `customer_id` and join back to the full customer dataset.
+Each customer included in the clustering workflow receives a cluster label.
+To keep the downstream analysis method-agnostic, cluster assignments are stored in a generic object `cluster_vector`.
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Code"
 
-
 cluster_labels <- df_id %>%
-  mutate(cluster = factor(km$cluster))
+  mutate(cluster = factor(cluster_vector))
 
 customers_labeled <- customers %>%
   left_join(cluster_labels, by = "customer_id")
@@ -520,129 +606,121 @@ customers_clustered <- customers_labeled %>%
   filter(!is.na(cluster))
 
 tibble(
+  method_used = method_demo,
   total_customers = nrow(customers_labeled),
   clustered_customers = nrow(customers_clustered),
   excluded_customers = nrow(customers_labeled) - nrow(customers_clustered)
 )
 ```
 
-Customers without cluster labels (not included in the clustering matrix after preprocessing) are excluded from downstream profiling and visual outputs.
-
 ### 6.2 Cluster Size Distribution
 
-Cluster size reveals whether segmentation identifies a dominant segment or a niche group.
+Cluster size reveals whether the selected method identifies balanced segments or a smaller niche group.
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Code"
 
-
 cluster_size <- customers_clustered %>%
-  count(cluster) %>%
-  mutate(proportion = n / sum(n))
+  dplyr::count(cluster) %>%
+  dplyr::mutate(proportion = n / sum(n))
 
 ggplot(cluster_size, aes(cluster, proportion, fill = cluster)) +
   geom_col(show.legend = FALSE) +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = c("#9297A0", "#D4C5B9")) +
+  scale_fill_manual(values = c("#9297A0", "#D4C5B9", "#A8B7AB", "#C3A6A0")) +
   labs(
-    title = "Cluster Size Distribution",
+    title = paste("Cluster Size Distribution -", method_demo),
     x = "Cluster",
     y = "Proportion of Customers"
   ) +
   theme_minimal()
 ```
 
-
 ### 6.3 Behavioural Contrast
 
-To understand how clusters differ behaviourally, we visualise standardised means.
+To understand how clusters differ behaviourally, we visualise the mean standardised profile of each cluster across the selected clustering variables.
 
-- **Muted Rose (Positive)** → above dataset average
-- **Slate Grey (Negative)** → below dataset average
-- **White (Near 0)** → close to dataset average
+This parallel coordinates plot shows the relative behavioural shape of each cluster rather than only the magnitude of difference.
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Code"
 
-cluster_profile <- as_tibble(df_scaled) %>%
-  mutate(cluster = factor(km$cluster)) %>%
-  group_by(cluster) %>%
-  summarise(across(everything(), mean))
+pp_data <- df_model %>%
+  dplyr::left_join(cluster_labels, by = "customer_id") %>%
+  dplyr::filter(!is.na(cluster)) %>%
+  dplyr::select(cluster, dplyr::all_of(cluster_vars))
 
-cluster_long <- cluster_profile %>%
-  pivot_longer(-cluster,
-               names_to = "variable",
-               values_to = "mean_scaled")
+histoVisibility <- names(pp_data)
 
-ggplot(cluster_long, aes(variable, cluster, fill = mean_scaled)) +
-  geom_tile(color = "white") +
-  scale_fill_gradient2(
-    low = "#7B8B97",   
-    mid = "#F8F9FA",   
-    high = "#C3A6A0",  
-    midpoint = 0
-  ) +
-  labs(
-    title = "Cluster Profile Heatmap (Standardised Mean)",
-    x = "Variable",
-    y = "Cluster"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+parallelPlot::parallelPlot(
+  data = pp_data,
+  refColumnDim = "cluster",
+  rotateTitle = TRUE,
+  histoVisibility = histoVisibility
+)
 ```
+
 
 ### 6.4 Key Behavioural Drivers
 
-To objectively identify which variables drive separation, we rank absolute mean differences.
+To avoid subjective storytelling, we rank variables by the magnitude of difference between clusters.
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Code"
 
-
-df_profile <- df_model %>%             
-  left_join(cluster_labels, by = "customer_id") %>%
-  filter(!is.na(cluster))
+df_profile <- df_model %>%
+  dplyr::left_join(cluster_labels, by = "customer_id") %>%
+  dplyr::filter(!is.na(cluster))
 
 cluster_means <- df_profile %>%
-  group_by(cluster) %>%
-  summarise(across(all_of(cluster_vars), mean), .groups = "drop")
+  dplyr::group_by(cluster) %>%
+  dplyr::summarise(
+    dplyr::across(dplyr::all_of(cluster_vars), mean),
+    .groups = "drop"
+  )
 
 diff_rank <- cluster_means %>%
-  pivot_longer(-cluster, names_to = "variable", values_to = "mean_value") %>%
-  pivot_wider(names_from = cluster, values_from = mean_value) %>%
-  mutate(abs_diff = abs(`2` - `1`)) %>%
-  arrange(desc(abs_diff))
+  tidyr::pivot_longer(
+    -cluster,
+    names_to = "variable",
+    values_to = "mean_value"
+  ) %>%
+  tidyr::pivot_wider(
+    names_from = cluster,
+    values_from = mean_value
+  ) %>%
+  dplyr::mutate(abs_diff = abs(`2` - `1`)) %>%
+  dplyr::arrange(dplyr::desc(abs_diff))
 
 diff_rank %>% head(5)
 ```
 
 ### 6.5 Demographic Profiling
 
-Segmentation becomes meaningful when linked to demographic characteristics.
+Segmentation becomes more meaningful when linked back to customer characteristics.
 
-We examine whether cluster membership differs by gender.
+For this prototype, we examine whether cluster membership differs by gender.
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Code"
 
-
 gender_profile <- customers_clustered %>%
-  group_by(cluster, gender) %>%
-  summarise(n = n(), .groups = "drop") %>%
-  group_by(cluster) %>%
-  mutate(prop = n / sum(n))
+  dplyr::group_by(cluster, gender) %>%
+  dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+  dplyr::group_by(cluster) %>%
+  dplyr::mutate(prop = n / sum(n)) %>%
+  dplyr::ungroup()
 
-ggplot(gender_profile,
-       aes(cluster, prop, fill = gender)) +
+ggplot(gender_profile, aes(cluster, prop, fill = gender)) +
   geom_col(position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values = c("#9297A0", "#D4C5B9", "#A8B7AB")) +
   labs(
-    title = "Gender Composition by Cluster",
+    title = paste("Gender Composition by Cluster -", method_demo),
     x = "Cluster",
     y = "Proportion"
   ) +
@@ -651,26 +729,22 @@ ggplot(gender_profile,
 
 ### 6.6 Distribution Comparison
 
-To further illustrate behavioural contrast, we visualise the top-ranked variable.
+To further illustrate behavioural contrast, we visualise the top-ranked variable from the driver table.
 
 ```{r}
 #| code-fold: true
 #| code-summary: "Code"
-
 
 selected_var <- diff_rank$variable[1]
 
 ggplot(customers_clustered,
        aes(cluster, log1p(.data[[selected_var]]), fill = cluster)) +
   geom_boxplot(show.legend = FALSE) +
-  scale_fill_manual(values = c("#A8B7AB", "#C3A6A0")) +
+  scale_fill_manual(values = c("#A8B7AB", "#C3A6A0", "#9297A0", "#D4C5B9")) +
   labs(
-    title = paste("Log Distribution of", selected_var),
+    title = paste("Log Distribution of", selected_var, "-", method_demo),
     x = "Cluster",
     y = "log(1 + value)"
   ) +
   theme_minimal()
 ```
-
-
-
