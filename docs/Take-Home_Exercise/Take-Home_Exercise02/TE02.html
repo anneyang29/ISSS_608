@@ -648,7 +648,7 @@ $ customer_lifetime_value    &lt;dbl&gt; 312414808, 167022286, 19403711, 3597810
 <span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">round</span>(Correlation, <span class="dv">3</span>)), <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
 <span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Correlation Matrix of Clustering Variables (Lower Triangular)"</span>,</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Correlation Matrix of Clustering Variables"</span>,</span>
 <span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">""</span></span>
 <span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
 <span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
@@ -825,25 +825,17 @@ Note
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialise H2O</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>h2o<span class="sc">::</span><span class="fu">h2o.init</span>(<span class="at">nthreads =</span> <span class="sc">-</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>
-H2O is not running yet, starting it now...
-
-Note:  In case of errors look at the following log files:
-    C:\Users\88696\AppData\Local\Temp\RtmpCIvNuZ\file701433072822/h2o_88696_started_from_r.out
-    C:\Users\88696\AppData\Local\Temp\RtmpCIvNuZ\file70144f9b7c81/h2o_88696_started_from_r.err
-
-
-Starting H2O JVM and connecting:  Connection successful!
+<pre><code> Connection successful!
 
 R is connected to the H2O cluster: 
-    H2O cluster uptime:         3 seconds 162 milliseconds 
+    H2O cluster uptime:         18 minutes 50 seconds 
     H2O cluster timezone:       +08:00 
     H2O data parsing timezone:  UTC 
     H2O cluster version:        3.44.0.3 
     H2O cluster version age:    2 years, 2 months and 16 days 
-    H2O cluster name:           H2O_started_from_R_88696_itw629 
+    H2O cluster name:           H2O_started_from_R_88696_dzm568 
     H2O cluster total nodes:    1 
-    H2O cluster total memory:   7.91 GB 
+    H2O cluster total memory:   7.90 GB 
     H2O cluster total cores:    22 
     H2O cluster allowed cores:  22 
     H2O cluster healthy:        TRUE 
@@ -937,6 +929,20 @@ R is connected to the H2O cluster:
 </div>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As k increases, WSS will always decrease because more clusters reduce the distance between points and their assigned centroids. Therefore, the goal is not to minimise WSS but to identify the point where the rate of improvement slows down.</p>
+<p>The “elbow” point represents a balance between model simplicity and cluster compactness. After this point, increasing the number of clusters yields diminishing returns in terms of improved cluster cohesion.</p>
+</div>
+</div>
 </section>
 <section id="betweenss-totalss-ratio" class="level4">
 <h4 class="anchored" data-anchor-id="betweenss-totalss-ratio">5.1.3 BetweenSS / TotalSS ratio</h4>
@@ -968,6 +974,20 @@ R is connected to the H2O cluster:
 <span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This ratio measures how much of the total variance in the data is explained by the clustering structure. A higher ratio indicates that clusters are more clearly separated.</p>
+<p>As k increases, the ratio typically increases but eventually stabilises. The optimal k is often found where the improvement becomes marginal.</p>
 </div>
 </div>
 </section>
@@ -1042,6 +1062,25 @@ R is connected to the H2O cluster:
 </div>
 </div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each observation, the silhouette value ranges from −1 to 1:</p>
+<ul>
+<li>Values close to 1 indicate well-separated clusters</li>
+<li>Values near 0 suggest overlapping clusters</li>
+<li>Negative values indicate potential misclassification</li>
+</ul>
+<p>The average silhouette score across all observations is computed for each k. The optimal number of clusters is typically the value of k that maximises the average silhouette score.</p>
+</div>
+</div>
 </section>
 </section>
 <section id="gmm" class="level3">
@@ -1059,14 +1098,14 @@ R is connected to the H2O cluster:
 Gaussian finite mixture model fitted by EM algorithm 
 ---------------------------------------------------- 
 
-Mclust VVI (diagonal, varying volume and shape) model with 15 components: 
+Mclust VVI (diagonal, varying volume and shape) model with 14 components: 
 
  log-likelihood     n  df       BIC       ICL
-      -274394.1 48723 314 -552177.5 -558644.3
+      -286966.5 48723 293 -577095.7 -584169.9
 
 Clustering table:
-   1    2    3    4    5    6    7    8    9   10   11   12   13   14   15 
-2020 3025 4104 2376 3069 2357 2902 1981 2692 3824 4400 4806 4877 4962 1328 </code></pre>
+   1    2    3    4    5    6    7    8    9   10   11   12   13   14 
+1422 3413 3413 5059 4141 1691 1586 3642 4694 3061 3741 5223 4393 3244 </code></pre>
 </div>
 </div>
 </section>
@@ -1076,7 +1115,7 @@ Clustering table:
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Code</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
-<div class="cell">
+<div class="cell" width="10">
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1087,10 +1126,12 @@ Clustering table:
 </div>
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">xpd =</span> <span class="cn">TRUE</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">16</span>))  </span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gmm_fit, <span class="at">what =</span> <span class="st">"BIC"</span>, <span class="at">legendArgs =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="st">"right"</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.32</span>, <span class="dv">0</span>)))</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">xpd =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell" width="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">xpd =</span> <span class="cn">TRUE</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">13</span>))  </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gmm_fit, <span class="at">what =</span> <span class="st">"BIC"</span>, <span class="at">legendArgs =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="st">"right"</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.8</span>, <span class="dv">0</span>), <span class="at">cex =</span> <span class="fl">0.8</span>))</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">xpd =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
