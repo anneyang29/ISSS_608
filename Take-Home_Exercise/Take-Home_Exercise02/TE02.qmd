@@ -550,7 +550,7 @@ summary(gmm_fit)
 
 par(xpd = TRUE, mar = c(5, 2, 2, 13))  
 
-plot(gmm_fit, what = "BIC", legendArgs = list(x = "right", inset = c(-0.8, 0), cex = 0.8))
+plot(gmm_fit, what = "BIC", legendArgs = list(x = "right", inset = c(-0.6, 0), cex = 0.8))
 
 par(xpd = FALSE)
 ```
@@ -563,7 +563,7 @@ par(xpd = FALSE)
 
 par(xpd = TRUE, mar = c(5, 4, 4, 13))  
 
-plot(gmm_fit, what = "BIC", legendArgs = list(x = "right", inset = c(-0.8, 0), cex = 0.8))
+plot(gmm_fit, what = "BIC", legendArgs = list(x = "right", inset = c(-0.6, 0), cex = 0.8))
 
 par(xpd = FALSE)
 ```

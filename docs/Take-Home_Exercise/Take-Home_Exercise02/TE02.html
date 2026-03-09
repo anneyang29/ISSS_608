@@ -828,11 +828,11 @@ Note
 <pre><code> Connection successful!
 
 R is connected to the H2O cluster: 
-    H2O cluster uptime:         18 minutes 50 seconds 
+    H2O cluster uptime:         1 hours 14 minutes 
     H2O cluster timezone:       +08:00 
     H2O data parsing timezone:  UTC 
     H2O cluster version:        3.44.0.3 
-    H2O cluster version age:    2 years, 2 months and 16 days 
+    H2O cluster version age:    2 years, 2 months and 17 days 
     H2O cluster name:           H2O_started_from_R_88696_dzm568 
     H2O cluster total nodes:    1 
     H2O cluster total memory:   7.90 GB 
@@ -1098,14 +1098,14 @@ Note
 Gaussian finite mixture model fitted by EM algorithm 
 ---------------------------------------------------- 
 
-Mclust VVI (diagonal, varying volume and shape) model with 14 components: 
+Mclust VVI (diagonal, varying volume and shape) model with 8 components: 
 
- log-likelihood     n  df       BIC       ICL
-      -286966.5 48723 293 -577095.7 -584169.9
+ log-likelihood     n  df     BIC       ICL
+      -319268.7 48723 167 -640340 -645963.5
 
 Clustering table:
-   1    2    3    4    5    6    7    8    9   10   11   12   13   14 
-1422 3413 3413 5059 4141 1691 1586 3642 4694 3061 3741 5223 4393 3244 </code></pre>
+   1    2    3    4    5    6    7    8 
+4144 8773 4928 9442 9807 1786 3571 6272 </code></pre>
 </div>
 </div>
 </section>
@@ -1129,7 +1129,7 @@ Clustering table:
 <div class="cell" width="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">xpd =</span> <span class="cn">TRUE</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">13</span>))  </span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gmm_fit, <span class="at">what =</span> <span class="st">"BIC"</span>, <span class="at">legendArgs =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="st">"right"</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.8</span>, <span class="dv">0</span>), <span class="at">cex =</span> <span class="fl">0.8</span>))</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gmm_fit, <span class="at">what =</span> <span class="st">"BIC"</span>, <span class="at">legendArgs =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="st">"right"</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.6</span>, <span class="dv">0</span>), <span class="at">cex =</span> <span class="fl">0.8</span>))</span>
 <span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">xpd =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
