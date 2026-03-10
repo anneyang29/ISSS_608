@@ -31,7 +31,11 @@ listing:
 toc: false
 ---
 
-Welcome to **ISSS608 Visual Analytics and Applications** homepage. In this website, you will find my coursework. Materials here are based on [https://isss608-ay2025-26apr.netlify.app/](https://isss608-ay2025-26apr.netlify.app/lesson) by Prof Kam Tin Seong from SMU.
+This website presents selected coursework and analytical exercises completed for ISSS608: Visual Analytics and Applications at Singapore Management University. It includes hands-on exercises, in-class work, and take-home assignments covering data visualization, exploratory analysis, geospatial techniques, and interactive data storytelling.
+
+Together, these works reflect my learning journey in visual analytics and my interest in communicating insights through clear, structured, and engaging visual design.
+
+Materials here are based on [https://isss608-ay2025-26apr.netlify.app/](https://isss608-ay2025-26apr.netlify.app/lesson) by Prof Kam Tin Seong from SMU.
 
 
 Overview:
