@@ -26,7 +26,8 @@ listing:
       - "title"
     type: grid
     fields: [image, date, title, author]
-  
+    
+      
     
 toc: false
 ---
@@ -37,35 +38,37 @@ Together, these works reflect my learning journey in visual analytics and my int
 
 Materials here are based on [https://isss608-ay2025-26apr.netlify.app/](https://isss608-ay2025-26apr.netlify.app/lesson) by Prof Kam Tin Seong from SMU.
 
-
 Overview:
 
-::: content-container
-::: listing-block
+::::: content-container
+:::: listing-block
 ## Hands On Exercise
 
 </a>
 
 ::: {#Hands-On_Exercise}
 :::
-:::
-:::
+::::
+:::::
 
-::: content-container
-::: listing-block
+::::: content-container
+:::: listing-block
 ## In Class Exercise
 
 </a>
 
 ::: {#In-Class_Exercise}
 :::
-:::
-:::
-::: content-container
-::: listing-block
+::::
+:::::
+
+::::: content-container
+:::: listing-block
 ## Take Home Exercise
 
 </a>
 
 ::: {#Take-Home_Exercise}
 :::
+::::
+:::::

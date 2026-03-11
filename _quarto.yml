@@ -64,6 +64,8 @@ website:
       - href: index.qmd
         text: Home
       - about.qmd
+      - icon: github
+        href: "https://github.com/anneyang29/ISSS_608"
       
 brand:
   color:
