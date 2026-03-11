@@ -776,3 +776,180 @@ ggplot(customers_clustered,
   ) +
   theme_minimal()
 ```
+
+## 7 UI Design and Prototype Storyboard
+
+This section presents the proposed interface design for the Customer Segmentation Module in the final Shiny application.
+
+The purpose of this design is to translate the analytical workflow developed in this prototype into an interactive interface that allows users to explore customer segmentation results dynamically.
+
+The interface is organised into a sequential workflow consisting of four main stages:
+
+- Variable screening through correlation analysis
+- Clustering method selection and model evaluation
+- Cluster structure inspection
+- Behavioural and demographic interpretation
+
+Each stage exposes a small number of interactive parameters while presenting visual outputs that support interpretation of clustering results.
+
+### 7.1 Interface Workflow Overview
+
+Table: Proposed workflow of the clustering module interface
+
+| Step | Purpose | User Inputs | Visual Outputs |
+|-----|-----|-----|-----|
+| **Step 1** | Variable screening | Variable selector | Correlation heatmap and correlation warning |
+| **Step 2** | Clustering method selection | Method selector | Model selection plots |
+| **Step 3** | Cluster structure inspection | k selector | Cluster size distribution |
+| **Step 4** | Behavioural comparison | None | Parallel coordinate plot |
+| **Step 5** | Interpretation | Demographic selector and variable selector | Demographic composition and distribution comparison |
+
+### 7.2 Step 1 – Correlation Analysis
+
+The first interface panel allows users to screen the selected clustering variables using a correlation matrix.
+
+Highly correlated variables can distort distance-based clustering methods such as K-means and CLARA by over-weighting redundant information. Therefore, correlation inspection is provided as a preliminary diagnostic step.
+
+Users can choose which variables to include in the clustering analysis. The system then computes the Pearson correlation matrix and visualises it as a heatmap.
+
+If the absolute correlation between two variables exceeds a predefined threshold (e.g., |r| ≥ 0.8), the interface displays a warning message recommending that users retain only one variable from the correlated pair.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Code"
+knitr::include_graphics("image/Cluster.png")
+```
+
+Interactive controls
+
+- Variable selection dropdown
+- Automatic correlation warning system
+
+Outputs
+
+- Correlation heatmap
+- Correlation warning message
+
+Planned Shiny components
+
+- `selectInput()` or `pickerInput()` for variable selection
+- `plotOutput()`for correlation heatmap
+- `uiOutput()` for correlation warning
+
+### 7.3 Step 2 – Clustering Method Selection
+
+After selecting appropriate variables, users proceed to choose a clustering algorithm.
+
+Three clustering methods are supported:
+
+- *K-means* 
+- *CLARA* 
+- *Gaussian Mixture Models (GMM)* 
+
+For each method, a model selection plot is displayed to help users determine an appropriate number of clusters.
+
+For example:
+
+- K-means: Elbow plot and BetweenSS/TotalSS ratio
+- CLARA: Average silhouette score
+- GMM: Bayesian Information Criterion (BIC)
+
+These plots help users identify a suitable cluster number before running the final segmentation.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Code"
+knitr::include_graphics("image/Cluster (2).png")
+```
+
+Interactive controls
+
+- Clustering method selector
+
+Outputs
+
+- Model selection plots corresponding to the chosen method
+
+Planned Shiny components
+
+- `radioButtons()` for clustering method selection
+- `plotOutput()` for model selection plots
+
+### 7.4 Step 3 – Cluster Structure Inspection
+
+Once the clustering method has been selected, users choose the number of clusters (k).
+
+The interface then visualises the resulting cluster size distribution.
+
+This step allows users to inspect whether clusters are reasonably balanced or whether the solution produces extremely small niche segments.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Code"
+knitr::include_graphics("image/Cluster (3).png")
+```
+
+Interactive controls
+
+- Cluster number selector
+
+Outputs
+
+- Cluster size distribution bar chart
+
+Planned Shiny components
+
+- `sliderInput()` or `selectInput()` for k selection
+- `plotOutput()` for cluster size visualisation
+
+### 7.5 Step 4 – Behavioural Contrast
+
+After cluster formation, the interface presents behavioural differences between clusters.
+
+A parallel coordinates plot is used to visualise how clusters differ across multiple behavioural variables simultaneously.
+
+This plot highlights the relative profile of each cluster rather than absolute magnitude, allowing users to identify distinct behavioural patterns.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Code"
+knitr::include_graphics("image/Cluster (4).png")
+```
+
+Outputs
+
+- Parallel coordinates plot showing behavioural differences between clusters
+
+Planned Shiny components
+
+- `plotOutput()` or `plotlyOutput()` for interactive parallel coordinates
+
+### 7.6 Step 5 – Cluster Interpretation
+
+The final panel focuses on interpreting clusters through demographic characteristics and variable distributions.
+
+Users can explore how clusters differ across demographic variables such as gender, age group, or income category.
+
+In addition, the interface allows users to examine distribution differences for selected behavioural variables.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Code"
+knitr::include_graphics("image/Cluster (5).png")
+```
+
+Interactive controls
+
+- Demographic variable selector
+- Behavioural variable selector
+
+Outputs
+
+- Demographic composition chart
+- Distribution comparison plot
+
+Planned Shiny components
+
+- `selectInput()` for demographic variable selection
+- `selectInput()` for variable distribution comparison
+- `plotOutput()` for visualisations
