@@ -353,7 +353,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">March 11, 2026</p>
+      <p class="date-modified">March 14, 2026</p>
     </div>
   </div>
     
@@ -816,7 +816,7 @@ Note
 <p>Three clustering methods are included:</p>
 <ul>
 <li>K-means: centroid-based baseline</li>
-<li>PAM: medoid-based robust alternative</li>
+<li>CLARA: medoid-based robust alternative</li>
 <li>GMM: model-based probabilistic alternative</li>
 </ul>
 <p>This design is motivated by the fact that some behavioural variables remain highly skewed even after log transformation, and different clustering methods may respond differently to skewness, outliers, and cluster shape assumptions.</p>
@@ -843,25 +843,17 @@ Note
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialise H2O</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>h2o<span class="sc">::</span><span class="fu">h2o.init</span>(<span class="at">nthreads =</span> <span class="sc">-</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>
-H2O is not running yet, starting it now...
-
-Note:  In case of errors look at the following log files:
-    C:\Users\88696\AppData\Local\Temp\RtmpUnw2ZT\file104c288b4cc2/h2o_88696_started_from_r.out
-    C:\Users\88696\AppData\Local\Temp\RtmpUnw2ZT\file104c532a5abb/h2o_88696_started_from_r.err
-
-
-Starting H2O JVM and connecting:  Connection successful!
+<pre><code> Connection successful!
 
 R is connected to the H2O cluster: 
-    H2O cluster uptime:         3 seconds 48 milliseconds 
+    H2O cluster uptime:         43 minutes 1 seconds 
     H2O cluster timezone:       +08:00 
     H2O data parsing timezone:  UTC 
     H2O cluster version:        3.44.0.3 
-    H2O cluster version age:    2 years, 2 months and 18 days 
-    H2O cluster name:           H2O_started_from_R_88696_esq407 
+    H2O cluster version age:    2 years, 2 months and 22 days 
+    H2O cluster name:           H2O_started_from_R_88696_gxb127 
     H2O cluster total nodes:    1 
-    H2O cluster total memory:   7.91 GB 
+    H2O cluster total memory:   7.03 GB 
     H2O cluster total cores:    22 
     H2O cluster allowed cores:  22 
     H2O cluster healthy:        TRUE 
@@ -1124,14 +1116,14 @@ Note
 Gaussian finite mixture model fitted by EM algorithm 
 ---------------------------------------------------- 
 
-Mclust VVI (diagonal, varying volume and shape) model with 15 components: 
+Mclust VVI (diagonal, varying volume and shape) model with 14 components: 
 
  log-likelihood     n  df       BIC       ICL
-      -275540.1 48723 314 -554469.4 -560219.7
+      -283530.5 48723 293 -570223.6 -576822.7
 
 Clustering table:
-   1    2    3    4    5    6    7    8    9   10   11   12   13   14   15 
-4524 4804 1471 3290 2343 3483 4288 4442 4203 2884 2069 3028 4555 1845 1494 </code></pre>
+   1    2    3    4    5    6    7    8    9   10   11   12   13   14 
+2822 5013 3580 3792 2813 2738 5214 4206 2614 3594 4970 3260 1402 2705 </code></pre>
 </div>
 </div>
 </section>

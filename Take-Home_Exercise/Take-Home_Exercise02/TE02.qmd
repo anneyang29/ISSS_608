@@ -313,7 +313,7 @@ This prototype is designed to support multiple clustering methods so that users 
 Three clustering methods are included:
 
 - K-means: centroid-based baseline
-- PAM: medoid-based robust alternative
+- CLARA: medoid-based robust alternative
 - GMM: model-based probabilistic alternative
 
 This design is motivated by the fact that some behavioural variables remain highly skewed even after log transformation, and different clustering methods may respond differently to skewness, outliers, and cluster shape assumptions.
